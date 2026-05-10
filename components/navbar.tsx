@@ -55,18 +55,21 @@ export function Navbar() {
     { href: '/lien-he', label: 'Liên hệ' },
   ]
 
+  // Kiểm tra xem có đang ở Trang chủ hay không
+  const isHomePage = pathname === '/'
+
   return (
     <nav
       className={cn(
         'fixed top-0 w-full z-[9999] transition-all duration-500',
-        isScrolled
+        (isScrolled || !isHomePage)
           ? 'bg-white/95 backdrop-blur-2xl border-b border-slate-100 py-2 shadow-[0_10px_50px_rgba(0,0,0,0.08)]'
           : 'bg-transparent py-4'
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20 transition-all duration-500">
         <Link href="/" className="flex items-center h-full group">
-          <div className="relative w-[180px] h-[55px] rounded-lg overflow-hidden flex items-center bg-white/10 backdrop-blur-sm p-1">
+          <div className="relative w-[180px] h-[55px] rounded-lg overflow-hidden flex items-center">
             <Image 
               src="/logo.png" 
               alt="Inspiring HR Logo" 
@@ -78,38 +81,37 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => {
             const isActive = pathname === link.href
+            const isWhiteText = isHomePage && !isScrolled
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative text-[15px] font-bold px-4 py-2.5 rounded-xl transition-all duration-300",
-                  isActive 
-                    ? (isScrolled ? "text-primary bg-primary/5 shadow-sm" : "text-secondary bg-white/10 backdrop-blur-md shadow-sm") 
-                    : (isScrolled ? "text-slate-600 hover:text-primary hover:bg-slate-50" : "text-white/90 hover:text-secondary hover:bg-white/5")
+                  "relative text-[15px] font-bold transition-all duration-300 group py-2",
+                  isWhiteText
+                    ? (isActive ? "text-secondary" : "text-white/90 hover:text-secondary")
+                    : (isActive ? "text-primary" : "text-slate-700 hover:text-primary")
                 )}
               >
                 {link.label}
-                {isActive && (
-                  <span className={cn(
-                    "absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full",
-                    isScrolled ? "bg-secondary" : "bg-secondary"
-                  )}></span>
-                )}
+                <span className={cn(
+                  "absolute bottom-0 left-0 h-0.5 bg-secondary transition-all duration-300 rounded-full",
+                  isActive ? "w-full" : "w-0 group-hover:w-full"
+                )}></span>
               </Link>
             )
           })}
           
-          <div className="ml-6 flex items-center gap-3">
+          <div className="ml-4 flex items-center gap-4">
             {isAdmin && (
               <Link 
                 href="/admin/dashboard" 
                 className={cn(
-                  "flex items-center gap-2 font-black text-[14px] transition-all px-4 py-2.5 rounded-xl group shadow-sm",
-                  isScrolled ? "text-primary bg-secondary/10 hover:text-secondary" : "text-secondary bg-white/10 hover:bg-white/20"
+                  "flex items-center gap-2 font-black text-[14px] transition-all px-4 py-2 rounded-xl group",
+                  (isScrolled || !isHomePage) ? "text-primary bg-secondary/10 hover:text-secondary" : "text-secondary bg-white/10 hover:bg-white/20"
                 )}
               >
                 <LayoutDashboard className="w-4 h-4 group-hover:rotate-12 transition-transform" /> 
@@ -120,8 +122,8 @@ export function Navbar() {
             {user ? (
               <div className="flex items-center gap-4">
                 <div className={cn(
-                  "flex items-center gap-2 px-4 py-2.5 rounded-xl border shadow-sm",
-                  isScrolled ? "bg-primary/5 border-primary/10 text-primary" : "bg-white/10 border-white/10 text-white"
+                  "flex items-center gap-2 px-4 py-2 rounded-xl border",
+                  (isScrolled || !isHomePage) ? "bg-primary/5 border-primary/10 text-primary" : "bg-white/10 border-white/10 text-white"
                 )}>
                   <UserIcon className="w-4 h-4" />
                   <span className="font-bold text-sm">{user.name}</span>
@@ -132,7 +134,7 @@ export function Navbar() {
                   onClick={logout}
                   className={cn(
                     "w-10 h-10 rounded-xl transition-colors",
-                    isScrolled ? "hover:bg-red-50 hover:text-red-500" : "text-white hover:bg-white/10 hover:text-red-400"
+                    (isScrolled || !isHomePage) ? "hover:bg-red-50 hover:text-red-500" : "text-white hover:bg-white/10 hover:text-red-400"
                   )}
                 >
                   <LogOut className="w-4 h-4" />
@@ -143,8 +145,8 @@ export function Navbar() {
                 <Link 
                   href="/dang-nhap"
                   className={cn(
-                    "font-bold text-[14px] px-4 transition-colors",
-                    isScrolled ? "text-primary hover:text-secondary" : "text-white hover:text-secondary"
+                    "font-bold text-[14px] px-2 transition-colors",
+                    (isScrolled || !isHomePage) ? "text-primary hover:text-secondary" : "text-white hover:text-secondary"
                   )}
                 >
                   Đăng nhập
@@ -153,7 +155,7 @@ export function Navbar() {
                   href="/dang-nhap" 
                   className={cn(
                     buttonVariants({ size: "sm" }), 
-                    "bg-gradient-to-r from-primary to-[#1A5F1F] hover:shadow-lg hover:-translate-y-0.5 text-white rounded-xl px-8 h-11 flex items-center font-bold transition-all duration-300"
+                    "bg-gradient-to-r from-primary to-[#1A5F1F] hover:shadow-lg hover:-translate-y-0.5 text-white rounded-full px-8 h-10 flex items-center font-bold transition-all duration-300"
                   )}
                 >
                   Vào học
