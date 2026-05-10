@@ -65,12 +65,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-72 bg-white border-r border-slate-200 flex flex-col fixed inset-y-0 z-50">
         <div className="p-8">
           <Link href="/" className="flex items-center gap-3 mb-12 group">
-            <div className="relative w-[150px] h-[50px]">
+            <div className="relative w-[140px] h-[48px] bg-white rounded-xl p-1 shadow-sm border border-slate-100 group-hover:shadow-md transition-all duration-300">
               <Image 
                 src="/logo.png" 
                 alt="Inspiring HR Logo" 
                 fill 
-                className="object-contain"
+                className="object-contain p-1"
               />
             </div>
           </Link>

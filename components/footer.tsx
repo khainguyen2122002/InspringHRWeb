@@ -12,12 +12,12 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-6 md:col-span-1">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-[150px] h-[50px]">
+              <div className="relative w-[140px] h-[48px] bg-white rounded-xl p-1.5 shadow-lg group-hover:scale-105 transition-transform duration-300">
                 <Image 
                   src="/logo.png" 
                   alt="Inspiring HR Logo" 
                   fill 
-                  className="object-contain"
+                  className="object-contain p-1"
                 />
               </div>
             </Link>

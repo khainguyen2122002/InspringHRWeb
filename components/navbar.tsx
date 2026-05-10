@@ -63,12 +63,12 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-[180px] h-[60px]">
+          <div className="relative w-[160px] h-[54px] bg-white/40 backdrop-blur-sm rounded-xl overflow-hidden border border-white/20 shadow-sm group-hover:shadow-md transition-all duration-300">
             <Image 
               src="/logo.png" 
               alt="Inspiring HR Logo" 
               fill 
-              className="object-contain transition-transform duration-300 group-hover:scale-105"
+              className="object-contain p-1 mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
               priority
             />
           </div>
