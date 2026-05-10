@@ -6,49 +6,23 @@ import { CalendarDays, ArrowRight, Clock, User, LayoutGrid } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 
+import { useState, useEffect } from 'react'
+import { mockDb } from '@/lib/mock-db'
+
 export default function NewsPage() {
-  const news = [
-    { 
-      title: 'Xu hướng Quản trị Nhân sự 2026: Kỷ nguyên của AI và Trải nghiệm nhân viên', 
-      date: '10/05/2026', 
-      type: 'Xu Hướng', 
-      image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop', 
-      desc: 'Cùng chuyên gia phân tích những biến động mạnh mẽ của thị trường lao động và cách các bộ phận HR chuẩn bị cho tương lai kỹ thuật số.',
-      author: 'Ms. Hồng Nhung'
-    },
-    { 
-      title: 'Workshop: Tối ưu hóa chi phí nhân sự & Xây dựng hệ thống C&B bền vững', 
-      date: '25/05/2026', 
-      type: 'Hội Thảo', 
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop', 
-      desc: 'Sự kiện chuyên sâu dành riêng cho các Quản lý và Giám đốc Nhân sự (CHRO) tại TP.HCM nhằm giải quyết bài toán tối ưu nguồn lực.',
-      author: 'Inspiring HR'
-    },
-    { 
-      title: 'Làm thế nào để xây dựng Văn hóa Doanh nghiệp thực chiến?', 
-      date: '05/06/2026', 
-      type: 'Góc Nhìn', 
-      image: 'https://images.unsplash.com/photo-1511376777868-611b54f68947?q=80&w=2070&auto=format&fit=crop', 
-      desc: 'Văn hóa doanh nghiệp không chỉ là những khẩu hiệu. Đó là cách đội ngũ hành động và gắn kết ngay cả khi không có sự giám sát.',
-      author: 'Ms. Hồng Nhung'
-    },
-    { 
-      title: 'Ứng dụng AI trong quy trình Tuyển dụng & Đào tạo nhân sự', 
-      date: '15/06/2026', 
-      type: 'Công Nghệ', 
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop', 
-      desc: 'Trí tuệ nhân tạo đang tái định nghĩa cách các doanh nghiệp sàng lọc ứng viên và thiết kế lộ trình phát triển năng lực nội bộ.',
-      author: 'Inspiring HR Team'
-    },
-    { 
-      title: 'Khai giảng Khóa học: Nghề Nhân sự Chuyên nghiệp - Khóa K28', 
-      date: '01/08/2026', 
-      type: 'Thông Báo', 
-      image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop', 
-      desc: 'Cơ hội cuối cùng để đăng ký khóa học HR thực chiến toàn diện nhất trong năm với ưu đãi học phí lên đến 1.000.000đ.',
-      author: 'Phòng Đào Tạo'
-    }
-  ]
+  const [news, setNews] = useState<any[]>([])
+
+  useEffect(() => {
+    setNews(mockDb.getNews())
+  }, [])
+
+  if (news.length === 0) {
+    return (
+      <div className="flex flex-col min-h-screen bg-slate-50 pt-24 pb-20 items-center justify-center">
+         <p className="text-slate-500 font-medium">Chưa có bài viết nào.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 pt-24 pb-20">
@@ -73,7 +47,7 @@ export default function NewsPage() {
       <div className="container mx-auto px-4 mt-12">
          {/* Featured Post - Sạch sẽ hơn */}
          <div className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-50 mb-12">
-            <Link href="/tin-tuc/chi-tiet" className="absolute inset-0 z-30" />
+            <Link href={`/tin-tuc/chi-tiet?id=${news[0].id}`} className="absolute inset-0 z-30" />
             <div className="grid lg:grid-cols-2 bg-white">
                <div className="relative h-72 lg:h-[450px] overflow-hidden">
                   <Image 
@@ -136,7 +110,7 @@ export default function NewsPage() {
                     </p>
                     <div className="pt-4 flex items-center justify-between border-t border-slate-50">
                        <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">By {item.author}</span>
-                       <Link href="/tin-tuc/chi-tiet" className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+                       <Link href={`/tin-tuc/chi-tiet?id=${item.id}`} className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
                           <ArrowRight className="w-4 h-4" />
                        </Link>
                     </div>

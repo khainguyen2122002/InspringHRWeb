@@ -24,6 +24,45 @@ export default function AdminNewsPage() {
     setIsEditing(true)
   }
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let width = img.width
+        let height = img.height
+        const MAX_DIM = 800
+
+        if (width > height) {
+          if (width > MAX_DIM) {
+            height *= MAX_DIM / width
+            width = MAX_DIM
+          }
+        } else {
+          if (height > MAX_DIM) {
+            width *= MAX_DIM / height
+            height = MAX_DIM
+          }
+        }
+
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height)
+          const base64Url = canvas.toDataURL('image/jpeg', 0.7)
+          setCurrentItem((prev: any) => ({...prev, image: base64Url}))
+        }
+      }
+      img.src = event.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+
   const handleAddNew = () => {
     setCurrentItem({
       title: '',
@@ -97,12 +136,28 @@ export default function AdminNewsPage() {
             </div>
 
             <div className="space-y-4 md:col-span-2">
-              <label className="text-sm font-black text-slate-400 uppercase tracking-widest">Link hình ảnh minh họa</label>
-              <Input 
-                value={currentItem.image} 
-                onChange={(e) => setCurrentItem({...currentItem, image: e.target.value})}
-                className="h-14 rounded-2xl border-slate-100"
-              />
+              <label className="text-sm font-black text-slate-400 uppercase tracking-widest">Hình ảnh minh họa</label>
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                 {currentItem.image && (
+                   <div className="w-32 h-20 rounded-xl overflow-hidden shrink-0 border border-slate-100 bg-slate-50">
+                      <img src={currentItem.image} alt="preview" className="w-full h-full object-cover" />
+                   </div>
+                 )}
+                 <div className="space-y-2 flex-1 w-full">
+                    <Input 
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="h-14 rounded-2xl border-slate-100 pt-3"
+                    />
+                    <Input 
+                      placeholder="Hoặc dán URL hình ảnh vào đây..."
+                      value={currentItem.image} 
+                      onChange={(e) => setCurrentItem({...currentItem, image: e.target.value})}
+                      className="h-14 rounded-2xl border-slate-100"
+                    />
+                 </div>
+              </div>
             </div>
 
             <div className="space-y-4 md:col-span-2">
