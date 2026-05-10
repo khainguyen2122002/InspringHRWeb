@@ -3,25 +3,62 @@
 import { useState } from 'react'
 import { 
   Mail, Phone, MapPin, Clock, Facebook, 
-  MessageCircle, Send, ArrowRight, PartyPopper 
+  MessageCircle, Send, ArrowRight, PartyPopper, Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { mockDb } from '@/lib/mock-db'
+import { toast } from 'sonner'
+
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyFj52ZzU5vkE_4sQUXElI1l6xzExoqZqUd3L69XtC3MMXY_rH2QLmIFqAbSQU_GNL_/exec'
 
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setTimeout(() => {
-      setIsSubmitting(false)
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    
+    const topic = formData.get('topic') as string
+    const rawMessage = formData.get('message') as string
+    const combinedMessage = `[Vấn đề: ${topic}] - ${rawMessage}`
+
+    const data = {
+      name: formData.get('name') as string,
+      phone: formData.get('phone') as string,
+      email: formData.get('email') as string,
+      message: combinedMessage,
+      type: 'contact'
+    }
+
+    try {
+      // 1. Save to mockDb for Admin Dashboard
+      mockDb.saveInquiry(data)
+
+      // 2. Send to Google Sheets Webhook
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
       setIsSubmitted(true)
-    }, 1500)
+      form.reset()
+    } catch (error: any) {
+      toast.error("Có lỗi xảy ra khi gửi liên hệ: " + error.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const contactInfo = [
@@ -120,41 +157,41 @@ export default function ContactPage() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Họ và tên *</label>
-                      <Input placeholder="Nguyễn Văn A" required className="h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
+                      <Input name="name" placeholder="Nguyễn Văn A" required className="h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Số điện thoại *</label>
-                      <Input type="tel" placeholder="0901 xxx xxx" required className="h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
+                      <Input name="phone" type="tel" placeholder="0901 xxx xxx" required className="h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
                     </div>
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email *</label>
-                      <Input type="email" placeholder="email@vi-du.com" required className="h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
+                      <Input name="email" type="email" placeholder="email@vi-du.com" required className="h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Vấn đề quan tâm</label>
-                      <select className="w-full h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/20 appearance-none text-slate-700">
-                        <option>Đào tạo nhân sự</option>
-                        <option>Tư vấn doanh nghiệp</option>
-                        <option>Hợp tác đào tạo</option>
-                        <option>Khác...</option>
+                      <select name="topic" className="w-full h-12 rounded-xl bg-slate-50 border-none font-medium px-5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/20 appearance-none text-slate-700">
+                        <option value="Đào tạo nhân sự">Đào tạo nhân sự</option>
+                        <option value="Tư vấn doanh nghiệp">Tư vấn doanh nghiệp</option>
+                        <option value="Hợp tác đào tạo">Hợp tác đào tạo</option>
+                        <option value="Khác...">Khác...</option>
                       </select>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nội dung tư vấn *</label>
-                    <Textarea placeholder="Vui lòng để lại lời nhắn..." required className="min-h-[120px] rounded-xl bg-slate-50 border-none font-medium p-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
+                    <Textarea name="message" placeholder="Vui lòng để lại lời nhắn..." required className="min-h-[120px] rounded-xl bg-slate-50 border-none font-medium p-5 text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
                   </div>
 
                   <Button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="w-full md:w-auto h-14 px-10 bg-secondary hover:bg-primary hover:text-white text-primary font-black text-sm uppercase tracking-widest rounded-xl shadow-md transition-all flex items-center gap-2 group"
+                    className="w-full md:w-auto h-14 px-10 bg-secondary hover:bg-primary hover:text-white text-primary font-black text-sm uppercase tracking-widest rounded-xl shadow-md transition-all flex items-center justify-center gap-2 group"
                   >
-                    {isSubmitting ? 'Đang gửi...' : 'Gửi Yêu Cầu'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Gửi Yêu Cầu <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>}
                   </Button>
                 </form>
               )}

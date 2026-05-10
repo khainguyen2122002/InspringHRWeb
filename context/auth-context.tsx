@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const users = JSON.parse(localStorage.getItem('ih_users') || '[]')
     
     // Check if it's the default admin
-    if (cleanEmail === 'admin@inspiringhr.vn' && cleanPassword === 'admin123') {
+    if (cleanEmail === 'khainguyen2122002@gmail.com' && cleanPassword === 'admin123') {
       const adminUser: User = { id: 'admin', email: cleanEmail, name: 'Quản trị viên', role: 'admin' }
       localStorage.setItem('ih_user', JSON.stringify(adminUser))
       setUser(adminUser)

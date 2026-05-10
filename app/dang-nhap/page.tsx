@@ -125,11 +125,6 @@ function LoginForm() {
             Chưa có tài khoản?{' '}
             <Link href="/dang-ky" className="text-primary font-black hover:text-secondary transition-colors underline underline-offset-4">Đăng ký ngay</Link>
           </p>
-          
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Admin Account</p>
-            <p className="text-sm font-black text-primary">admin@inspiringhr.vn / admin123</p>
-          </div>
         </div>
       </Card>
     </div>

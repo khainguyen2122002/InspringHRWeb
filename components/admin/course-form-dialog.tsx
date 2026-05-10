@@ -439,26 +439,48 @@ export function CourseFormDialog({
                   <FormField
                     control={form.control}
                     name="original_price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[10px] font-black uppercase text-white/40 tracking-wider">Học phí gốc (VND)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} className="h-12 rounded-xl bg-white/5 border-white/10 text-center text-white" />
-                        </FormControl>
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const displayValue = field.value ? new Intl.NumberFormat('vi-VN').format(field.value) : ''
+                      return (
+                        <FormItem>
+                          <FormLabel className="text-[10px] font-black uppercase text-white/40 tracking-wider">Học phí gốc (VND)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="text" 
+                              value={displayValue}
+                              onChange={(e) => {
+                                const rawValue = e.target.value.replace(/\./g, '')
+                                field.onChange(rawValue ? Number(rawValue) : 0)
+                              }}
+                              className="h-12 rounded-xl bg-white/5 border-white/10 text-center text-white" 
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )
+                    }}
                   />
                   <FormField
                     control={form.control}
                     name="price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[10px] font-black uppercase text-white/50 tracking-wider">Học phí ưu đãi (Hiện tại)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} className="h-16 rounded-2xl bg-white/10 border-white/20 text-2xl font-black text-secondary focus:bg-white/20 transition-all text-center" />
-                        </FormControl>
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const displayValue = field.value ? new Intl.NumberFormat('vi-VN').format(field.value) : ''
+                      return (
+                        <FormItem>
+                          <FormLabel className="text-[10px] font-black uppercase text-white/50 tracking-wider">Học phí ưu đãi (Hiện tại)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="text" 
+                              value={displayValue}
+                              onChange={(e) => {
+                                const rawValue = e.target.value.replace(/\./g, '')
+                                field.onChange(rawValue ? Number(rawValue) : 0)
+                              }}
+                              className="h-16 rounded-2xl bg-white/10 border-white/20 text-2xl font-black text-secondary focus:bg-white/20 transition-all text-center" 
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )
+                    }}
                   />
                   <FormField
                     control={form.control}

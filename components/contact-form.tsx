@@ -9,6 +9,8 @@ import { CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { mockDb } from '@/lib/mock-db'
 
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyFj52ZzU5vkE_4sQUXElI1l6xzExoqZqUd3L69XtC3MMXY_rH2QLmIFqAbSQU_GNL_/exec'
+
 interface ContactFormProps {
   courseId?: string
   courseTitle?: string
@@ -43,6 +45,15 @@ export function ContactForm({ courseId, courseTitle }: ContactFormProps) {
       }
       
       mockDb.saveInquiry(data)
+
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
       
       toast.success("Cảm ơn bạn, chúng tôi sẽ liên hệ sớm!", {
         description: "Yêu cầu của bạn đã được chuyển đến bộ phận tư vấn.",
