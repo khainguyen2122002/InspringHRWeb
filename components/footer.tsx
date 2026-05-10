@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Facebook, Youtube, Mail, Phone, MapPin, ArrowRight } from 'lucide-react'
 
 export function Footer() {
@@ -11,12 +12,14 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-6 md:col-span-1">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center text-primary font-black text-xl shadow-lg group-hover:scale-105 transition-transform">
-                IH
+              <div className="relative w-[150px] h-[50px]">
+                <Image 
+                  src="/logo.png" 
+                  alt="Inspiring HR Logo" 
+                  fill 
+                  className="object-contain"
+                />
               </div>
-              <span className="font-black text-xl tracking-tighter text-white uppercase">
-                INSPIRING HR
-              </span>
             </Link>
             <p className="text-white/60 text-sm leading-relaxed font-medium">
               Đồng hành cùng cộng đồng HR Việt Nam bằng tri thức thực chiến và sự tận tâm nghề nghiệp.

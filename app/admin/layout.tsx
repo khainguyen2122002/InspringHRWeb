@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { LayoutDashboard, BookOpen, Newspaper, Users, LogOut, Home, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 
@@ -64,8 +65,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-72 bg-white border-r border-slate-200 flex flex-col fixed inset-y-0 z-50">
         <div className="p-8">
           <Link href="/" className="flex items-center gap-3 mb-12 group">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-secondary font-black text-xl group-hover:rotate-12 transition-transform">IH</div>
-            <span className="font-black text-xl tracking-tighter text-primary">Admin Panel</span>
+            <div className="relative w-[150px] h-[50px]">
+              <Image 
+                src="/logo.png" 
+                alt="Inspiring HR Logo" 
+                fill 
+                className="object-contain"
+              />
+            </div>
           </Link>
 
           <nav className="space-y-1.5">

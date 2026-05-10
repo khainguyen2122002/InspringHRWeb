@@ -30,18 +30,28 @@ export const metadata: Metadata = {
   },
   description: "Nâng tầm năng lực của người làm nghề Nhân sự tại Việt Nam thông qua các chương trình đào tạo mang tính ứng dụng thực tiễn cao nhất.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  icons: {
+    icon: [
+      { url: '/favicon.png' },
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon.png' },
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "vi_VN",
     url: "/",
     siteName: "Inspiring HR",
     description: "Nâng tầm năng lực nghề Nhân sự cùng đội ngũ chuyên gia CHRO hàng đầu.",
-    images: ["/og-image.jpg"],
+    images: ["/logo.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Inspiring HR - Đào tạo chuyên nghiệp",
     description: "Học tập đột phá, thành công vững bền cùng đội ngũ chuyên gia hàng đầu.",
+    images: ["/logo.png"],
   },
   robots: {
     index: true,

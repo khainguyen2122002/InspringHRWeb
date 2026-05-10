@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, X, ArrowRight, Sparkles, User as UserIcon, LogOut, LayoutDashboard } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -62,15 +63,15 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-white font-black text-2xl group-hover:shadow-[0_0_20px_rgba(242,169,0,0.4)] transition-all duration-300">
-            IH
+          <div className="relative w-[180px] h-[60px]">
+            <Image 
+              src="/logo.png" 
+              alt="Inspiring HR Logo" 
+              fill 
+              className="object-contain transition-transform duration-300 group-hover:scale-105"
+              priority
+            />
           </div>
-          <span className={cn(
-            "font-black text-2xl tracking-tighter transition-colors",
-            isScrolled ? "text-primary" : "text-primary"
-          )}>
-            INSPIRING HR
-          </span>
         </Link>
 
         {/* Desktop Nav */}
