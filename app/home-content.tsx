@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { mockDb } from '@/lib/mock-db'
 import { Course } from '@/types'
+import { GalleryCarousel } from '@/components/gallery-carousel'
 
 export default function HomeContent() {
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([])
@@ -136,7 +137,10 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 3. TIN TỨC & HỘI THẢO */}
+      {/* 3. KHOẢNH KHẮC THỰC TẾ (GALLERY CAROUSEL) */}
+      <GalleryCarousel />
+
+      {/* 4. TIN TỨC & HỘI THẢO */}
       <section className="py-24 bg-slate-50">
          <div className="container mx-auto px-4 max-w-6xl">
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
@@ -178,7 +182,7 @@ export default function HomeContent() {
          </div>
       </section>
 
-      {/* 4. VỀ CHÚNG TÔI */}
+      {/* 5. VỀ CHÚNG TÔI */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -227,7 +231,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 5. LÝ DO CHỌN CHÚNG TÔI */}
+      {/* 6. LÝ DO CHỌN CHÚNG TÔI */}
       <section className="py-24 bg-slate-50 relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-6xl relative z-10">
            <div className="text-center mb-20 space-y-4">
@@ -248,7 +252,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 6. CTA CUỐI TRANG / LIÊN HỆ NHANH */}
+      {/* 7. CTA CUỐI TRANG / LIÊN HỆ NHANH */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto bg-primary rounded-[3.5rem] p-12 md:p-24 text-center space-y-10 shadow-2xl relative overflow-hidden">

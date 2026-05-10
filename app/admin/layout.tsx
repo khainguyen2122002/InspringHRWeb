@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/auth-context'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { LayoutDashboard, BookOpen, Newspaper, Users, LogOut, Home } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Newspaper, Users, LogOut, Home, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -54,6 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/courses', label: 'Khóa học', icon: BookOpen },
     { href: '/admin/news', label: 'Tin tức', icon: Newspaper },
+    { href: '/admin/gallery', label: 'Khoảnh khắc', icon: ImageIcon },
     { href: '/admin/registrations', label: 'Đăng ký', icon: Users },
   ]
 

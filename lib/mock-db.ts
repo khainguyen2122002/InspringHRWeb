@@ -4,6 +4,7 @@ import { Course } from '@/types'
 const COURSES_KEY = 'ih_courses_data'
 const NEWS_KEY = 'ih_news_data'
 const INQUIRIES_KEY = 'ih_inquiries_data'
+const GALLERY_KEY = 'ih_gallery_data'
 
 export const mockDb = {
   // --- COURSES ---
@@ -233,5 +234,62 @@ export const mockDb = {
   deleteInquiry: (id: string) => {
     const inquiries = mockDb.getInquiries().filter(i => i.id !== id)
     localStorage.setItem(INQUIRIES_KEY, JSON.stringify(inquiries))
+  },
+
+  // --- GALLERY ---
+  getGallery: (): any[] => {
+    if (typeof window === 'undefined') return []
+    const data = localStorage.getItem(GALLERY_KEY)
+    if (!data) {
+      const defaults = [
+        {
+          id: '1',
+          image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop',
+          caption: 'Không khí sôi nổi tại lớp học Nghề Nhân Sự',
+          created_at: new Date().toISOString()
+        },
+        {
+          id: '2',
+          image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
+          caption: 'Học viên nhận chứng chỉ tốt nghiệp xuất sắc',
+          created_at: new Date().toISOString()
+        },
+        {
+          id: '3',
+          image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop',
+          caption: 'Làm việc nhóm và giải quyết Case Study thực tế',
+          created_at: new Date().toISOString()
+        },
+        {
+          id: '4',
+          image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop',
+          caption: 'Workshop chuyên sâu về xây dựng văn hóa doanh nghiệp',
+          created_at: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem(GALLERY_KEY, JSON.stringify(defaults))
+      return defaults
+    }
+    return JSON.parse(data)
+  },
+
+  saveGallery: (item: any) => {
+    const gallery = mockDb.getGallery()
+    const index = gallery.findIndex(g => g.id === item.id)
+    if (index > -1) {
+      gallery[index] = { ...gallery[index], ...item }
+    } else {
+      gallery.unshift({ 
+        ...item, 
+        id: Math.random().toString(36).substr(2, 9),
+        created_at: new Date().toISOString()
+      })
+    }
+    localStorage.setItem(GALLERY_KEY, JSON.stringify(gallery))
+  },
+
+  deleteGallery: (id: string) => {
+    const gallery = mockDb.getGallery().filter(g => g.id !== id)
+    localStorage.setItem(GALLERY_KEY, JSON.stringify(gallery))
   }
 }

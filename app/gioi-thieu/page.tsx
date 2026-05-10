@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { CheckCircle2, Award, Users, Target, Building2, Sparkles, ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { GalleryCarousel } from '@/components/gallery-carousel'
 
 export const metadata = {
   title: 'Giới thiệu | CÔNG TY TNHH INSPIRING HR',
@@ -83,6 +84,9 @@ export default function AboutPage() {
            </div>
         </div>
       </section>
+
+      {/* Gallery Carousel */}
+      <GalleryCarousel />
 
       {/* Core Values */}
       <section className="py-20 bg-slate-50">
