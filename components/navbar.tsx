@@ -63,7 +63,7 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
         <Link href="/" className="flex items-center h-full group">
-          <div className="relative w-[140px] h-[44px] rounded-lg overflow-hidden flex items-center">
+          <div className="relative w-[220px] h-[70px] rounded-lg overflow-hidden flex items-center">
             <Image 
               src="/logo.png" 
               alt="Inspiring HR Logo" 
