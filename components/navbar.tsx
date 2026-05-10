@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, X, ArrowRight, Sparkles, User as UserIcon, LogOut, LayoutDashboard } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/context/auth-context'
@@ -16,6 +16,7 @@ export function Navbar() {
   const { user, logout } = useAuth()
   const isAdmin = user?.role === 'admin'
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     setMounted(true)
@@ -57,13 +58,13 @@ export function Navbar() {
       className={cn(
         'fixed top-0 w-full z-50 transition-all duration-500',
         isScrolled
-          ? 'bg-white/90 backdrop-blur-2xl border-b border-slate-100 py-2 shadow-[0_10px_40px_rgba(0,0,0,0.05)]'
-          : 'bg-transparent py-4'
+          ? 'bg-white/95 backdrop-blur-2xl border-b border-slate-100 py-3 shadow-[0_10px_50px_rgba(0,0,0,0.08)]'
+          : 'bg-transparent py-6'
       )}
     >
-      <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
+      <div className="container mx-auto px-4 flex items-center justify-between h-20 md:h-24 transition-all duration-500">
         <Link href="/" className="flex items-center h-full group">
-          <div className="relative w-[220px] h-[70px] rounded-lg overflow-hidden flex items-center">
+          <div className="relative w-[220px] h-[75px] rounded-lg overflow-hidden flex items-center">
             <Image 
               src="/logo.png" 
               alt="Inspiring HR Logo" 
@@ -75,65 +76,77 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="relative text-[15px] font-bold text-slate-700 hover:text-primary transition-colors group py-2"
-            >
-              {link.label}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-hover:w-full rounded-full"></span>
-            </Link>
-          ))}
+        <div className="hidden lg:flex items-center gap-1">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "relative text-[16px] font-bold px-5 py-3 rounded-2xl transition-all duration-300",
+                  isActive 
+                    ? "text-primary bg-primary/5 shadow-[0_4px_15px_rgba(14,59,15,0.08)] scale-105" 
+                    : "text-slate-600 hover:text-primary hover:bg-slate-50"
+                )}
+              >
+                {link.label}
+                {isActive && (
+                  <span className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-secondary rounded-full"></span>
+                )}
+              </Link>
+            )
+          })}
           
-          {isAdmin && (
-            <Link 
-              href="/admin/dashboard" 
-              className="flex items-center gap-2 text-primary font-black text-[15px] hover:text-secondary transition-all bg-secondary/10 px-4 py-2 rounded-xl group"
-            >
-              <LayoutDashboard className="w-5 h-5 group-hover:rotate-12 transition-transform" /> 
-              Admin
-            </Link>
-          )}
+          <div className="ml-6 flex items-center gap-3">
+            {isAdmin && (
+              <Link 
+                href="/admin/dashboard" 
+                className="flex items-center gap-2 text-primary font-black text-[15px] hover:text-secondary transition-all bg-secondary/10 px-5 py-3 rounded-2xl group shadow-sm"
+              >
+                <LayoutDashboard className="w-5 h-5 group-hover:rotate-12 transition-transform" /> 
+                Admin
+              </Link>
+            )}
 
-          {user ? (
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-2xl border border-primary/10">
-                <UserIcon className="w-4 h-4 text-primary" />
-                <span className="font-bold text-primary text-sm">{user.name}</span>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-primary/5 px-5 py-3 rounded-2xl border border-primary/10 shadow-sm">
+                  <UserIcon className="w-4 h-4 text-primary" />
+                  <span className="font-bold text-primary text-sm">{user.name}</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={logout}
+                  className="w-12 h-12 rounded-2xl hover:bg-red-50 hover:text-red-500 transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                </Button>
               </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={logout}
-                className="rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors"
-              >
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link 
-                href="/dang-nhap"
-                className="text-primary font-bold text-sm px-4 hover:text-secondary transition-colors"
-              >
-                Đăng nhập
-              </Link>
-              <Link 
-                href="/dang-nhap" 
-                className={cn(buttonVariants({ }), "bg-gradient-to-r from-primary to-[#1A5F1F] hover:shadow-lg hover:-translate-y-0.5 text-white rounded-full px-8 font-bold transition-all duration-300")}
-              >
-                Vào học
-              </Link>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link 
+                  href="/dang-nhap"
+                  className="text-primary font-bold text-[15px] px-5 hover:text-secondary transition-colors"
+                >
+                  Đăng nhập
+                </Link>
+                <Link 
+                  href="/dang-nhap" 
+                  className={cn(buttonVariants({ }), "bg-gradient-to-r from-primary to-[#1A5F1F] hover:shadow-xl hover:-translate-y-1 text-white rounded-2xl px-10 h-14 flex items-center font-bold transition-all duration-300")}
+                >
+                  Vào học
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Mobile Menu Toggle */}
         <button
           className={cn(
-            "lg:hidden p-2 rounded-md",
+            "lg:hidden p-3 rounded-2xl bg-primary/5 text-primary transition-all active:scale-95",
             isScrolled ? "text-primary" : "text-primary"
           )}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
