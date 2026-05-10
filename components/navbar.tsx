@@ -57,13 +57,13 @@ export function Navbar() {
       className={cn(
         'fixed top-0 w-full z-50 transition-all duration-500',
         isScrolled
-          ? 'bg-white/80 backdrop-blur-2xl border-b border-slate-100 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.05)]'
-          : 'bg-transparent py-6'
+          ? 'bg-white/90 backdrop-blur-2xl border-b border-slate-100 py-2 shadow-[0_10px_40px_rgba(0,0,0,0.05)]'
+          : 'bg-transparent py-4'
       )}
     >
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-[150px] h-[50px] rounded-xl overflow-hidden">
+      <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
+        <Link href="/" className="flex items-center h-full group">
+          <div className="relative w-[140px] h-[44px] rounded-lg overflow-hidden flex items-center">
             <Image 
               src="/logo.png" 
               alt="Inspiring HR Logo" 
