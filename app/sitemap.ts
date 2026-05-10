@@ -5,6 +5,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
+  if (!supabase) {
+    return [
+      {
+        url: siteUrl,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 1,
+      },
+      {
+        url: `${siteUrl}/khoa-hoc`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.9,
+      }
+    ]
+  }
+
   // Fetch all course slugs
   const { data: courses } = await supabase
     .from('courses')
