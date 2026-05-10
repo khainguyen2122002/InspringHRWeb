@@ -283,7 +283,7 @@ function CourseDetailContent() {
                         <Input name="phone" type="tel" placeholder="Số điện thoại *" required className="h-12 rounded-xl bg-slate-50 border-none font-medium text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
                         <Input name="email" type="email" placeholder="Email liên hệ *" required className="h-12 rounded-xl bg-slate-50 border-none font-medium text-sm focus-visible:ring-1 focus-visible:ring-primary/20" />
                         
-                        <Select value={level} onValueChange={setLevel} required>
+                        <Select value={level} onValueChange={(val) => setLevel(val || '')} required>
                           <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-none font-medium text-sm focus:ring-1 focus:ring-primary/20">
                             <SelectValue placeholder="Hình thức học *" />
                           </SelectTrigger>
