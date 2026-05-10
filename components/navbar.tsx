@@ -32,11 +32,13 @@ export function Navbar() {
 
   if (!mounted) {
     return (
-      <nav className="fixed top-0 w-full z-50 bg-transparent py-5">
-        <div className="container mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-slate-200 rounded-2xl animate-pulse" />
-            <div className="w-32 h-6 bg-slate-200 rounded-md animate-pulse" />
+      <nav className="fixed top-0 w-full z-[9999] bg-transparent py-6">
+        <div className="container mx-auto px-4 flex items-center justify-between h-20 md:h-24">
+          <div className="w-48 h-12 bg-slate-100/50 rounded-2xl animate-pulse" />
+          <div className="hidden lg:flex gap-4">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="w-20 h-10 bg-slate-100/50 rounded-2xl animate-pulse" />
+            ))}
           </div>
         </div>
       </nav>
@@ -56,9 +58,9 @@ export function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed top-0 w-full z-50 transition-all duration-500',
+        'fixed top-0 w-full z-[9999] transition-all duration-500',
         isScrolled
-          ? 'bg-white/95 backdrop-blur-2xl border-b border-slate-100 py-3 shadow-[0_10px_50px_rgba(0,0,0,0.08)]'
+          ? 'bg-white/95 backdrop-blur-2xl border-b border-slate-100 py-3 shadow-[0_10px_50px_rgba(0,0,0,0.1)]'
           : 'bg-transparent py-6'
       )}
     >
