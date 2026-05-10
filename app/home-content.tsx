@@ -35,7 +35,7 @@ export default function HomeContent() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* 1. HERO SECTION - CỰC ẤN TƯỢNG */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#0A2A0B]">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#0A2A0B] z-0">
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
