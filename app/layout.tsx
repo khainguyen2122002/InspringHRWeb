@@ -9,8 +9,8 @@ import Link from 'next/link'
 import { Phone, MessageCircle } from 'lucide-react'
 import { AuthProvider } from '@/context/auth-context'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// export const dynamic = 'force-dynamic'
+// export const revalidate = 0
 
 const inter = Inter({
   variable: "--font-inter",
