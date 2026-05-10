@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .from('courses')
     .select('slug, updated_at')
 
-  const courseEntries: MetadataRoute.Sitemap = (courses || []).map((course) => ({
+  const courseEntries: MetadataRoute.Sitemap = (courses || []).map((course: any) => ({
     url: `${siteUrl}/courses/${course.slug}`,
     lastModified: new Date(course.updated_at),
     changeFrequency: 'weekly',

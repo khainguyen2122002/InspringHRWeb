@@ -46,7 +46,7 @@ export default function CoursesPage() {
     // Realtime sync
     const channel = supabase
       .channel('public-courses')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, (payload) => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'courses' }, (payload: any) => {
         fetchCourses()
         router.refresh()
       })
