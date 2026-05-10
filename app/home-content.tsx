@@ -17,13 +17,9 @@ export default function HomeContent() {
   const [latestNews, setLatestNews] = useState<any[]>([])
 
   useEffect(() => {
-    // Lấy khóa học nổi bật từ mockDb
-    const courses = mockDb.getCourses().filter((c: any) => c.is_featured).slice(0, 3)
-    if (courses.length === 0) {
-      setFeaturedCourses(mockDb.getCourses().slice(0, 3)) // Fallback nếu không có khóa nào đánh dấu nổi bật
-    } else {
-      setFeaturedCourses(courses)
-    }
+    // Lấy toàn bộ khóa học ra trang chủ vì hiện tại đang ít khóa học
+    const allCourses = mockDb.getCourses()
+    setFeaturedCourses(allCourses)
 
     // Lấy tin tức mới nhất từ mockDb
     setLatestNews(mockDb.getNews().slice(0, 3))
@@ -137,9 +133,6 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 3. KHOẢNH KHẮC THỰC TẾ (GALLERY CAROUSEL) */}
-      <GalleryCarousel />
-
       {/* 4. TIN TỨC & HỘI THẢO */}
       <section className="py-24 bg-slate-50">
          <div className="container mx-auto px-4 max-w-6xl">
@@ -251,6 +244,9 @@ export default function HomeContent() {
            </div>
         </div>
       </section>
+
+      {/* 6. KHOẢNH KHẮC THỰC TẾ (GALLERY CAROUSEL) */}
+      <GalleryCarousel />
 
       {/* 7. CTA CUỐI TRANG / LIÊN HỆ NHANH */}
       <section className="py-24 bg-white">
