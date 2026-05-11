@@ -41,37 +41,37 @@ export default function CoursesPage() {
   })
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-32 pb-20">
+    <div className="min-h-screen bg-slate-50 pt-20 md:pt-32 pb-16 md:pb-20">
       <div className="container mx-auto px-4">
         
         {/* Page Header */}
-        <div className="max-w-4xl mb-12 space-y-4 animate-in fade-in slide-in-from-bottom duration-700">
-          <Badge className="bg-primary/5 text-primary border-none px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 w-fit">
-            <LayoutGrid className="w-3.5 h-3.5" /> Danh mục đào tạo
+        <div className="max-w-4xl mb-8 md:mb-12 space-y-3 md:space-y-4 animate-in fade-in slide-in-from-bottom duration-700">
+          <Badge className="bg-primary/5 text-primary border-none px-3 md:px-4 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 w-fit">
+            <LayoutGrid className="w-3 md:w-3.5 h-3 md:h-3.5" /> Danh mục đào tạo
           </Badge>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-primary tracking-tight leading-tight">
-            Nâng Tầm Năng Lực <br />
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-primary tracking-tight leading-tight">
+            Nâng Tầm Năng Lực <br className="hidden sm:block" />
             <span className="text-secondary italic">Nghề Nhân Sự Chuyên Nghiệp</span>
           </h1>
-          <p className="text-base text-slate-500 font-medium leading-relaxed max-w-xl">
+          <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed max-w-xl">
             Khám phá các lộ trình đào tạo thực chiến được thiết kế bởi những chuyên gia hàng đầu, giúp bạn làm chủ mọi khía cạnh trong Quản trị nhân sự.
           </p>
         </div>
 
         {/* Filter Section */}
-        <div className="flex flex-col md:flex-row gap-4 mb-12 items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-8 md:mb-12 items-center bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-slate-100">
           <div className="relative flex-grow w-full">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <Input 
               placeholder="Tìm kiếm khóa học..." 
-              className="pl-12 h-14 bg-slate-50 border-none rounded-xl focus-visible:ring-1 focus-visible:ring-primary/20 text-base font-medium"
+              className="pl-11 md:pl-12 h-12 md:h-14 bg-slate-50 border-none rounded-xl focus-visible:ring-1 focus-visible:ring-primary/20 text-sm md:text-base font-medium"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="w-full md:w-64">
             <Select value={levelFilter} onValueChange={(val) => setLevelFilter(val || 'all')}>
-              <SelectTrigger className="h-14 bg-slate-50 border-none rounded-xl px-6 font-bold text-primary text-sm">
+              <SelectTrigger className="h-12 md:h-14 bg-slate-50 border-none rounded-xl px-5 md:px-6 font-bold text-primary text-xs md:text-sm">
                 <div className="flex items-center gap-2">
                   <Layers className="w-4 h-4 text-secondary" />
                   <SelectValue placeholder="Tất cả hình thức" />
@@ -105,7 +105,7 @@ export default function CoursesPage() {
                      </Badge>
                   </div>
                 )}
-                <div className="relative h-56 overflow-hidden bg-slate-100">
+                <div className="relative h-40 md:h-56 overflow-hidden bg-slate-100">
                   {course.image_url && (
                     <Image 
                       src={course.image_url} 
@@ -115,54 +115,54 @@ export default function CoursesPage() {
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white font-bold text-[9px] uppercase tracking-widest">
-                     <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-md border border-white/10"><Clock className="w-3.5 h-3.5 text-secondary" /> {course.sessions}</div>
-                     <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-md border border-white/10"><CheckCircle2 className="w-3.5 h-3.5 text-secondary" /> {course.status}</div>
+                  <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 right-3 md:right-4 flex items-center justify-between text-white font-bold text-[8px] md:text-[9px] uppercase tracking-widest">
+                     <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-sm px-2 md:px-2.5 py-1 rounded-md border border-white/10"><Clock className="w-3 md:w-3.5 h-3 md:h-3.5 text-secondary" /> {course.sessions}</div>
+                     <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-sm px-2 md:px-2.5 py-1 rounded-md border border-white/10"><CheckCircle2 className="w-3 md:w-3.5 h-3 md:h-3.5 text-secondary" /> {course.status}</div>
                   </div>
                 </div>
 
-                <CardContent className="p-8 flex-grow flex flex-col space-y-5">
+                <CardContent className="p-6 md:p-8 flex-grow flex flex-col space-y-4 md:space-y-5">
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-secondary border-secondary font-bold px-2 py-0.5 text-[9px] uppercase tracking-widest">
+                    <Badge variant="outline" className="text-secondary border-secondary font-bold px-2 py-0.5 text-[8px] md:text-[9px] uppercase tracking-widest">
                       {course.category}
                     </Badge>
-                    <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{course.commencement}</span>
+                    <span className="text-[8px] md:text-[9px] font-bold text-slate-300 uppercase tracking-widest">{course.commencement}</span>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-primary line-clamp-2 leading-tight group-hover:text-secondary transition-colors min-h-[2.5rem]">
+                  <h3 className="text-base md:text-lg font-bold text-primary line-clamp-2 leading-tight group-hover:text-secondary transition-colors min-h-[2rem] md:min-h-[2.5rem]">
                     {course.title}
                   </h3>
                   
-                  <p className="text-slate-500 text-xs font-medium line-clamp-3 leading-relaxed flex-grow">
+                  <p className="text-slate-500 text-[11px] md:text-xs font-medium line-clamp-3 leading-relaxed flex-grow">
                     {course.description}
                   </p>
                   
-                  <div className="pt-6 border-t border-slate-50">
-                    <div className="flex items-center justify-between mb-6">
+                  <div className="pt-4 md:pt-6 border-t border-slate-50">
+                    <div className="flex items-center justify-between mb-4 md:mb-6">
                       <div className="flex flex-col">
-                        <span className="text-[9px] font-bold text-slate-300 line-through tracking-widest uppercase mb-0.5">
+                        <span className="text-[7px] md:text-[9px] font-bold text-slate-300 line-through tracking-widest uppercase mb-0.5">
                           {new Intl.NumberFormat('vi-VN').format(Number(course.original_price || 0))}đ
                         </span>
-                        <span className="text-2xl font-black text-primary">
+                        <span className="text-lg md:text-2xl font-black text-primary">
                           {new Intl.NumberFormat('vi-VN').format(Number(course.price || 0))}đ
                         </span>
                       </div>
                       {course.level && (
                         <div className="text-right">
-                          <span className="block text-[9px] uppercase text-slate-400 font-bold tracking-widest mb-0.5">Hình thức</span>
-                          <span className="text-xs font-bold text-slate-700">{course.level}</span>
+                          <span className="block text-[8px] md:text-[9px] uppercase text-slate-400 font-bold tracking-widest mb-0.5">Hình thức</span>
+                          <span className="text-[11px] md:text-xs font-bold text-slate-700">{course.level}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2 md:gap-3">
                       <Link href={`/khoa-hoc/chi-tiet?id=${course.id}`} className="w-full">
-                        <Button variant="outline" className="w-full h-11 rounded-xl border-slate-200 font-bold text-slate-500 hover:bg-slate-50 hover:text-primary transition-all text-xs uppercase tracking-widest">
+                        <Button variant="outline" className="w-full h-9 md:h-11 rounded-xl border-slate-200 font-bold text-slate-500 hover:bg-slate-50 hover:text-primary transition-all text-[10px] md:text-xs uppercase tracking-widest">
                           Chi tiết
                         </Button>
                       </Link>
                       <Link href={`/khoa-hoc/chi-tiet?id=${course.id}#register`} className="w-full">
-                        <Button className="w-full h-11 rounded-xl bg-secondary hover:bg-primary hover:text-white text-primary font-bold shadow-md transition-all text-xs uppercase tracking-widest">
+                        <Button className="w-full h-9 md:h-11 rounded-xl bg-secondary hover:bg-primary hover:text-white text-primary font-bold shadow-md transition-all text-[10px] md:text-xs uppercase tracking-widest">
                           Đăng ký
                         </Button>
                       </Link>

@@ -69,12 +69,15 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20 transition-all duration-500">
         <Link href="/" className="flex items-center h-full group">
-          <div className="relative w-[180px] h-[55px] rounded-lg overflow-hidden flex items-center">
+          <div className="relative w-[140px] md:w-[180px] h-[45px] md:h-[55px] rounded-lg overflow-hidden flex items-center">
             <Image 
               src="/logo.png" 
               alt="Inspiring HR Logo" 
               fill 
-              className="object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+              className={cn(
+                "object-contain transition-transform duration-500 group-hover:scale-105",
+                (isScrolled || !isHomePage) ? "mix-blend-multiply" : "brightness-0 invert"
+              )}
               priority
             />
           </div>
@@ -168,10 +171,13 @@ export function Navbar() {
         {/* Mobile Menu Toggle */}
         <button
           className={cn(
-            "lg:hidden p-3 rounded-2xl bg-primary/5 text-primary transition-all active:scale-95",
-            isScrolled ? "text-primary" : "text-primary"
+            "lg:hidden p-2.5 rounded-xl transition-all active:scale-95 flex items-center justify-center",
+            (isScrolled || !isHomePage) 
+              ? "bg-primary/5 text-primary hover:bg-primary/10" 
+              : "bg-white/10 text-white hover:bg-white/20"
           )}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -180,45 +186,61 @@ export function Navbar() {
       {/* Mobile Menu */}
       <div 
         className={cn(
-          "lg:hidden fixed inset-x-0 top-[73px] bg-white/95 backdrop-blur-xl border-b shadow-2xl transition-all duration-500 origin-top overflow-hidden",
-          isMobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          "lg:hidden fixed inset-x-0 top-full bg-white shadow-2xl transition-all duration-500 origin-top overflow-hidden border-t border-slate-100",
+          isMobileMenuOpen ? "max-h-[90vh] opacity-100 visible" : "max-h-0 opacity-0 invisible"
         )}
       >
-        <div className="p-6 flex flex-col gap-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-lg font-bold p-2 hover:bg-slate-50 rounded-md text-primary"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="pt-4 border-t">
+        <div className="p-6 flex flex-col gap-1 overflow-y-auto max-h-[calc(90vh-20px)]">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "text-base font-bold p-3.5 rounded-xl transition-all flex items-center justify-between group",
+                  isActive ? "bg-primary/5 text-primary" : "text-slate-600 hover:bg-slate-50 hover:text-primary"
+                )}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+                <ArrowRight className={cn("w-4 h-4 transition-transform group-hover:translate-x-1", isActive ? "opacity-100" : "opacity-0")} />
+              </Link>
+            )
+          })}
+          <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-4">
             {isAdmin ? (
               <Link 
                 href="/admin/dashboard" 
-                className={cn(buttonVariants({ }), "w-full rounded-xl bg-primary text-white")}
+                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-xl bg-primary text-white font-bold h-14 shadow-lg shadow-primary/20")}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Admin Dashboard
+                <LayoutDashboard className="w-4 h-4 mr-2" /> Admin Dashboard
               </Link>
             ) : !user ? (
-              <Link 
-                href="/dang-nhap" 
-                className={cn(buttonVariants({ variant: "outline" }), "w-full rounded-xl border-primary text-primary")}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Đăng nhập
-              </Link>
+              <div className="grid grid-cols-2 gap-4">
+                <Link 
+                  href="/dang-nhap" 
+                  className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full rounded-xl border-slate-200 text-slate-600 font-bold h-14")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Đăng nhập
+                </Link>
+                <Link 
+                  href="/dang-nhap" 
+                  className={cn(buttonVariants({ size: "lg" }), "w-full rounded-xl bg-secondary text-primary font-black h-14 shadow-lg shadow-secondary/20")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Vào học
+                </Link>
+              </div>
             ) : (
                <Link 
                 href="/khoa-hoc" 
-                className={cn(buttonVariants({ }), "w-full rounded-xl bg-[#F2A900] text-primary font-black")}
+                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-xl bg-secondary text-primary font-black h-14 shadow-lg shadow-secondary/20")}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Vào học
+                Vào học ngay
               </Link>
             )}
           </div>

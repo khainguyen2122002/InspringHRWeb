@@ -26,18 +26,18 @@ export default function AboutPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-white pt-24">
+    <div className="flex flex-col min-h-screen bg-white pt-20 md:pt-24">
       {/* Hero Section - Sạch sẽ, typography tinh tế */}
-      <section className="bg-slate-50 py-20 relative overflow-hidden">
+      <section className="bg-slate-50 py-12 md:py-20 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center max-w-3xl">
-          <Badge className="bg-primary/5 text-primary border-none px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] mb-6">
+          <Badge className="bg-primary/5 text-primary border-none px-3 md:px-4 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] mb-4 md:mb-6">
             Hành trình Inspiring HR
           </Badge>
-          <h1 className="text-3xl md:text-5xl font-black text-primary leading-tight tracking-tight mb-6">
-            Khơi Nguồn Cảm Hứng <br />
+          <h1 className="text-2xl md:text-5xl font-black text-primary leading-tight tracking-tight mb-4 md:mb-6 px-4 md:px-0">
+            Khơi Nguồn Cảm Hứng <br className="hidden sm:block" />
             <span className="text-secondary italic">Nâng Tầm Năng Lực</span>
           </h1>
-          <p className="text-base text-slate-500 font-medium leading-relaxed">
+          <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed px-4 md:px-0">
             Chúng tôi không chỉ dạy kỹ năng, chúng tôi truyền cảm hứng để bạn trở thành phiên bản chuyên nghiệp nhất của chính mình trong nghề Nhân sự.
           </p>
         </div>
@@ -45,39 +45,39 @@ export default function AboutPage() {
       </section>
 
       {/* Founder Section */}
-      <section className="py-20">
+      <section className="py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-6xl">
-           <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div className="relative aspect-square max-w-md mx-auto rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-slate-50">
-                 <Image 
-                   src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" 
-                   alt="Ms. Trần Thị Hồng Nhung" 
-                   fill 
-                   className="object-cover"
-                 />
-                 <div className="absolute bottom-8 left-8 right-8 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/50">
-                    <h3 className="text-xl font-black text-primary">Ms. Trần Thị Hồng Nhung</h3>
-                    <p className="text-xs font-bold text-secondary uppercase tracking-widest mt-1">Founder & CEO Inspiring HR</p>
-                 </div>
+           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <div className="relative aspect-square max-w-md mx-auto rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-slate-50">
+                  <Image 
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" 
+                    alt="Ms. Trần Thị Hồng Nhung" 
+                    fill 
+                    className="object-cover"
+                  />
+                  <div className="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 bg-white/90 backdrop-blur-md p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border border-white/50">
+                     <h3 className="text-lg md:text-xl font-black text-primary">Ms. Trần Thị Hồng Nhung</h3>
+                     <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mt-1">Founder & CEO Inspiring HR</p>
+                  </div>
               </div>
               
-              <div className="space-y-6">
-                 <div className="space-y-3">
-                    <p className="text-secondary font-bold uppercase tracking-widest text-[10px]">Người truyền lửa</p>
-                    <h2 className="text-2xl md:text-3xl font-black text-primary leading-tight">Chuyên gia với 15+ năm <br /> kinh nghiệm thực chiến</h2>
+              <div className="space-y-6 text-center md:text-left">
+                 <div className="space-y-2 md:space-y-3">
+                    <p className="text-secondary font-bold uppercase tracking-widest text-[9px] md:text-[10px]">Người truyền lửa</p>
+                    <h2 className="text-xl md:text-3xl font-black text-primary leading-tight">Chuyên gia với 15+ năm <br className="hidden md:block" /> kinh nghiệm thực chiến</h2>
                  </div>
-                 <div className="space-y-4 text-slate-600 text-sm md:text-base leading-loose font-medium">
+                 <div className="space-y-4 text-slate-600 text-[13px] md:text-base leading-relaxed md:leading-loose font-medium">
                     <p>Với hành trình hơn 15 năm kinh nghiệm đảm nhiệm các vị trí Giám đốc Nhân sự (CHRO), Trưởng phòng Nhân sự tại các tập đoàn lớn, Ms. Hồng Nhung hiểu rõ những nỗi đau và thách thức mà người làm nghề HR đang gặp phải.</p>
                     <p>Inspiring HR ra đời từ tâm huyết muốn chia sẻ những kiến thức "xương máu", những biểu mẫu "thực chiến" mà không một trường lớp hàn lâm nào giảng dạy. Mục tiêu duy nhất là giúp học viên rút ngắn thời gian thành công và doanh nghiệp tối ưu được nguồn lực quý giá nhất: <strong>Con người</strong>.</p>
                  </div>
-                 <div className="flex gap-8 pt-4">
-                    <div className="space-y-1">
-                       <p className="text-2xl font-black text-primary">5000+</p>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Học viên đào tạo</p>
+                 <div className="flex justify-center md:justify-start gap-8 pt-2 md:pt-4">
+                    <div className="space-y-0.5 md:space-y-1">
+                       <p className="text-2xl md:text-2xl font-black text-primary">5000+</p>
+                       <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Học viên đào tạo</p>
                     </div>
-                    <div className="space-y-1">
-                       <p className="text-2xl font-black text-primary">50+</p>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doanh nghiệp tư vấn</p>
+                    <div className="space-y-0.5 md:space-y-1">
+                       <p className="text-2xl md:text-2xl font-black text-primary">50+</p>
+                       <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doanh nghiệp tư vấn</p>
                     </div>
                  </div>
               </div>
@@ -89,20 +89,20 @@ export default function AboutPage() {
       <GalleryCarousel />
 
       {/* Core Values */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-16 md:py-20 bg-slate-50">
          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="text-center mb-16 space-y-3">
-               <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight">Giá Trị Cốt Lõi</h2>
-               <div className="w-12 h-1 bg-secondary mx-auto rounded-full" />
+            <div className="text-center mb-10 md:mb-16 space-y-2 md:space-y-3">
+               <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight">Giá Trị Cốt Lõi</h2>
+               <div className="w-10 md:w-12 h-1 bg-secondary mx-auto rounded-full" />
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                {values.map((v, i) => (
-                 <Card key={i} className="p-8 border-none shadow-sm rounded-2xl bg-white group hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-                       <v.icon className="w-6 h-6" />
+                 <Card key={i} className="p-6 md:p-8 border-none shadow-sm rounded-2xl bg-white group hover:shadow-md transition-all">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl flex items-center justify-center text-primary mb-5 md:mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
+                       <v.icon className="w-5 h-5 md:w-6 md:h-6" />
                     </div>
-                    <h3 className="text-base font-black text-primary mb-3">{v.title}</h3>
-                    <p className="text-[13px] text-slate-500 font-medium leading-relaxed">{v.desc}</p>
+                    <h3 className="text-[15px] md:text-base font-black text-primary mb-2 md:mb-3">{v.title}</h3>
+                    <p className="text-[12px] md:text-[13px] text-slate-500 font-medium leading-relaxed">{v.desc}</p>
                  </Card>
                ))}
             </div>
@@ -127,19 +127,19 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-primary">
-         <div className="container mx-auto px-4 text-center max-w-4xl space-y-8">
-            <h2 className="text-2xl md:text-4xl font-black text-white leading-tight">
-               Hãy Để Chúng Tôi Đồng Hành Cùng <br /> <span className="text-secondary italic">Sự Nghiệp Của Bạn</span>
+      <section className="py-16 md:py-20 bg-primary">
+         <div className="container mx-auto px-4 text-center max-w-4xl space-y-6 md:space-y-8">
+            <h2 className="text-xl md:text-4xl font-black text-white leading-tight px-4 md:px-0">
+               Hãy Để Chúng Tôi Đồng Hành Cùng <br className="hidden md:block" /> <span className="text-secondary italic">Sự Nghiệp Của Bạn</span>
             </h2>
-            <p className="text-white/70 text-base md:text-lg font-medium leading-relaxed">
+            <p className="text-white/70 text-sm md:text-lg font-medium leading-relaxed px-4 md:px-0">
                Gia nhập cộng đồng nhân sự chuyên nghiệp và bứt phá giới hạn năng lực bản thân ngay hôm nay.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-               <Link href="/khoa-hoc" className="bg-secondary text-primary font-black px-10 h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-[#E09D00] transition-all">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-2 md:pt-4 px-4 md:px-0">
+               <Link href="/khoa-hoc" className="bg-secondary text-primary font-black px-10 h-13 md:h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-[#E09D00] transition-all text-sm w-full sm:w-auto">
                   Khám phá các khóa học <ArrowRight className="w-4 h-4" />
                </Link>
-               <Link href="/lien-he" className="bg-white/10 text-white border border-white/20 font-black px-10 h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-white/20 transition-all">
+               <Link href="/lien-he" className="bg-white/10 text-white border border-white/20 font-black px-10 h-13 md:h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-white/20 transition-all text-sm w-full sm:w-auto">
                   Tư vấn lộ trình
                </Link>
             </div>

@@ -113,6 +113,10 @@
 }
 
 @layer base {
+  html, body {
+    @apply overflow-x-hidden;
+    scroll-behavior: smooth;
+  }
   * {
     @apply border-border outline-ring/50;
   }

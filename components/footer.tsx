@@ -7,21 +7,21 @@ export function Footer() {
 
   return (
     <footer className="bg-[#0E3B0F] text-white border-t border-white/5 relative overflow-hidden">
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16">
+      <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 lg:gap-16 text-center md:text-left">
           {/* Brand */}
-          <div className="space-y-6 md:col-span-1">
+          <div className="space-y-6 md:col-span-1 flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-[180px] h-[60px] rounded-lg overflow-hidden flex items-center">
+              <div className="relative w-[160px] md:w-[180px] h-[55px] md:h-[60px] rounded-lg overflow-hidden flex items-center">
                 <Image 
                   src="/logo.png" 
                   alt="Inspiring HR Logo" 
                   fill 
-                  className="object-contain mix-blend-multiply"
+                  className="object-contain mix-blend-multiply brightness-0 invert"
                 />
               </div>
             </Link>
-            <p className="text-white/60 text-sm leading-relaxed font-medium">
+            <p className="text-white/60 text-[13px] md:text-sm leading-relaxed font-medium max-w-xs md:max-w-none">
               Đồng hành cùng cộng đồng HR Việt Nam bằng tri thức thực chiến và sự tận tâm nghề nghiệp.
             </p>
             <div className="flex gap-3">
@@ -46,19 +46,19 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="md:col-span-2 space-y-6">
-            <h3 className="text-secondary font-bold mb-6 uppercase text-[10px] tracking-widest">Thông Tin Liên Hệ</h3>
-            <div className="space-y-4 text-[13px] text-white/70">
+          <div className="md:col-span-2 space-y-6 flex flex-col items-center md:items-start">
+            <h3 className="text-secondary font-bold mb-2 md:mb-6 uppercase text-[9px] md:text-[10px] tracking-widest">Thông Tin Liên Hệ</h3>
+            <div className="space-y-4 text-[13px] text-white/70 flex flex-col items-center md:items-start">
               <p className="font-bold text-sm text-white uppercase tracking-wider">CÔNG TY TNHH INSPIRING HR</p>
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 justify-center md:justify-start">
                 <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
                 <span className="leading-relaxed">114/2K hẻm 222 đường Trường Chinh, P. Đông Hưng Thuận, TP. HCM</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 justify-center md:justify-start">
                 <Phone className="w-4 h-4 text-secondary shrink-0" />
                 <span>Hotline: 0915 099 642</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 justify-center md:justify-start">
                 <Mail className="w-4 h-4 text-secondary shrink-0" />
                 <span>Email: inspiringhr.daotaonhansu@gmail.com</span>
               </div>
@@ -66,11 +66,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[11px] text-white/40 font-medium tracking-wide">
+        <div className="mt-12 md:mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
+          <p className="text-[10px] md:text-[11px] text-white/40 font-medium tracking-wide">
             © {year} Inspiring HR. All rights reserved.
           </p>
-          <div className="flex gap-6 text-[11px] text-white/40 font-bold uppercase tracking-widest">
+          <div className="flex gap-6 text-[10px] md:text-[11px] text-white/40 font-bold uppercase tracking-widest">
             <Link href="#" className="hover:text-white transition-colors">Điều khoản</Link>
             <Link href="#" className="hover:text-white transition-colors">Bảo mật</Link>
           </div>
