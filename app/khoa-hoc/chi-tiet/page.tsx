@@ -233,11 +233,11 @@ function CourseDetailContent() {
                 <Card className="p-6 border border-slate-100 shadow-sm rounded-2xl bg-white space-y-4">
                    <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-slate-100 rounded-full overflow-hidden shrink-0 border border-slate-200">
-                         <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" alt={courseData.instructor_name} width={64} height={64} className="object-cover w-full h-full" />
+                         <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" alt={courseData.instructor_name || 'Giảng viên'} width={64} height={64} className="object-cover w-full h-full" />
                       </div>
                       <div className="space-y-1">
-                         <h4 className="text-base font-black text-primary">{courseData.instructor_name}</h4>
-                         <p className="text-[10px] font-bold text-secondary uppercase tracking-widest">{courseData.instructor_role}</p>
+                         <h4 className="text-base font-black text-primary">{courseData.instructor_name || 'Đội ngũ chuyên gia'}</h4>
+                         <p className="text-[10px] font-bold text-secondary uppercase tracking-widest">{courseData.instructor_role || 'Chuyên gia Inspiring HR'}</p>
                       </div>
                    </div>
                    <div className="bg-slate-50 p-4 rounded-xl">
