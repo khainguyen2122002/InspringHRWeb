@@ -13,9 +13,11 @@
   --card-foreground: 224 71.4% 4.1%;
   --popover: 0 0% 100%;
   --popover-foreground: 224 71.4% 4.1%;
-  --primary: 121 62% 14%; /* #0E3B0F */
+  --primary: 121 62% 14%;
+  /* #0E3B0F */
   --primary-foreground: 0 0% 100%;
-  --secondary: 42 100% 47.5%; /* #F2A900 */
+  --secondary: 42 100% 47.5%;
+  /* #F2A900 */
   --secondary-foreground: 0 0% 100%;
   --muted: 220 14.3% 95.9%;
   --muted-foreground: 220 8.9% 46.1%;
@@ -99,27 +101,47 @@
   --color-sidebar-primary: hsl(var(--sidebar-primary));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar: hsl(var(--sidebar));
-  
+
   @keyframes pulse-slow {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.1); opacity: 1; }
+
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
   }
+
   @keyframes spin-slow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
   }
+
   --animate-pulse-slow: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-spin-slow: spin-slow 12s linear infinite;
 }
 
 @layer base {
-  html, body {
+
+  html,
+  body {
     @apply overflow-x-hidden;
     scroll-behavior: smooth;
   }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
