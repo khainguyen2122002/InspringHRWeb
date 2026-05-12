@@ -23,7 +23,10 @@ export const mockDb = {
           level: 'Cơ bản - Nâng cao',
           image_url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
           views: 1250,
-          description: 'Khóa học cung cấp kiến thức toàn diện về quản trị nhân sự hiện đại, từ tuyển dụng, đào tạo đến C&B và quan hệ lao động.'
+          description: 'Khóa học cung cấp kiến thức toàn diện về quản trị nhân sự hiện đại, từ tuyển dụng, đào tạo đến C&B và quan hệ lao động.',
+          is_featured: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         },
         {
           id: '2',
@@ -34,7 +37,10 @@ export const mockDb = {
           level: 'Nâng cao',
           image_url: 'https://images.unsplash.com/photo-1454165833767-027ffea36c1e?q=80&w=2070&auto=format&fit=crop',
           views: 840,
-          description: 'Học cách xây dựng hệ thống lương thưởng, bảo hiểm và các chính sách nhân sự giúp thu hút và giữ chân nhân tài.'
+          description: 'Học cách xây dựng hệ thống lương thưởng, bảo hiểm và các chính sách nhân sự giúp thu hút và giữ chân nhân tài.',
+          is_featured: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         },
         {
           id: '3',
@@ -45,7 +51,10 @@ export const mockDb = {
           level: 'Cơ bản',
           image_url: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=2070&auto=format&fit=crop',
           views: 2100,
-          description: 'Nắm vững các bộ câu hỏi phỏng vấn hành vi và kỹ năng đánh giá ứng viên chuẩn xác nhất.'
+          description: 'Nắm vững các bộ câu hỏi phỏng vấn hành vi và kỹ năng đánh giá ứng viên chuẩn xác nhất.',
+          is_featured: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         },
         {
           id: '4',
@@ -56,7 +65,10 @@ export const mockDb = {
           level: 'Chiến lược',
           image_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop',
           views: 560,
-          description: 'Lộ trình từng bước để định hình và lan tỏa giá trị cốt lõi, gắn kết đội ngũ một cách tự nhiên.'
+          description: 'Lộ trình từng bước để định hình và lan tỏa giá trị cốt lõi, gắn kết đội ngũ một cách tự nhiên.',
+          is_featured: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         }
       ]
       localStorage.setItem(COURSES_KEY, JSON.stringify(defaults))

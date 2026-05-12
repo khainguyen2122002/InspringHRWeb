@@ -28,28 +28,28 @@ export type CenterInfo = {
 
 export interface Course {
   id: string
-  slug: string
+  slug?: string
   title: string
   description: string // Mô tả ngắn
   image_url: string
   category: string
   level: string // Hình thức học
   sessions: string // Số buổi
-  schedule: string // Lịch học (19h30 - 21h30, Thứ 2,4,6)
-  commencement: string // Khai giảng
+  schedule?: string // Lịch học (19h30 - 21h30, Thứ 2,4,6)
+  commencement?: string // Khai giảng
   price: number // Học phí ưu đãi
-  original_price: number // Học phí gốc
-  instructor_name: string
-  instructor_role: string
-  target_audience: string // Đối tượng phù hợp
-  benefits: string[] // Lợi ích sau khóa học
-  special_benefits: string // Quyền lợi đặc biệt
-  content: string // Nội dung chi tiết (Markdown hoặc HTML)
-  curriculum: Array<{
+  original_price?: number // Học phí gốc
+  instructor_name?: string
+  instructor_role?: string
+  target_audience?: string // Đối tượng phù hợp
+  benefits?: string[] // Lợi ích sau khóa học
+  special_benefits?: string // Quyền lợi đặc biệt
+  content?: string // Nội dung chi tiết (Markdown hoặc HTML)
+  curriculum?: Array<{
     title: string
     lessons: string[]
   }>
-  status: 'Sắp khai giảng' | 'Đang diễn ra' | 'Đã kết thúc'
+  status?: 'Sắp khai giảng' | 'Đang diễn ra' | 'Đã kết thúc'
   external_form_url?: string
   is_featured: boolean
   views: number
