@@ -69,16 +69,16 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20 transition-all duration-500">
         <Link href="/" className="flex items-center h-full group">
-          <div className="relative w-[140px] md:w-[180px] h-[45px] md:h-[55px] rounded-lg overflow-hidden flex items-center">
-            <Image 
+          <div className="h-[40px] md:h-[50px] flex items-center">
+            <img 
               src="/logo.png" 
-              alt="Inspiring HR Logo" 
-              fill 
+              alt="Inspiring HR" 
               className={cn(
-                "object-contain transition-transform duration-500 group-hover:scale-105",
-                (isScrolled || !isHomePage) ? "mix-blend-multiply" : "brightness-0 invert"
+                "h-full w-auto object-contain transition-all duration-500 group-hover:scale-105",
+                (isScrolled || !isHomePage) 
+                  ? "" 
+                  : "brightness-0 invert"
               )}
-              priority
             />
           </div>
         </Link>

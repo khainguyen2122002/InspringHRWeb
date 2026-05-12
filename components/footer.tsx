@@ -12,12 +12,11 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-6 md:col-span-1 flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-[160px] md:w-[180px] h-[55px] md:h-[60px] rounded-lg overflow-hidden flex items-center">
-                <Image 
+              <div className="h-[50px] md:h-[60px] flex items-center">
+                <img 
                   src="/logo.png" 
-                  alt="Inspiring HR Logo" 
-                  fill 
-                  className="object-contain mix-blend-multiply brightness-0 invert"
+                  alt="Inspiring HR" 
+                  className="h-full w-auto object-contain brightness-0 invert"
                 />
               </div>
             </Link>

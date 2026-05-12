@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Users, Target, BookOpen, Clock, Layers, PhoneCall, CheckCircle2, Award, Building2, Sparkles, CalendarDays } from 'lucide-react'
+import { ArrowRight, Users, Target, BookOpen, Clock, Layers, PhoneCall, CheckCircle2, Award, Building2, Sparkles, CalendarDays, Eye } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
@@ -17,12 +17,12 @@ export default function HomeContent() {
   const [latestNews, setLatestNews] = useState<any[]>([])
 
   useEffect(() => {
-    // Lấy toàn bộ khóa học ra trang chủ vì hiện tại đang ít khóa học
+    // Lấy danh sách khóa học
     const allCourses = mockDb.getCourses()
-    setFeaturedCourses(allCourses)
+    setFeaturedCourses(allCourses.slice(0, 4)) // Lấy 4 khóa học
 
     // Lấy tin tức mới nhất từ mockDb
-    setLatestNews(mockDb.getNews().slice(0, 3))
+    setLatestNews(mockDb.getNews().slice(0, 5)) // Lấy 5 tin tức
   }, [])
 
   const reasons = [
@@ -84,9 +84,9 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 2. CHƯƠNG TRÌNH TIÊU BIỂU */}
+      {/* 2. KHÓA HỌC NỔI BẬT */}
       <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 max-w-6xl">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
              <div className="space-y-2 md:space-y-3">
                 <p className="text-secondary font-bold uppercase tracking-widest text-[9px] md:text-[10px]">Chương trình đào tạo</p>
@@ -98,48 +98,86 @@ export default function HomeContent() {
              </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {featuredCourses.map((course) => (
-              <Card key={course.id} className="border border-slate-100 shadow-sm rounded-2xl overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col">
-                <div className="relative h-44 md:h-56 overflow-hidden">
-                  <Image src={course.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop'} alt={course.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute top-3 md:top-4 left-3 md:left-4">
-                    <Badge className="bg-white/95 backdrop-blur-sm text-primary border-none font-bold px-2.5 py-1 rounded-lg text-[8px] md:text-[9px] uppercase tracking-widest shadow-md">
-                      {course.category}
-                    </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-6 md:p-8 flex-grow flex flex-col space-y-4 md:space-y-5">
-                  <h3 className="text-base md:text-lg font-bold text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-2 min-h-[2.5rem] md:min-h-[3rem]">
-                    {course.title}
-                  </h3>
-                  <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-secondary" /> {course.sessions}</div>
-                    <div className="flex items-center gap-1.5"><Layers className="w-3.5 h-3.5 text-secondary" /> {course.level}</div>
-                  </div>
-                  <div className="flex justify-between items-center pt-5 md:pt-6 border-t border-slate-50">
-                    <div className="space-y-0.5">
-                       <p className="text-[8px] md:text-[9px] font-bold text-slate-300 uppercase tracking-widest">Học phí</p>
-                       <span className="text-lg md:text-xl font-black text-primary">{new Intl.NumberFormat('vi-VN').format(Number(course.price))}đ</span>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            {/* Featured Course (Left - 2/3) */}
+            <div className="lg:col-span-2 space-y-6">
+              {featuredCourses[0] && (
+                <div className="group cursor-pointer">
+                  <Link href={`/khoa-hoc/chi-tiet?id=${featuredCourses[0].id}`}>
+                    <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl mb-6 md:mb-8">
+                      <Image 
+                        src={featuredCourses[0].image_url} 
+                        alt={featuredCourses[0].title} 
+                        fill 
+                        className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute top-4 md:top-6 left-4 md:left-6">
+                        <Badge className="bg-secondary text-primary font-bold px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg border-none">
+                          Nổi bật nhất
+                        </Badge>
+                      </div>
+                      <div className="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 text-white">
+                        <div className="flex items-center gap-4 text-[10px] md:text-[11px] font-bold text-white/80 uppercase tracking-widest mb-2 md:mb-4">
+                          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].sessions}</span>
+                          <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].views} lượt xem</span>
+                        </div>
+                        <h3 className="text-xl md:text-4xl font-black mb-3 md:mb-5 leading-tight group-hover:text-secondary transition-colors">
+                          {featuredCourses[0].title}
+                        </h3>
+                        <p className="text-white/70 text-xs md:text-base font-medium line-clamp-2 max-w-3xl mb-4 md:mb-6 leading-relaxed">
+                          {featuredCourses[0].description}
+                        </p>
+                        <div className="inline-flex items-center gap-2 bg-white text-primary px-5 md:px-8 py-2.5 md:py-4 rounded-xl font-black text-[10px] md:text-[12px] uppercase tracking-widest hover:bg-secondary transition-all">
+                          Xem chi tiết <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </div>
                     </div>
-                    <Link href={`/khoa-hoc/chi-tiet?id=${course.id}#register`} className="bg-secondary text-primary hover:bg-primary hover:text-white px-4 md:px-5 py-2 md:py-2.5 rounded-xl font-bold text-[10px] md:text-[11px] uppercase tracking-widest transition-all shadow-md">
-                       Đăng ký
-                    </Link>
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Course List (Right - 1/3) */}
+            <div className="flex flex-col gap-6 md:gap-8">
+              {featuredCourses.slice(1, 4).map((course) => (
+                <Link key={course.id} href={`/khoa-hoc/chi-tiet?id=${course.id}`} className="group block">
+                  <div className="flex gap-4 md:gap-6 items-start">
+                    <div className="relative w-28 md:w-36 aspect-square rounded-2xl overflow-hidden shrink-0 shadow-md">
+                      <Image 
+                        src={course.image_url} 
+                        alt={course.title} 
+                        fill 
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="space-y-2 md:space-y-3 py-1">
+                      <div className="flex items-center gap-3 text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em]">
+                        <span className="text-secondary">{course.category}</span>
+                        <span className="flex items-center gap-1"><Eye className="w-2.5 h-2.5" /> {course.views}</span>
+                      </div>
+                      <h4 className="text-sm md:text-[15px] font-bold text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-2">
+                        {course.title}
+                      </h4>
+                      <p className="text-[10px] md:text-[11px] font-bold text-primary/80">
+                         {new Intl.NumberFormat('vi-VN').format(Number(course.price))}đ
+                      </p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. TIN TỨC & HỘI THẢO */}
+      {/* 4. TIN TỨC & SỰ KIỆN */}
       <section className="py-16 md:py-24 bg-slate-50">
-         <div className="container mx-auto px-4 max-w-6xl">
+         <div className="container mx-auto px-4 max-w-7xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
                <div className="space-y-2 md:space-y-3">
                   <p className="text-secondary font-bold uppercase tracking-widest text-[9px] md:text-[10px]">Kiến thức & Sự kiện</p>
-                  <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Tin Tức & Hội Thảo</h2>
+                  <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Tin Tức & Sự Kiện Mới Nhất</h2>
                   <div className="w-12 md:w-16 h-1 bg-secondary rounded-full" />
                </div>
                <Link href="/tin-tuc" className="text-primary font-bold text-[13px] md:text-sm hover:text-secondary transition-colors flex items-center gap-2 group">
@@ -147,30 +185,62 @@ export default function HomeContent() {
                </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-               {latestNews.map((news, i) => (
-                 <Card key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group border-none flex flex-col">
-                    <div className="relative h-40 md:h-48 overflow-hidden">
-                       <Image src={news.image} alt={news.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                       <div className="absolute top-3 md:top-4 left-3 md:left-4 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-                          <p className="text-[8px] md:text-[9px] font-bold text-primary flex items-center gap-1.5 md:gap-2 uppercase tracking-widest">
-                             <CalendarDays className="w-3 md:w-3.5 h-3 md:h-3.5 text-secondary" /> {news.date}
-                          </p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+               {/* Featured News (Left - 2/3) */}
+               <div className="lg:col-span-2">
+                 {latestNews[0] && (
+                   <Card className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group border-none">
+                      <div className="grid md:grid-cols-2">
+                        <div className="relative h-64 md:h-full min-h-[300px] overflow-hidden">
+                           <Image 
+                            src={latestNews[0].image} 
+                            alt={latestNews[0].title} 
+                            fill 
+                            className="object-cover group-hover:scale-110 transition-transform duration-1000" 
+                           />
+                           <div className="absolute top-4 left-4">
+                              <Badge className="bg-primary text-white font-bold px-3 py-1.5 rounded-lg border-none uppercase text-[9px] tracking-widest">
+                                {latestNews[0].type}
+                              </Badge>
+                           </div>
+                        </div>
+                        <div className="p-8 md:p-12 flex flex-col justify-center space-y-5 md:space-y-6">
+                           <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                              <span className="flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5 text-secondary" /> {latestNews[0].date}</span>
+                              <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-secondary" /> {latestNews[0].views}</span>
+                           </div>
+                           <h3 className="text-xl md:text-2xl font-black text-primary leading-tight group-hover:text-secondary transition-colors">
+                              {latestNews[0].title}
+                           </h3>
+                           <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed line-clamp-3">
+                              {latestNews[0].desc}
+                           </p>
+                           <Link href={`/tin-tuc/chi-tiet?id=${latestNews[0].id}`} className="inline-flex items-center gap-2 text-[10px] md:text-[11px] font-black text-primary uppercase tracking-widest group/btn">
+                              Xem chi tiết <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                           </Link>
+                        </div>
+                      </div>
+                   </Card>
+                 )}
+               </div>
+
+               {/* News List (Right - 1/3) */}
+               <div className="space-y-8">
+                  {latestNews.slice(1, 5).map((news, i) => (
+                    <Link key={i} href={`/tin-tuc/chi-tiet?id=${news.id}`} className="group block">
+                       <div className="space-y-3">
+                          <div className="flex items-center gap-3 text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                             <span className="text-secondary">{news.type}</span>
+                             <span>{news.date}</span>
+                          </div>
+                          <h4 className="text-sm md:text-[15px] font-bold text-primary leading-snug group-hover:text-secondary transition-colors line-clamp-2">
+                             {news.title}
+                          </h4>
+                          <div className="w-0 group-hover:w-12 h-0.5 bg-secondary transition-all duration-300 rounded-full" />
                        </div>
-                    </div>
-                    <div className="p-6 md:p-8 space-y-3 md:space-y-4 flex-grow flex flex-col">
-                       <h3 className="text-[15px] md:text-lg font-bold text-primary leading-tight line-clamp-2 group-hover:text-secondary transition-colors flex-grow">
-                          {news.title}
-                       </h3>
-                       <p className="text-[11px] md:text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
-                         {news.desc}
-                       </p>
-                       <Link href={`/tin-tuc/chi-tiet?id=${news.id}`} className="inline-flex items-center gap-2 text-[9px] md:text-[10px] font-black text-primary uppercase tracking-widest hover:text-secondary transition-colors pt-3 md:pt-4 border-t border-slate-50">
-                          Đọc thêm <ArrowRight className="w-3 md:w-3.5 h-3 md:h-3.5" />
-                       </Link>
-                    </div>
-                 </Card>
-               ))}
+                    </Link>
+                  ))}
+               </div>
             </div>
          </div>
       </section>
