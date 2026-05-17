@@ -2,24 +2,57 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { CalendarDays, User, ArrowLeft, Share2, Facebook, MessageCircle, Clock } from 'lucide-react'
+import { CalendarDays, User, ArrowLeft, Share2, Facebook, MessageCircle, Clock, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useSearchParams } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { getGoogleSheetNews } from '@/app/actions'
+import { mockDb } from '@/lib/mock-db'
 
-export default function NewsDetailPage() {
-  const post = {
-    title: 'Xu hướng Quản trị Nhân sự 2026: Kỷ nguyên của AI và Trải nghiệm nhân viên',
-    date: '10/05/2026',
-    author: 'Ms. Hồng Nhung',
-    type: 'Xu Hướng',
-    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop',
-    content: [
-      'Năm 2026 đánh dấu bước ngoặt lớn trong cách thức vận hành của bộ phận Nhân sự. Không còn chỉ là các thủ tục hành chính khô khan, HR hiện đại đang chuyển mình trở thành đối tác chiến lược quan trọng, trực tiếp đóng góp vào sự tăng trưởng của doanh nghiệp.',
-      'Ứng dụng Trí tuệ Nhân tạo (AI) đã không còn là điều xa xỉ. Từ việc sàng lọc CV tự động, phân tích hành vi ứng viên đến việc thiết kế lộ trình đào tạo cá nhân hóa, AI đang giúp HR tiết kiệm hàng trăm giờ làm việc mỗi tháng.',
-      'Tuy nhiên, công nghệ không thể thay thế con người hoàn toàn. Trải nghiệm nhân viên (Employee Experience) mới là yếu tố cốt lõi để giữ chân nhân tài. Doanh nghiệp cần tập trung vào việc xây dựng môi trường làm việc hạnh phúc, nơi mỗi cá nhân đều cảm thấy được trân trọng và phát triển.',
-      'Tại Inspiring HR, chúng tôi luôn cập nhật những xu hướng này vào các chương trình đào tạo thực chiến để học viên không chỉ giỏi kỹ năng mà còn có tư duy chiến lược dẫn đầu thị trường.'
-    ]
+function NewsDetailContent() {
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id')
+  const [post, setPost] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await getGoogleSheetNews()
+        const allNews = res && res.success && res.data && res.data.length > 0 ? res.data : mockDb.getNews()
+        if (id) {
+          const found = allNews.find((item: any) => item.id.toString() === id.toString())
+          if (found) {
+            setPost(found)
+            return
+          }
+        }
+        setPost(allNews[0])
+      } catch (err) {
+        setPost(mockDb.getNews()[0])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    load()
+  }, [id])
+
+  if (isLoading || !post) {
+    return (
+      <div className="min-h-screen bg-white pt-32 pb-20 flex items-center justify-center space-y-4 flex-col">
+         <Loader2 className="w-10 h-10 animate-spin text-primary" />
+         <p className="text-sm font-bold text-slate-400">Đang tải nội dung chi tiết từ Google Sheets...</p>
+      </div>
+    )
   }
+
+  // Split content into paragraphs if it's a raw string
+  const paragraphs = Array.isArray(post.content) 
+    ? post.content 
+    : typeof post.content === 'string' && post.content.trim().length > 0
+    ? post.content.split('\n').filter((p: string) => p.trim().length > 0)
+    : [post.desc || 'Nội dung chi tiết đang được cập nhật.']
 
   return (
     <div className="min-h-screen bg-white pt-28 pb-20">
@@ -35,39 +68,39 @@ export default function NewsDetailPage() {
            {/* Post Header */}
            <div className="space-y-5 mb-10">
               <Badge className="bg-secondary text-primary px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest border-none">
-                 {post.type}
+                 {post.type || 'Tin Tức'}
               </Badge>
-              <h1 className="text-2xl md:text-3xl font-black text-primary leading-tight tracking-tight">
+              <h1 className="text-2xl md:text-4xl font-black text-primary leading-tight tracking-tight">
                  {post.title}
               </h1>
               <div className="flex flex-wrap items-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50 pb-6">
                  <div className="flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4 text-secondary" /> {post.date}
+                    <CalendarDays className="w-4 h-4 text-secondary" /> {post.date || '2026'}
                  </div>
                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-secondary" /> {post.author}
+                    <User className="w-4 h-4 text-secondary" /> {post.author || 'Inspiring HR'}
                  </div>
                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-secondary" /> 5 phút đọc
+                    <Clock className="w-4 h-4 text-secondary" /> {Math.ceil((post.content?.length || 1000) / 800)} phút đọc
                  </div>
               </div>
            </div>
 
            {/* Image */}
-           <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg mb-10 border border-slate-50">
-              <Image src={post.image} alt={post.title} fill className="object-cover" />
+           <div className="relative aspect-video rounded-2xl md:rounded-[2rem] overflow-hidden shadow-xl mb-10 border border-slate-100 bg-slate-100">
+              <Image src={post.image || 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop'} alt={post.title} fill className="object-cover" />
            </div>
 
            {/* Content */}
            <div className="space-y-6">
-              {post.content.map((para, i) => (
+              {paragraphs.map((para: string, i: number) => (
                 <p key={i} className="text-slate-600 leading-loose text-sm md:text-base font-medium text-justify">
                    {para}
                 </p>
               ))}
               
-              <div className="bg-slate-50 p-8 rounded-2xl border-l-4 border-primary mt-10 italic text-primary font-bold text-base leading-relaxed">
-                 "Thách thức lớn nhất của HR không phải là công nghệ, mà là làm sao để giữ được bản sắc con người trong một thế giới số hóa."
+              <div className="bg-slate-50 p-8 rounded-2xl md:rounded-[2rem] border-l-4 border-primary mt-12 italic text-primary font-bold text-base leading-relaxed">
+                 "Inspiring HR - Nơi hội tụ tri thức thực chiến, đồng hành cùng sự thăng tiến vượt bậc của cộng đồng Nhân sự Việt Nam."
               </div>
            </div>
 
@@ -82,13 +115,25 @@ export default function NewsDetailPage() {
                  </div>
               </div>
               <Link href="/khoa-hoc">
-                 <Button className="bg-secondary text-primary font-bold px-6 h-11 rounded-xl hover:bg-primary hover:text-white transition-all text-xs uppercase tracking-widest">
-                    Xem khóa học liên quan
+                 <Button className="bg-secondary text-primary font-black px-8 h-12 rounded-xl hover:bg-primary hover:text-white transition-all text-xs uppercase tracking-widest shadow-md">
+                    Xem khóa học thực chiến
                  </Button>
               </Link>
            </div>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function NewsDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white pt-32 pb-20 flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      </div>
+    }>
+      <NewsDetailContent />
+    </Suspense>
   )
 }

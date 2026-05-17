@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { CenterInfo, Course, Contact } from '@/types'
+import { mockDb } from '@/lib/mock-db'
 
 const adminEmail = 'khainguyen2122002@gmail.com'
 
@@ -337,6 +338,77 @@ function parseCsvLine(text: string): string[] {
   }
   result.push(cur.trim())
   return result
+}
+
+const GOOGLE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyFj52ZzU5vkE_4sQUXElI1l6xzExoqZqUd3L69XtC3MMXY_rH2QLmIFqAbSQU_GNL_/exec'
+
+export async function getGoogleSheetNews() {
+  try {
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1szp_pNmmnoGjtRbc5vkmUA-kCwlShQNv7tYTRcO4Ckw/export?format=csv&gid=701056727'
+    const res = await fetch(csvUrl, { cache: 'no-store' })
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    const text = await res.text()
+
+    const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0)
+    if (lines.length <= 1) {
+      return { success: true, data: mockDb.getNews() }
+    }
+
+    const records = lines.slice(1).map((line, idx) => {
+      const row = parseCsvLine(line)
+      return {
+        id: row[0] || `news-${idx}-${Date.now()}`,
+        title: row[1] || '',
+        date: row[2] || new Date().toLocaleDateString('vi-VN'),
+        type: row[3] || 'Tin Tức',
+        author: row[4] || 'Inspiring HR',
+        image: row[5] || 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
+        desc: row[6] || '',
+        content: row[7] || '',
+        views: Number(row[8]) || 150
+      }
+    })
+
+    records.reverse()
+    return { success: true, data: records }
+  } catch (err: any) {
+    console.error('Error in getGoogleSheetNews:', err)
+    return { success: false, error: err.message, data: mockDb.getNews() }
+  }
+}
+
+export async function saveNewsToGoogleSheet(newsItem: any) {
+  try {
+    const payload = {
+      sheetName: 'News',
+      id: newsItem.id || Date.now().toString(),
+      title: newsItem.title || '',
+      date: newsItem.date || new Date().toLocaleDateString('vi-VN'),
+      type: newsItem.type || 'Tin Tức',
+      author: newsItem.author || 'Ban Biên tập',
+      image: newsItem.image || 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
+      desc: newsItem.desc || '',
+      content: newsItem.content || '',
+      views: newsItem.views || 150
+    }
+
+    await fetch(GOOGLE_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    revalidatePath('/tin-tuc')
+    revalidatePath('/')
+    revalidatePath('/admin/news')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error in saveNewsToGoogleSheet:', error)
+    return { success: false, error: error.message }
+  }
 }
 
 // SEED DATA

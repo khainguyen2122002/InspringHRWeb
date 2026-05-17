@@ -2,19 +2,44 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { CalendarDays, ArrowRight, Clock, User, LayoutGrid } from 'lucide-react'
+import { CalendarDays, ArrowRight, Clock, User, LayoutGrid, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 
 import { useState, useEffect } from 'react'
 import { mockDb } from '@/lib/mock-db'
+import { getGoogleSheetNews } from '@/app/actions'
 
 export default function NewsPage() {
   const [news, setNews] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setNews(mockDb.getNews())
+    async function loadNews() {
+      try {
+        const res = await getGoogleSheetNews()
+        if (res && res.success && res.data && res.data.length > 0) {
+          setNews(res.data)
+        } else {
+          setNews(mockDb.getNews())
+        }
+      } catch (err) {
+        setNews(mockDb.getNews())
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadNews()
   }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-slate-50 pt-32 pb-20 items-center justify-center space-y-4">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-sm font-bold text-slate-400">Đang tải tin tức từ trang tính Google Sheets...</p>
+      </div>
+    )
+  }
 
   if (news.length === 0) {
     return (

@@ -6,17 +6,34 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Edit, Trash2, X, Save, Calendar } from 'lucide-react'
+import { Plus, Edit, Trash2, X, Save, Calendar, Loader2 } from 'lucide-react'
 import { mockDb } from '@/lib/mock-db'
 import { toast } from 'sonner'
+import { getGoogleSheetNews, saveNewsToGoogleSheet } from '@/app/actions'
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState<any[]>([])
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [currentItem, setCurrentItem] = useState<any>(null)
 
   useEffect(() => {
-    setNews(mockDb.getNews())
+    async function load() {
+      try {
+        const res = await getGoogleSheetNews()
+        if (res.success && res.data && res.data.length > 0) {
+          setNews(res.data)
+        } else {
+          setNews(mockDb.getNews())
+        }
+      } catch (e) {
+        setNews(mockDb.getNews())
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    load()
   }, [])
 
   const handleEdit = (item: any) => {
@@ -69,7 +86,8 @@ export default function AdminNewsPage() {
       date: new Date().toLocaleDateString('vi-VN'),
       type: 'Tin Tức',
       image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop',
-      desc: ''
+      desc: '',
+      content: ''
     })
     setIsEditing(true)
   }
@@ -78,16 +96,36 @@ export default function AdminNewsPage() {
     if (confirm('Bạn có chắc muốn xóa bài viết này?')) {
       mockDb.deleteNews(id)
       setNews(mockDb.getNews())
-      toast.success('Đã xóa bài viết.')
+      toast.success('Đã xóa bài viết khỏi bộ đệm.')
     }
   }
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    mockDb.saveNews(currentItem)
-    setNews(mockDb.getNews())
-    setIsEditing(false)
-    toast.success('Đã lưu bài viết.')
+    setIsSaving(true)
+    toast.info('Đang xuất bản và đồng bộ bài viết lên Google Sheets...', { duration: 6000 })
+    
+    try {
+      mockDb.saveNews(currentItem)
+      const res = await saveNewsToGoogleSheet(currentItem)
+      if (res && res.success) {
+        toast.success('Xuất bản thành công! Bài viết đã được lưu vào Google Sheets.', { duration: 10000 })
+      } else {
+        toast.error('Lưu bộ đệm thành công, nhưng kết nối Google Sheets gặp sự cố: ' + (res?.error || ''))
+      }
+
+      const refreshed = await getGoogleSheetNews()
+      if (refreshed.success && refreshed.data && refreshed.data.length > 0) {
+        setNews(refreshed.data)
+      } else {
+        setNews(mockDb.getNews())
+      }
+      setIsEditing(false)
+    } catch (err: any) {
+      toast.error('Lỗi xuất bản: ' + err.message)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (

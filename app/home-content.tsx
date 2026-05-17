@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { mockDb } from '@/lib/mock-db'
 import { Course } from '@/types'
 import { GalleryCarousel } from '@/components/gallery-carousel'
+import { getGoogleSheetNews } from '@/app/actions'
 
 export default function HomeContent() {
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([])
@@ -21,8 +22,20 @@ export default function HomeContent() {
     const allCourses = mockDb.getCourses()
     setFeaturedCourses(allCourses.slice(0, 4)) // Lấy 4 khóa học
 
-    // Lấy tin tức mới nhất từ mockDb
-    setLatestNews(mockDb.getNews().slice(0, 5)) // Lấy 5 tin tức
+    // Lấy tin tức mới nhất từ Google Sheets
+    async function loadLatestNews() {
+      try {
+        const res = await getGoogleSheetNews()
+        if (res && res.success && res.data && res.data.length > 0) {
+          setLatestNews(res.data.slice(0, 5))
+        } else {
+          setLatestNews(mockDb.getNews().slice(0, 5))
+        }
+      } catch (e) {
+        setLatestNews(mockDb.getNews().slice(0, 5))
+      }
+    }
+    loadLatestNews()
   }, [])
 
   const reasons = [
