@@ -69,14 +69,19 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20 transition-all duration-500">
         <Link href="/" className="flex items-center group transition-transform duration-300 hover:scale-105">
-          <div className="relative h-11 md:h-14 w-44 md:w-56 bg-white px-3.5 py-1.5 rounded-2xl shadow-sm border border-slate-100/50 flex items-center justify-center transition-all duration-300 group-hover:shadow-md">
+          <div className={cn(
+            "relative h-11 md:h-14 w-44 md:w-56 flex items-center justify-center transition-all duration-300",
+            (isHomePage && !isScrolled)
+              ? "bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-lg border border-white/20"
+              : ""
+          )}>
             <Image 
               src="/logo.png" 
               alt="Inspiring HR Logo" 
               fill
               priority
               sizes="(max-width: 768px) 176px, 224px"
-              className="object-contain p-1.5 transition-opacity duration-300 group-hover:opacity-95"
+              className="object-contain transition-opacity duration-300 group-hover:opacity-95"
             />
           </div>
         </Link>
@@ -107,38 +112,34 @@ export function Navbar() {
           })}
           
           <div className="ml-4 flex items-center gap-2.5 md:gap-3">
-            <a 
-              href="tel:0915099642" 
-              className={cn(
-                "hidden xl:flex items-center gap-2 font-bold text-xs md:text-sm px-3.5 py-2 rounded-xl transition-all border",
-                (isScrolled || !isHomePage) ? "bg-emerald-50/80 border-emerald-200 text-emerald-700 hover:bg-emerald-100" : "bg-white/10 border-white/20 text-white hover:bg-white/20"
-              )}
+            <Link 
+              href="/khoa-hoc" 
+              className="flex items-center gap-1.5 font-bold text-xs md:text-sm bg-gradient-to-r from-secondary to-amber-500 hover:from-amber-500 hover:to-secondary text-primary px-4 py-2 md:py-2.5 rounded-xl shadow-md shadow-amber-500/20 transition-all hover:scale-105"
             >
-              <Phone className="w-3.5 h-3.5 text-emerald-500 animate-pulse" /> 0915 099 642
-            </a>
-
-            <a 
-              href="https://zalo.me/0915099642" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 font-bold text-xs md:text-sm bg-[#0068ff] hover:bg-[#0055d4] text-white px-3.5 py-2 rounded-xl shadow-sm transition-all"
-            >
-              <MessageSquare className="w-3.5 h-3.5" /> Zalo
-            </a>
+              <Sparkles className="w-4 h-4 text-primary animate-spin" />
+              Đăng ký ngay
+            </Link>
 
             <Link 
               href="/lien-he" 
-              className="hidden sm:flex items-center gap-1.5 font-bold text-xs md:text-sm bg-gradient-to-r from-primary to-[#1A5F1F] hover:from-[#114616] hover:to-[#124216] text-white px-4 py-2 rounded-xl shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5"
+              className={cn(
+                "flex items-center gap-1.5 font-bold text-xs md:text-sm px-4 py-2 md:py-2.5 rounded-xl transition-all border",
+                (isScrolled || !isHomePage) 
+                  ? "border-primary text-primary hover:bg-primary/5" 
+                  : "border-white/30 text-white hover:bg-white/10"
+              )}
             >
-              Nhận tư vấn
+              Liên hệ
             </Link>
 
             {isAdmin && (
               <Link 
                 href="/admin/registrations" 
                 className={cn(
-                  "flex items-center gap-1.5 font-black text-xs md:text-sm px-3.5 py-2 rounded-xl transition-all group border",
-                  (isScrolled || !isHomePage) ? "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100" : "bg-amber-500/20 border-amber-500/30 text-amber-300 hover:bg-amber-500/30"
+                  "flex items-center gap-1.5 font-black text-xs md:text-sm px-3.5 py-2 md:py-2.5 rounded-xl transition-all group border",
+                  (isScrolled || !isHomePage) 
+                    ? "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100" 
+                    : "bg-amber-500/20 border-amber-500/30 text-amber-300 hover:bg-amber-500/30"
                 )}
               >
                 <LayoutDashboard className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" /> 
@@ -158,43 +159,55 @@ export function Navbar() {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={logout}
+                  onClick={() => logout()}
                   className={cn(
-                    "w-9 h-9 rounded-xl transition-colors",
-                    (isScrolled || !isHomePage) ? "hover:bg-red-50 hover:text-red-500" : "text-white hover:bg-white/10 hover:text-red-400"
+                    "rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors",
+                    (isScrolled || !isHomePage) ? "text-slate-400" : "text-white/80 hover:text-white"
                   )}
                   title="Đăng xuất"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
+                  <LogOut className="w-4 h-4" />
                 </Button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className={cn(
-            "lg:hidden p-2.5 rounded-xl transition-all active:scale-95 flex items-center justify-center",
-            (isScrolled || !isHomePage) 
-              ? "bg-primary/5 text-primary hover:bg-primary/10" 
-              : "bg-white/10 text-white hover:bg-white/20"
+        {/* Mobile Menu Button */}
+        <div className="flex items-center gap-2 lg:hidden">
+          {isAdmin && (
+            <Link 
+              href="/admin/registrations" 
+              className={cn(
+                "flex items-center gap-1 font-black text-xs px-3 py-2 rounded-xl border",
+                (isScrolled || !isHomePage) ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-amber-500/20 border-amber-500/30 text-amber-300"
+              )}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" /> Admin
+            </Link>
           )}
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className={cn(
+              "rounded-xl h-10 w-10",
+              (isScrolled || !isHomePage) ? "text-slate-700 hover:bg-slate-100" : "text-white hover:bg-white/10"
+            )}
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </Button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
-      <div 
-        className={cn(
-          "lg:hidden fixed inset-x-0 top-full bg-white shadow-2xl transition-all duration-500 origin-top overflow-hidden border-t border-slate-100",
-          isMobileMenuOpen ? "max-h-[90vh] opacity-100 visible" : "max-h-0 opacity-0 invisible"
-        )}
-      >
-        <div className="p-6 flex flex-col gap-1 overflow-y-auto max-h-[calc(90vh-20px)]">
+      {/* Mobile Menu Overlay */}
+      <div className={cn(
+        "fixed inset-x-0 top-[64px] md:top-[80px] bg-white border-b border-slate-200/80 shadow-2xl transition-all duration-300 ease-in-out overflow-hidden z-40 lg:hidden",
+        isMobileMenuOpen ? "max-h-[85vh] py-6 opacity-100" : "max-h-0 py-0 opacity-0 pointer-events-none"
+      )}>
+        <div className="container mx-auto px-6 flex flex-col space-y-1">
           {navLinks.map((link) => {
             const isActive = pathname === link.href
             return (
@@ -213,28 +226,20 @@ export function Navbar() {
             )
           })}
           <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3">
-            <a 
-              href="tel:0915099642" 
-              className="flex items-center justify-center gap-2 font-bold text-sm bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3.5 rounded-xl hover:bg-emerald-100 transition-all"
+            <Link 
+              href="/khoa-hoc" 
+              className="flex items-center justify-center gap-2 font-black text-sm bg-gradient-to-r from-secondary to-amber-500 text-primary px-4 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
-              <Phone className="w-4 h-4 text-emerald-500 animate-pulse" /> Hotline: 0915 099 642
-            </a>
-
-            <a 
-              href="https://zalo.me/0915099642" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 font-bold text-sm bg-[#0068ff] text-white px-4 py-3.5 rounded-xl shadow-md transition-all"
-            >
-              <MessageSquare className="w-4 h-4" /> Chat Zalo OA
-            </a>
+              <Sparkles className="w-4 h-4" /> Đăng ký khóa học ngay
+            </Link>
 
             <Link 
               href="/lien-he" 
-              className="flex items-center justify-center gap-2 font-bold text-sm bg-gradient-to-r from-primary to-[#1A5F1F] text-white px-4 py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all"
+              className="flex items-center justify-center gap-2 font-bold text-sm bg-primary/5 border border-primary/20 text-primary px-4 py-3.5 rounded-xl hover:bg-primary/10 transition-all"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Nhận tư vấn ngay
+              Liên hệ & Nhận tư vấn
             </Link>
 
             {isAdmin && (
