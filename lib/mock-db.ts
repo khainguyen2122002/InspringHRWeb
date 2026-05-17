@@ -2,7 +2,7 @@
 import { Course } from '@/types'
 
 const COURSES_KEY = 'ih_courses_data_v2'
-const NEWS_KEY = 'ih_news_data'
+const NEWS_KEY = 'ih_news_data_v2'
 const INQUIRIES_KEY = 'ih_inquiries_data'
 const GALLERY_KEY = 'ih_gallery_data_v2'
 
@@ -101,52 +101,57 @@ export const mockDb = {
       const defaults = [
         { 
           id: '1', 
-          title: 'Xu hướng Quản trị Nhân sự 2024: Cơ hội và Thách thức', 
-          date: '15/05/2024', 
+          title: 'Báo cáo Xu hướng Quản trị Nhân sự & AI Thực chiến 2026', 
+          date: '15/05/2026', 
           type: 'Tin Tức', 
+          author: 'Chuyên gia Hồng Nhung',
           image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop',
-          desc: 'Cập nhật những thay đổi mới nhất trong ngành nhân sự và cách doanh nghiệp thích nghi với kỷ nguyên số.',
-          views: 1540,
-          content: 'Nội dung chi tiết bài viết về xu hướng 2024...'
+          desc: 'Cập nhật toàn diện những biến chuyển của ngành quản trị nhân sự khi Trí tuệ nhân tạo (AI) định hình lại quy trình tuyển dụng và đánh giá năng lực.',
+          views: 1850,
+          content: 'Nội dung chi tiết bài viết báo cáo xu hướng quản trị nhân sự 2026...'
         },
         { 
           id: '2', 
-          title: 'Kỹ năng giữ chân nhân tài trong thời kỳ suy thoái kinh tế', 
-          date: '12/05/2024', 
+          title: 'Chiến lược giữ chân nhân tài và xây dựng gói phúc lợi linh hoạt', 
+          date: '12/05/2026', 
           type: 'Sự Kiện', 
+          author: 'Inspiring HR',
           image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop',
-          desc: 'Làm thế nào để duy trì động lực làm việc khi ngân sách phúc lợi bị cắt giảm?',
-          views: 890,
+          desc: 'Giải pháp thiết kế hệ thống C&B và các chính sách đãi ngộ phi tài chính giúp gắn kết nhân viên sâu sắc trong thời đại mới.',
+          views: 940,
           content: 'Nội dung chi tiết...'
         },
         { 
           id: '3', 
-          title: 'Workshop: Xây dựng lộ trình phát triển nghề nghiệp cho HR', 
-          date: '10/05/2024', 
+          title: 'Workshop: Xây dựng lộ trình thăng tiến và định hướng nghề HR', 
+          date: '10/05/2026', 
           type: 'Hội Thảo', 
+          author: 'Ban Đào tạo',
           image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop',
-          desc: 'Buổi chia sẻ kinh nghiệm từ các CHRO hàng đầu về con đường thăng tiến trong nghề nhân sự.',
-          views: 2105,
+          desc: 'Buổi đối thoại trực tiếp cùng các CHRO hàng đầu về bí quyết bứt phá từ Chuyên viên lên vị trí Giám đốc Nhân sự.',
+          views: 2310,
           content: 'Nội dung chi tiết...'
         },
         { 
           id: '4', 
-          title: 'Tầm quan trọng của Trí tuệ nhân tạo (AI) trong Tuyển dụng', 
-          date: '08/05/2024', 
-          type: 'Tin Tức', 
+          title: 'Ứng dụng OKRs và KPIs trong đánh giá hiệu suất nhân sự', 
+          date: '08/05/2026', 
+          type: 'Kiến Thức', 
+          author: 'Inspiring HR',
           image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2070&auto=format&fit=crop',
-          desc: 'AI đang thay đổi cách chúng ta lọc hồ sơ và phỏng vấn ứng viên như thế nào?',
-          views: 3420,
+          desc: 'Phương pháp kết hợp OKRs truyền cảm hứng với bộ chỉ số KPIs cốt lõi để thúc đẩy năng suất doanh nghiệp vượt trội.',
+          views: 3560,
           content: 'Nội dung chi tiết...'
         },
         { 
           id: '5', 
-          title: 'Bí quyết xây dựng thương hiệu cá nhân cho người làm HR', 
-          date: '05/05/2024', 
-          type: 'Kiến Thức', 
+          title: 'Bí quyết xây dựng thương hiệu nhà tuyển dụng (Employer Branding)', 
+          date: '05/05/2026', 
+          type: 'Tin Tức', 
+          author: 'Ban Truyền thông',
           image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070&auto=format&fit=crop',
-          desc: 'Tại sao người làm HR cần có thương hiệu cá nhân mạnh mẽ trên mạng xã hội?',
-          views: 1230,
+          desc: 'Tại sao việc định vị văn hóa doanh nghiệp lại đóng vai trò quyết định trong việc thu hút thế hệ nhân tài trẻ?',
+          views: 1420,
           content: 'Nội dung chi tiết...'
         }
       ]
@@ -162,7 +167,13 @@ export const mockDb = {
     if (index > -1) {
       news[index] = item
     } else {
-      news.push({ ...item, id: Math.random().toString(36).substr(2, 9) })
+      news.unshift({ 
+        ...item, 
+        id: Math.random().toString(36).substr(2, 9),
+        author: item.author || 'Quản trị viên',
+        views: item.views || 120,
+        date: item.date || new Date().toLocaleDateString('vi-VN')
+      })
     }
     localStorage.setItem(NEWS_KEY, JSON.stringify(news))
   },
