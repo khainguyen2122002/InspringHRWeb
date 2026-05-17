@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/auth-context'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { LayoutDashboard, BookOpen, Newspaper, Users, LogOut, Home, Image as ImageIcon } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Newspaper, Users, LogOut, Home, Image as ImageIcon, Settings } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
@@ -21,7 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (mounted && !isLoading && (!user || user.role !== 'admin')) {
-      router.replace('/dang-nhap?redirect=/admin/dashboard')
+      router.replace('/dang-nhap?redirect=/admin/registrations')
     }
   }, [user, isLoading, router, mounted])
 
@@ -39,10 +39,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || user.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-red-50 p-10">
-        <div className="bg-white p-12 rounded-[3rem] shadow-2xl text-center space-y-6">
-          <h1 className="text-4xl font-black text-red-600 tracking-tighter">TRUY CẬP BỊ CHẶN</h1>
-          <p className="text-slate-500 font-medium">Bạn không có quyền quản trị.</p>
-          <Link href="/dang-nhap" className="inline-block bg-primary text-white px-8 py-4 rounded-2xl font-bold">Đăng nhập Admin</Link>
+        <div className="bg-white p-12 rounded-[3rem] shadow-2xl text-center space-y-6 max-w-md mx-auto">
+          <h1 className="text-3xl md:text-4xl font-black text-red-600 tracking-tighter">Yêu Cầu Đăng Nhập</h1>
+          <p className="text-slate-500 font-medium text-sm md:text-base">Vui lòng đăng nhập với tài khoản Quản trị viên để truy cập trang này.</p>
+          <Link href="/dang-nhap?redirect=/admin/registrations" className="inline-block bg-gradient-to-r from-primary to-[#1A5F1F] text-white px-8 py-4 rounded-2xl font-black shadow-xl hover:shadow-2xl transition-all">
+            Đăng Nhập Quản Trị
+          </Link>
           <div className="pt-4 border-t border-slate-100">
              <Link href="/" className="text-slate-400 font-bold hover:text-primary transition-colors italic">Quay lại Trang Chủ</Link>
           </div>
@@ -52,11 +54,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const sidebarLinks = [
-    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/registrations', label: 'Đăng ký', icon: Users },
     { href: '/admin/courses', label: 'Khóa học', icon: BookOpen },
     { href: '/admin/news', label: 'Tin tức', icon: Newspaper },
     { href: '/admin/gallery', label: 'Khoảnh khắc', icon: ImageIcon },
-    { href: '/admin/registrations', label: 'Đăng ký', icon: Users },
+    { href: '/admin/settings', label: 'Bảo mật & MK', icon: Settings },
   ]
 
   return (

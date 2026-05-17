@@ -275,6 +275,70 @@ export async function deleteContact(id: string) {
   }
 }
 
+export async function getGoogleSheetRegistrations() {
+  try {
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1szp_pNmmnoGjtRbc5vkmUA-kCwlShQNv7tYTRcO4Ckw/export?format=csv'
+    const res = await fetch(csvUrl, { cache: 'no-store' })
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    const text = await res.text()
+
+    const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0)
+    const records = lines.map((line, idx) => {
+      const row = parseCsvLine(line)
+      const rawType = (row[7] || '').trim()
+      const courseTitle = (row[4] || '').trim()
+      
+      let type = 'contact'
+      if (rawType.toLowerCase() === 'registration' || courseTitle.length > 0) {
+        type = 'registration'
+      }
+
+      return {
+        id: `sheet-${idx}-${Date.now()}`,
+        date: (row[0] || '').trim(),
+        name: (row[1] || '').trim(),
+        phone: (row[2] || '').trim(),
+        email: (row[3] || '').trim(),
+        courseTitle: courseTitle || null,
+        level: (row[5] || '').trim() || null,
+        message: (row[6] || '').trim() || null,
+        type: type,
+        status: 'new'
+      }
+    })
+
+    records.reverse()
+    return { success: true, data: records }
+  } catch (err: any) {
+    console.error('Error in getGoogleSheetRegistrations:', err)
+    return { success: false, error: err.message, data: [] }
+  }
+}
+
+function parseCsvLine(text: string): string[] {
+  const result: string[] = []
+  let cur = ''
+  let inQuote = false
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    if (char === '"') {
+      if (inQuote && text[i+1] === '"') {
+        cur += '"'
+        i++
+      } else {
+        inQuote = !inQuote
+      }
+    } else if (char === ',' && !inQuote) {
+      result.push(cur.trim())
+      cur = ''
+    } else {
+      cur += char
+    }
+  }
+  result.push(cur.trim())
+  return result
+}
+
 // SEED DATA
 export async function seedSampleData() {
   try {

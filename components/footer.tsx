@@ -11,12 +11,14 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 lg:gap-16 text-center md:text-left">
           {/* Brand */}
           <div className="space-y-6 md:col-span-1 flex flex-col items-center md:items-start">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="h-[50px] md:h-[60px] flex items-center">
-                <img 
+            <Link href="/" className="flex items-center group transition-transform duration-300 hover:scale-105">
+              <div className="relative h-14 md:h-16 w-52 md:w-60 bg-white px-4 py-2 rounded-2xl shadow-xl flex items-center justify-center transition-all duration-300 group-hover:shadow-2xl group-hover:border-white/20 border border-white/10">
+                <Image 
                   src="/logo.png" 
-                  alt="Inspiring HR" 
-                  className="h-full w-auto object-contain brightness-0 invert"
+                  alt="Inspiring HR Logo" 
+                  fill
+                  sizes="(max-width: 768px) 208px, 240px"
+                  className="object-contain p-2 transition-opacity duration-300 group-hover:opacity-95"
                 />
               </div>
             </Link>

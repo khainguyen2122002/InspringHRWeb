@@ -71,20 +71,20 @@ export function GalleryCarousel() {
         {gallery.map((item) => (
           <div 
              key={item.id} 
-             className="shrink-0 w-[82vw] sm:w-[320px] md:w-[320px] aspect-[4/3] snap-center relative rounded-2xl overflow-hidden group cursor-pointer border border-white/10"
+             className="shrink-0 w-[85vw] sm:w-[380px] md:w-[420px] lg:w-[480px] aspect-[16/10] snap-center relative rounded-3xl overflow-hidden group cursor-pointer border border-white/15 shadow-2xl"
           >
              <Image 
                 src={item.image} 
                 alt={item.caption || 'Gallery Image'} 
                 fill 
-                className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
              />
-             <div className="absolute inset-0 bg-gradient-to-t from-[#0E3B0F]/90 via-[#0E3B0F]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-75 group-hover:opacity-90 transition-opacity duration-500" />
              
              {item.caption && (
-               <div className="absolute bottom-0 left-0 w-full p-5 md:p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <div className="w-8 h-1 bg-secondary mb-3 rounded-full scale-0 origin-left group-hover:scale-100 transition-transform duration-500 delay-100" />
-                  <p className="text-white font-bold text-xs md:text-base leading-snug line-clamp-2">{item.caption}</p>
+               <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                  <div className="w-12 h-1 bg-secondary mb-3 rounded-full scale-0 origin-left group-hover:scale-100 transition-transform duration-500 delay-100 shadow-md" />
+                  <p className="text-white font-bold text-sm md:text-base lg:text-lg leading-snug line-clamp-2 drop-shadow-md">{item.caption}</p>
                </div>
              )}
           </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, ArrowRight, Sparkles, User as UserIcon, LogOut, LayoutDashboard } from 'lucide-react'
+import { Menu, X, ArrowRight, Sparkles, User as UserIcon, LogOut, LayoutDashboard, Phone, MessageSquare } from 'lucide-react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -68,17 +68,15 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20 transition-all duration-500">
-        <Link href="/" className="flex items-center h-full group">
-          <div className="h-[40px] md:h-[50px] flex items-center">
-            <img 
+        <Link href="/" className="flex items-center group transition-transform duration-300 hover:scale-105">
+          <div className="relative h-11 md:h-14 w-44 md:w-56 bg-white px-3.5 py-1.5 rounded-2xl shadow-sm border border-slate-100/50 flex items-center justify-center transition-all duration-300 group-hover:shadow-md">
+            <Image 
               src="/logo.png" 
-              alt="Inspiring HR" 
-              className={cn(
-                "h-full w-auto object-contain transition-all duration-500 group-hover:scale-105",
-                (isScrolled || !isHomePage) 
-                  ? "" 
-                  : "brightness-0 invert"
-              )}
+              alt="Inspiring HR Logo" 
+              fill
+              priority
+              sizes="(max-width: 768px) 176px, 224px"
+              className="object-contain p-1.5 transition-opacity duration-300 group-hover:opacity-95"
             />
           </div>
         </Link>
@@ -108,61 +106,67 @@ export function Navbar() {
             )
           })}
           
-          <div className="ml-4 flex items-center gap-4">
+          <div className="ml-4 flex items-center gap-2.5 md:gap-3">
+            <a 
+              href="tel:0915099642" 
+              className={cn(
+                "hidden xl:flex items-center gap-2 font-bold text-xs md:text-sm px-3.5 py-2 rounded-xl transition-all border",
+                (isScrolled || !isHomePage) ? "bg-emerald-50/80 border-emerald-200 text-emerald-700 hover:bg-emerald-100" : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+              )}
+            >
+              <Phone className="w-3.5 h-3.5 text-emerald-500 animate-pulse" /> 0915 099 642
+            </a>
+
+            <a 
+              href="https://zalo.me/0915099642" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 font-bold text-xs md:text-sm bg-[#0068ff] hover:bg-[#0055d4] text-white px-3.5 py-2 rounded-xl shadow-sm transition-all"
+            >
+              <MessageSquare className="w-3.5 h-3.5" /> Zalo
+            </a>
+
+            <Link 
+              href="/lien-he" 
+              className="hidden sm:flex items-center gap-1.5 font-bold text-xs md:text-sm bg-gradient-to-r from-primary to-[#1A5F1F] hover:from-[#114616] hover:to-[#124216] text-white px-4 py-2 rounded-xl shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5"
+            >
+              Nhận tư vấn
+            </Link>
+
             {isAdmin && (
               <Link 
-                href="/admin/dashboard" 
+                href="/admin/registrations" 
                 className={cn(
-                  "flex items-center gap-2 font-black text-[14px] transition-all px-4 py-2 rounded-xl group",
-                  (isScrolled || !isHomePage) ? "text-primary bg-secondary/10 hover:text-secondary" : "text-secondary bg-white/10 hover:bg-white/20"
+                  "flex items-center gap-1.5 font-black text-xs md:text-sm px-3.5 py-2 rounded-xl transition-all group border",
+                  (isScrolled || !isHomePage) ? "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100" : "bg-amber-500/20 border-amber-500/30 text-amber-300 hover:bg-amber-500/30"
                 )}
               >
-                <LayoutDashboard className="w-4 h-4 group-hover:rotate-12 transition-transform" /> 
+                <LayoutDashboard className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" /> 
                 Admin
               </Link>
             )}
 
-            {user ? (
-              <div className="flex items-center gap-4">
+            {user && !isAdmin && (
+              <div className="flex items-center gap-2">
                 <div className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-xl border",
+                  "flex items-center gap-2 px-3 py-2 rounded-xl border text-xs md:text-sm font-bold",
                   (isScrolled || !isHomePage) ? "bg-primary/5 border-primary/10 text-primary" : "bg-white/10 border-white/10 text-white"
                 )}>
-                  <UserIcon className="w-4 h-4" />
-                  <span className="font-bold text-sm">{user.name}</span>
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>{user.name}</span>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={logout}
                   className={cn(
-                    "w-10 h-10 rounded-xl transition-colors",
+                    "w-9 h-9 rounded-xl transition-colors",
                     (isScrolled || !isHomePage) ? "hover:bg-red-50 hover:text-red-500" : "text-white hover:bg-white/10 hover:text-red-400"
                   )}
+                  title="Đăng xuất"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5" />
                 </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link 
-                  href="/dang-nhap"
-                  className={cn(
-                    "font-bold text-[14px] px-2 transition-colors",
-                    (isScrolled || !isHomePage) ? "text-primary hover:text-secondary" : "text-white hover:text-secondary"
-                  )}
-                >
-                  Đăng nhập
-                </Link>
-                <Link 
-                  href="/dang-nhap" 
-                  className={cn(
-                    buttonVariants({ size: "sm" }), 
-                    "bg-gradient-to-r from-primary to-[#1A5F1F] hover:shadow-lg hover:-translate-y-0.5 text-white rounded-full px-8 h-10 flex items-center font-bold transition-all duration-300"
-                  )}
-                >
-                  Vào học
-                </Link>
               </div>
             )}
           </div>
@@ -208,39 +212,38 @@ export function Navbar() {
               </Link>
             )
           })}
-          <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-4">
-            {isAdmin ? (
+          <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3">
+            <a 
+              href="tel:0915099642" 
+              className="flex items-center justify-center gap-2 font-bold text-sm bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3.5 rounded-xl hover:bg-emerald-100 transition-all"
+            >
+              <Phone className="w-4 h-4 text-emerald-500 animate-pulse" /> Hotline: 0915 099 642
+            </a>
+
+            <a 
+              href="https://zalo.me/0915099642" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 font-bold text-sm bg-[#0068ff] text-white px-4 py-3.5 rounded-xl shadow-md transition-all"
+            >
+              <MessageSquare className="w-4 h-4" /> Chat Zalo OA
+            </a>
+
+            <Link 
+              href="/lien-he" 
+              className="flex items-center justify-center gap-2 font-bold text-sm bg-gradient-to-r from-primary to-[#1A5F1F] text-white px-4 py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Nhận tư vấn ngay
+            </Link>
+
+            {isAdmin && (
               <Link 
-                href="/admin/dashboard" 
-                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-xl bg-primary text-white font-bold h-14 shadow-lg shadow-primary/20")}
+                href="/admin/registrations" 
+                className="flex items-center justify-center gap-2 font-black text-sm bg-amber-500 text-white px-4 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all mt-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <LayoutDashboard className="w-4 h-4 mr-2" /> Admin Dashboard
-              </Link>
-            ) : !user ? (
-              <div className="grid grid-cols-2 gap-4">
-                <Link 
-                  href="/dang-nhap" 
-                  className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full rounded-xl border-slate-200 text-slate-600 font-bold h-14")}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Đăng nhập
-                </Link>
-                <Link 
-                  href="/dang-nhap" 
-                  className={cn(buttonVariants({ size: "lg" }), "w-full rounded-xl bg-secondary text-primary font-black h-14 shadow-lg shadow-secondary/20")}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Vào học
-                </Link>
-              </div>
-            ) : (
-               <Link 
-                href="/khoa-hoc" 
-                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-xl bg-secondary text-primary font-black h-14 shadow-lg shadow-secondary/20")}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Vào học ngay
+                <LayoutDashboard className="w-4 h-4" /> Trang Quản Trị (Admin)
               </Link>
             )}
           </div>

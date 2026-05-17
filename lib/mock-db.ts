@@ -1,10 +1,10 @@
 // Mock Database using LocalStorage for Persistence
 import { Course } from '@/types'
 
-const COURSES_KEY = 'ih_courses_data'
+const COURSES_KEY = 'ih_courses_data_v2'
 const NEWS_KEY = 'ih_news_data'
 const INQUIRIES_KEY = 'ih_inquiries_data'
-const GALLERY_KEY = 'ih_gallery_data'
+const GALLERY_KEY = 'ih_gallery_data_v2'
 
 export const mockDb = {
   // --- COURSES ---
@@ -35,7 +35,7 @@ export const mockDb = {
           price: 4800000,
           sessions: '10 Buổi',
           level: 'Nâng cao',
-          image_url: 'https://images.unsplash.com/photo-1454165833767-027ffea36c1e?q=80&w=2070&auto=format&fit=crop',
+          image_url: 'https://images.unsplash.com/photo-1454165833767-027eeea15539?q=80&w=2070&auto=format&fit=crop',
           views: 840,
           description: 'Học cách xây dựng hệ thống lương thưởng, bảo hiểm và các chính sách nhân sự giúp thu hút và giữ chân nhân tài.',
           is_featured: false,
@@ -202,26 +202,32 @@ export const mockDb = {
       const defaults = [
         {
           id: '1',
-          image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop',
-          caption: 'Không khí sôi nổi tại lớp học Nghề Nhân Sự',
+          image: '/images/gallery/nhung-stage-1.png',
+          caption: 'Chuyên gia Trần Thị Hồng Nhung chia sẻ hành trình định hướng nghề Nhân sự',
           created_at: new Date().toISOString()
         },
         {
           id: '2',
-          image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
-          caption: 'Học viên nhận chứng chỉ tốt nghiệp xuất sắc',
+          image: '/images/gallery/nhung-stage-2.png',
+          caption: 'Phân tích 07 kỹ năng mềm quan trọng nhất để chinh phục nhà tuyển dụng',
           created_at: new Date().toISOString()
         },
         {
           id: '3',
-          image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop',
-          caption: 'Làm việc nhóm và giải quyết Case Study thực tế',
+          image: '/images/gallery/nhung-flowers.png',
+          caption: 'Tri ân đội ngũ Diễn giả & Giảng viên đồng hành cùng Inspiring HR',
           created_at: new Date().toISOString()
         },
         {
           id: '4',
-          image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop',
-          caption: 'Workshop chuyên sâu về xây dựng văn hóa doanh nghiệp',
+          image: '/images/gallery/ceremony.png',
+          caption: 'Lễ trao chứng chỉ tốt nghiệp khóa Quản trị Nhân sự Chuyên nghiệp',
+          created_at: new Date().toISOString()
+        },
+        {
+          id: '5',
+          image: '/images/gallery/classroom.png',
+          caption: 'Khoảnh khắc gắn kết tuyệt vời giữa giảng viên và học viên sau khóa học',
           created_at: new Date().toISOString()
         }
       ]

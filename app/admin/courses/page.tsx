@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, Search, MoreHorizontal, Edit, Trash, ExternalLink, Eye, LayoutGrid, List, Filter, BookOpen } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -12,14 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import Image from 'next/image'
@@ -159,43 +151,39 @@ export default function AdminCoursesPage() {
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price)}
                   </TableCell>
                   <TableCell className="text-right pr-8">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger render={
-                        (
-                          <Button variant="ghost" className="h-10 w-10 p-0 text-slate-400 hover:bg-slate-100 rounded-full">
-                            <MoreHorizontal className="h-5 w-5" />
-                          </Button>
-                        ) as any
-                      } />
-                      <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 border-slate-100 shadow-xl">
-                        <DropdownMenuLabel className="text-slate-400 font-bold uppercase text-[10px] tracking-widest px-3 py-2">Hành động</DropdownMenuLabel>
-                        
-                        <DropdownMenuItem 
-                          onSelect={() => {
-                            setSelectedCourse(course)
-                            setIsEditDialogOpen(true)
-                          }}
-                          className="rounded-xl gap-2 px-3 py-2.5 text-sm hover:bg-slate-50 transition-colors cursor-pointer font-medium"
-                        >
-                          <Edit className="w-4 h-4 text-secondary" /> Chỉnh sửa
-                        </DropdownMenuItem>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCourse(course)
+                          setIsEditDialogOpen(true)
+                        }}
+                        className="h-9 px-3 rounded-xl hover:bg-secondary/10 hover:text-secondary text-slate-600 font-bold flex items-center gap-1.5"
+                        title="Chỉnh sửa khóa học"
+                      >
+                        <Edit className="w-4 h-4 text-secondary" /> <span className="hidden sm:inline">Sửa</span>
+                      </Button>
 
-                        <Link 
-                          href={`/courses/view?id=${course.id}`} 
-                          target="_blank"
-                          className="flex items-center gap-2 px-3 py-2.5 text-sm hover:bg-slate-50 rounded-xl transition-colors font-medium"
-                        >
-                          <ExternalLink className="w-4 h-4 text-blue-500" /> Xem demo
-                        </Link>
-                        <DropdownMenuSeparator className="my-2" />
-                        <DropdownMenuItem 
-                          onClick={() => handleDelete(course.id)}
-                          className="rounded-xl gap-2 px-3 py-2.5 text-red-500 focus:bg-red-50 focus:text-red-600 cursor-pointer font-medium"
-                        >
-                          <Trash className="w-4 h-4" /> Xóa khóa học
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      <Link 
+                        href={`/courses/view?id=${course.id}`} 
+                        target="_blank"
+                        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-9 px-3 rounded-xl hover:bg-blue-50 text-blue-600 font-bold flex items-center gap-1.5")}
+                        title="Xem trang demo chi tiết"
+                      >
+                        <Eye className="w-4 h-4 text-blue-500" /> <span className="hidden sm:inline">Xem</span>
+                      </Link>
+
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleDelete(course.id)}
+                        className="h-9 px-3 rounded-xl hover:bg-red-50 text-red-500 font-bold flex items-center gap-1.5"
+                        title="Xóa khóa học"
+                      >
+                        <Trash className="w-4 h-4" /> <span className="hidden sm:inline">Xóa</span>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

@@ -25,9 +25,9 @@ function LoginForm() {
   useEffect(() => {
     setMounted(true)
     if (user) {
-      router.push(redirect)
+      window.location.href = redirect
     }
-  }, [user, router, redirect])
+  }, [user, redirect])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,8 +44,7 @@ function LoginForm() {
       const success = await login(email, password)
       if (success) {
         toast.success('Đăng nhập thành công! Đang chuyển hướng...')
-        router.push(redirect)
-        router.refresh()
+        window.location.href = redirect
       } else {
         toast.error('Email hoặc mật khẩu không chính xác.')
       }
