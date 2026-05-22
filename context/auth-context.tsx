@@ -173,7 +173,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        return { success: false, error: 'Email hoặc mật khẩu cấp 1 không đúng.' }
+        console.error('Supabase signInWithPassword error:', error)
+        return { success: false, error: `Lỗi đăng nhập Supabase: ${error.message}` }
       }
 
       // Step 1 success. Request Layer 2 password verification.
