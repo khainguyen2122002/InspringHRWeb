@@ -1,16 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef, useTransition, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { 
   User, Mail, Phone, BookOpen, Calendar, MessageSquare, 
-  RefreshCw, ExternalLink, Layers, Search, Loader2, Sparkles, 
-  PhoneCall, PartyPopper 
+  RefreshCw, Layers, Search, Loader2, Sparkles, 
+  PhoneCall, Database
 } from 'lucide-react'
 import { getGoogleSheetRegistrations } from '@/app/actions'
+import { ContactStatusToggle } from '@/components/admin/contact-status-toggle'
+import { DeleteContactButton } from '@/components/admin/delete-contact-button'
 import { toast } from 'sonner'
 
 interface SheetRecord {
@@ -26,8 +28,6 @@ interface SheetRecord {
   status: string
 }
 
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1szp_pNmmnoGjtRbc5vkmUA-kCwlShQNv7tYTRcO4Ckw/edit?usp=sharing'
-
 export default function AdminStudentsPage() {
   const [registrations, setRegistrations] = useState<SheetRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +41,7 @@ export default function AdminStudentsPage() {
     try {
       const res = await getGoogleSheetRegistrations()
       if (res.success && res.data) {
-        setRegistrations(res.data)
+        setRegistrations(res.data as SheetRecord[])
         
         // Kiểm tra xem có bản ghi mới không (dựa trên tổng số lượng dòng)
         if (prevCountRef.current !== null && res.data.length > prevCountRef.current) {
@@ -54,7 +54,7 @@ export default function AdminStudentsPage() {
           }
         }
         prevCountRef.current = res.data.length
-        if (showToast) toast.success('Đã làm mới dữ liệu từ Google Sheet')
+        if (showToast) toast.success('Đã làm mới dữ liệu từ Supabase CSDL')
       } else {
         if (showToast) toast.error('Lỗi khi tải dữ liệu: ' + res.error)
       }
@@ -66,7 +66,7 @@ export default function AdminStudentsPage() {
     }
   }, [])
 
-  // Auto-refresh mỗi 7 giây
+  // Auto-refresh mỗi 7 giây để đồng bộ
   useEffect(() => {
     fetchData()
     const timer = setInterval(() => {
@@ -88,16 +88,29 @@ export default function AdminStudentsPage() {
   const regCount = registrations.filter(r => r.type === 'registration').length
   const contactCount = registrations.filter(r => r.type === 'contact').length
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'new':
+        return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200">Mới</Badge>
+      case 'contacted':
+        return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200">Đang xử lý</Badge>
+      case 'resolved':
+        return <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200">Hoàn thành</Badge>
+      default:
+        return <Badge className="bg-slate-100 text-slate-700">Mới</Badge>
+    }
+  }
+
   return (
     <div className="space-y-10 pb-20">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
         <div className="space-y-2">
           <Badge className="bg-emerald-50 text-emerald-600 border-none px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 w-fit">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" /> Nguồn: Google Sheets Trực Tiếp
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" /> Nguồn dữ liệu: Supabase Realtime
           </Badge>
           <h1 className="text-3xl lg:text-4xl font-black text-primary tracking-tight">Quản lý Đăng ký & Tư vấn</h1>
-          <p className="text-slate-500 text-sm font-medium">Theo dõi và phản hồi tự động các yêu cầu gửi về từ website.</p>
+          <p className="text-slate-500 text-sm font-medium">Theo dõi, phân loại và cập nhật trạng thái các yêu cầu gửi về từ website.</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
@@ -108,17 +121,13 @@ export default function AdminStudentsPage() {
             className="h-12 px-5 rounded-2xl border-slate-200 font-bold text-slate-600 hover:bg-slate-50 gap-2.5 shadow-sm"
           >
             <RefreshCw className={`w-4 h-4 text-primary ${isRefreshing ? 'animate-spin' : ''}`} />
-            Làm mới ngay
+            Làm mới dữ liệu
           </Button>
-
-          <Button 
-            asChild
-            className="h-12 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-2.5 shadow-md shadow-emerald-600/20"
-          >
-            <a href={SHEET_URL} target="_blank" rel="noopener noreferrer">
-              Mở Google Sheet <ExternalLink className="w-4 h-4" />
-            </a>
-          </Button>
+          
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/60 px-5 py-3 rounded-2xl text-xs font-bold text-slate-600">
+            <Database className="w-4 h-4 text-primary" />
+            <span>Supabase Connected</span>
+          </div>
         </div>
       </div>
 
@@ -176,7 +185,7 @@ export default function AdminStudentsPage() {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4 bg-white rounded-[3rem] border border-slate-100">
             <Loader2 className="w-10 h-10 text-primary animate-spin" />
-            <p className="font-bold text-slate-400">Đang đồng bộ dữ liệu từ Google Sheets...</p>
+            <p className="font-bold text-slate-400">Đang tải dữ liệu từ CSDL Supabase...</p>
           </div>
         ) : filteredRegistrations.length === 0 ? (
           <div className="text-center py-24 bg-white rounded-[3rem] border border-slate-100 shadow-sm space-y-4">
@@ -198,6 +207,7 @@ export default function AdminStudentsPage() {
                     <Badge className={item.type === 'registration' ? 'bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1 text-xs rounded-full' : 'bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1 text-xs rounded-full'}>
                       {item.type === 'registration' ? 'Đăng ký học' : 'Yêu cầu tư vấn'}
                     </Badge>
+                    {getStatusBadge(item.status)}
                   </div>
 
                   <div className="flex flex-wrap gap-4 text-sm font-bold text-slate-600">
@@ -231,28 +241,39 @@ export default function AdminStudentsPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap xl:flex-col gap-3 shrink-0 pt-4 xl:pt-0 border-t xl:border-t-0 border-slate-100">
-                <Button 
-                  asChild 
-                  variant="outline" 
-                  className="h-11 px-5 rounded-xl border-blue-200 hover:bg-[#0068ff] hover:text-white hover:border-transparent font-bold gap-2 group transition-all"
-                >
-                  <a href={`https://zalo.me/${item.phone.replace(/[\s.-]/g, '')}`} target="_blank" rel="noopener noreferrer">
-                    <MessageSquare className="w-4 h-4 text-blue-500 group-hover:text-white" />
-                    Nhắn Zalo
-                  </a>
-                </Button>
+              <div className="flex flex-wrap xl:flex-col gap-3 shrink-0 pt-4 xl:pt-0 border-t xl:border-t-0 border-slate-100 xl:w-56">
+                <div className="w-full">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Trạng thái xử lý</p>
+                  <ContactStatusToggle contactId={item.id} currentStatus={item.status as 'new' | 'contacted' | 'resolved'} />
+                </div>
+                
+                <div className="flex gap-2 w-full mt-2">
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    className="flex-1 h-11 px-3 rounded-xl border-blue-200 hover:bg-[#0068ff] hover:text-white hover:border-transparent font-bold gap-1.5 group transition-all text-xs"
+                  >
+                    <a href={`https://zalo.me/${item.phone.replace(/[\s.-]/g, '')}`} target="_blank" rel="noopener noreferrer">
+                      <MessageSquare className="w-4 h-4 text-blue-500 group-hover:text-white" />
+                      Zalo
+                    </a>
+                  </Button>
 
-                <Button 
-                  asChild 
-                  variant="outline" 
-                  className="h-11 px-5 rounded-xl border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-transparent font-bold gap-2 group transition-all"
-                >
-                  <a href={`tel:${item.phone.replace(/[\s.-]/g, '')}`}>
-                    <PhoneCall className="w-4 h-4 text-emerald-500 group-hover:text-white" />
-                    Gọi trực tiếp
-                  </a>
-                </Button>
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    className="flex-1 h-11 px-3 rounded-xl border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-transparent font-bold gap-1.5 group transition-all text-xs"
+                  >
+                    <a href={`tel:${item.phone.replace(/[\s.-]/g, '')}`}>
+                      <PhoneCall className="w-4 h-4 text-emerald-500 group-hover:text-white" />
+                      Gọi
+                    </a>
+                  </Button>
+                </div>
+
+                <div className="w-full mt-2 border-t border-slate-100 pt-2">
+                  <DeleteContactButton contactId={item.id} />
+                </div>
               </div>
             </Card>
           ))

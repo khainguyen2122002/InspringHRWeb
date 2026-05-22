@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { BookOpen, Newspaper, Users, MessageSquare, TrendingUp, ArrowUpRight, Sparkles, ShieldCheck } from 'lucide-react'
+import { getCourses, getGoogleSheetNews, getContacts } from '@/app/actions'
 import { mockDb } from '@/lib/mock-db'
 import { useState, useEffect } from 'react'
 
@@ -17,18 +18,50 @@ export default function AdminDashboard() {
   })
 
   useEffect(() => {
-    const courses = mockDb.getCourses()
-    const news = mockDb.getNews()
-    const allInquiries = mockDb.getInquiries()
-    const registrations = allInquiries.filter(i => i.type === 'registration')
-    const contactRequests = allInquiries.filter(i => i.type === 'contact')
+    async function loadStats() {
+      try {
+        const [coursesRes, newsRes, contactsRes] = await Promise.all([
+          getCourses(),
+          getGoogleSheetNews(),
+          getContacts()
+        ])
 
-    setStats({
-      courses: courses.length,
-      news: news.length,
-      inquiries: contactRequests.length,
-      users: registrations.length
-    })
+        const coursesLen = coursesRes.success && coursesRes.data ? coursesRes.data.length : mockDb.getCourses().length
+        const newsLen = newsRes.success && newsRes.data ? newsRes.data.length : mockDb.getNews().length
+        
+        let inquiriesLen = 0
+        let registrationsLen = 0
+        
+        if (contactsRes && 'data' in contactsRes && contactsRes.data) {
+          const allContacts = contactsRes.data as any[]
+          inquiriesLen = allContacts.filter(c => c.type === 'contact').length
+          registrationsLen = allContacts.filter(c => c.type === 'registration').length
+        } else {
+          const allInquiries = mockDb.getInquiries()
+          inquiriesLen = allInquiries.filter(i => i.type === 'contact').length
+          registrationsLen = allInquiries.filter(i => i.type === 'registration').length
+        }
+
+        setStats({
+          courses: coursesLen,
+          news: newsLen,
+          inquiries: inquiriesLen,
+          users: registrationsLen
+        })
+      } catch (err) {
+        console.error('Lỗi khi tải thống kê:', err)
+        const courses = mockDb.getCourses()
+        const news = mockDb.getNews()
+        const allInquiries = mockDb.getInquiries()
+        setStats({
+          courses: courses.length,
+          news: news.length,
+          inquiries: allInquiries.filter(i => i.type === 'contact').length,
+          users: allInquiries.filter(i => i.type === 'registration').length
+        })
+      }
+    }
+    loadStats()
   }, [])
 
   const statCards = [

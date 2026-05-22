@@ -9,16 +9,17 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { Mail, Lock, Loader2, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Mail, Lock, Loader2, Sparkles, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [step, setStep] = useState<'login' | 'otp'>('login')
-  const [otpCode, setOtpCode] = useState('')
+  const [step, setStep] = useState<'login' | 'secondary'>('login')
+  const [secondaryPassword, setSecondaryPassword] = useState('')
+  const [showSecondaryPassword, setShowSecondaryPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const { login, verifyAdminOtpLogin, user } = useAuth()
+  const { login, verifyAdminSecondaryPassword, user } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/'
@@ -45,44 +46,44 @@ function LoginForm() {
 
     setIsLoading(true)
     try {
-      console.log('Attempting login...')
+      console.log('Attempting login level 1...')
       const result = await login(email, password)
       if (result.success) {
-        if (result.requireOtp) {
-          setStep('otp')
-          toast.success('Mật khẩu chính xác! Vui lòng nhập mã OTP 6 số vừa gửi đến email của bạn.', { duration: 10000 })
+        if (result.requireSecondaryPassword) {
+          setStep('secondary')
+          toast.success('Mật khẩu cấp 1 chính xác! Vui lòng nhập mật khẩu cấp 2 để xác thực quyền quản trị.', { duration: 10000 })
         } else {
           toast.success('Đăng nhập thành công! Đang chuyển hướng...')
           window.location.href = redirect
         }
       } else {
-        toast.error('Email hoặc mật khẩu không chính xác.')
+        toast.error(result.error || 'Email hoặc mật khẩu không chính xác.')
       }
     } catch (error: any) {
-      console.error('Login error:', error)
+      console.error('Login level 1 error:', error)
       toast.error('Lỗi hệ thống: ' + (error.message || 'Không rõ nguyên nhân'))
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleOtpSubmit = async (e: React.FormEvent) => {
+  const handleSecondarySubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (isLoading) return
 
-    if (!otpCode || otpCode.length < 6) {
-      toast.error('Vui lòng nhập đủ 6 số OTP')
+    if (!secondaryPassword) {
+      toast.error('Vui lòng nhập mật khẩu cấp 2')
       return
     }
 
     setIsLoading(true)
     try {
-      const verified = await verifyAdminOtpLogin(otpCode)
+      const verified = await verifyAdminSecondaryPassword(email, secondaryPassword)
       if (verified) {
-        toast.success('Xác thực OTP 2 bước thành công! Phiên đăng nhập Admin 1 giờ đã bắt đầu.', { duration: 8000 })
+        toast.success('Xác thực mật khẩu cấp 2 thành công! Phiên đăng nhập Admin 1 giờ đã bắt đầu.', { duration: 8000 })
         window.location.href = redirect === '/' ? '/admin/registrations' : redirect
       } else {
-        toast.error('Mã OTP không chính xác. Vui lòng kiểm tra lại.')
+        toast.error('Mật khẩu cấp 2 không chính xác. Vui lòng kiểm tra lại.')
       }
     } catch (error: any) {
       toast.error('Lỗi hệ thống khi xác thực: ' + (error.message || 'Không rõ'))
@@ -169,24 +170,33 @@ function LoginForm() {
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary mb-6">
                 <ShieldCheck className="w-10 h-10" />
               </div>
-              <h2 className="text-3xl font-black text-primary tracking-tight">Xác Thực 2 Bước (2FA)</h2>
+              <h2 className="text-3xl font-black text-primary tracking-tight">Xác Thực Cấp 2</h2>
               <p className="text-slate-500 text-sm px-4 leading-relaxed font-medium">
-                Hệ thống đã gửi một mã xác thực OTP 6 số đến email <span className="text-primary font-bold">inspiringhr.daotaonhansu@gmail.com</span>.
+                Vui lòng nhập <span className="text-primary font-bold">Mật khẩu cấp 2</span> đã được thiết lập cho tài khoản quản trị <span className="text-primary font-semibold">{email}</span>.
               </p>
             </div>
 
-            <form onSubmit={handleOtpSubmit} className="space-y-6">
-              <div className="space-y-3 text-center">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-wider">Mã OTP 6 số</label>
-                <Input 
-                  type="text"
-                  maxLength={6}
-                  placeholder="••••••"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  required
-                  className="h-20 text-center tracking-[1em] text-3xl font-black rounded-3xl border-2 border-primary/20 bg-primary/5 focus:bg-white focus:border-primary transition-all shadow-inner uppercase"
-                />
+            <form onSubmit={handleSecondarySubmit} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-wider block">Mật khẩu cấp 2</label>
+                <div className="relative group">
+                  <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                  <Input 
+                    type={showSecondaryPassword ? "text" : "password"}
+                    placeholder="Mật khẩu cấp 2"
+                    value={secondaryPassword}
+                    onChange={(e) => setSecondaryPassword(e.target.value)}
+                    required
+                    className="pl-14 pr-12 h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-primary focus:border-primary transition-all text-lg font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSecondaryPassword(!showSecondaryPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors"
+                  >
+                    {showSecondaryPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-3">

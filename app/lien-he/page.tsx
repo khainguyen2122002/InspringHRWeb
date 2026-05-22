@@ -10,10 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { mockDb } from '@/lib/mock-db'
+import { submitContact } from '@/app/actions'
 import { toast } from 'sonner'
-
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyFj52ZzU5vkE_4sQUXElI1l6xzExoqZqUd3L69XtC3MMXY_rH2QLmIFqAbSQU_GNL_/exec'
 
 export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -30,27 +28,14 @@ export default function ContactPage() {
     const rawMessage = formData.get('message') as string
     const combinedMessage = `[Vấn đề: ${topic}] - ${rawMessage}`
 
-    const data = {
-      name: formData.get('name') as string,
-      phone: formData.get('phone') as string,
-      email: formData.get('email') as string,
-      message: combinedMessage,
-      type: 'contact'
-    }
+    formData.set('message', combinedMessage)
+    formData.set('type', 'contact')
 
     try {
-      // 1. Save to mockDb for Admin Dashboard
-      mockDb.saveInquiry(data)
-
-      // 2. Send to Google Sheets Webhook
-      await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
+      const res = await submitContact(formData)
+      if (res.error) {
+        throw new Error(res.error)
+      }
 
       setIsSubmitted(true)
       form.reset()

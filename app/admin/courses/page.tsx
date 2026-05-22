@@ -18,9 +18,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { CourseFormDialog } from '@/components/admin/course-form-dialog'
-import { Course } from '@/types'
-import { mockDb } from '@/lib/mock-db'
+import { getCourses, deleteCourse } from '@/app/actions'
 import { toast } from 'sonner'
+import { Course } from '@/types'
 
 export default function AdminCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([])
@@ -28,11 +28,21 @@ export default function AdminCoursesPage() {
   const [loading, setLoading] = useState(true)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
-  const fetchCourses = () => {
+  
+  const fetchCourses = async () => {
     setLoading(true)
-    const data = mockDb.getCourses()
-    setCourses(data)
-    setLoading(false)
+    try {
+      const res = await getCourses()
+      if (res.success && res.data) {
+        setCourses(res.data)
+      } else {
+        toast.error("Không thể tải danh sách khóa học: " + res.error)
+      }
+    } catch (e: any) {
+      toast.error("Lỗi tải khóa học: " + e.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -44,10 +54,13 @@ export default function AdminCoursesPage() {
     c.category.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Bạn có chắc chắn muốn xóa khóa học này?")) {
       try {
-        mockDb.deleteCourse(id)
+        const res = await deleteCourse(id)
+        if (res.error) {
+          throw new Error(res.error)
+        }
         toast.success("Đã xóa khóa học")
         fetchCourses()
       } catch (error: any) {

@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Course } from "@/types"
-import { mockDb } from "@/lib/mock-db"
+import { upsertCourse } from "@/app/actions"
 import Image from "next/image"
 
 const formSchema = z.object({
@@ -155,59 +155,57 @@ export function CourseFormDialog({
     const file = e.target.files?.[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const img = new window.Image()
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        let width = img.width
-        let height = img.height
-        const MAX_DIM = 800
-
-        if (width > height) {
-          if (width > MAX_DIM) {
-            height *= MAX_DIM / width
-            width = MAX_DIM
-          }
-        } else {
-          if (height > MAX_DIM) {
-            width *= MAX_DIM / height
-            height = MAX_DIM
-          }
-        }
-
-        canvas.width = width
-        canvas.height = height
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height)
-          const base64Url = canvas.toDataURL('image/jpeg', 0.7)
-          setPreview(base64Url) // Lưu base64 thay vì blob URL
-        }
-      }
-      img.src = event.target?.result as string
-    }
-    reader.readAsDataURL(file)
+    setImageFile(file)
+    setPreview(URL.createObjectURL(file))
   }
 
   async function onSubmit(values: FormValues) {
     setLoading(true)
     try {
-      const courseData: Course = {
-        ...values,
-        id: course?.id || '',
-        image_url: preview || course?.image_url || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop',
-        benefits: values.benefits.split('\n').filter(b => b.trim() !== ''),
-        curriculum: course?.curriculum || [],
-        created_at: course?.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      } as any
+      const formData = new FormData()
+      if (course?.id) {
+        formData.append('id', course.id)
+      }
+      formData.append('title', values.title)
+      formData.append('slug', values.slug)
+      formData.append('description', values.description)
+      formData.append('price', String(values.price))
+      formData.append('original_price', String(values.original_price || ''))
+      formData.append('instructor_name', values.instructor_name)
+      formData.append('instructor_role', values.instructor_role)
+      formData.append('target_audience', values.target_audience)
+      formData.append('external_form_url', values.external_form_url || '')
+      formData.append('duration', values.sessions) // duration = sessions!
+      formData.append('schedule', values.schedule)
+      formData.append('level', values.level)
+      formData.append('category', values.category)
+      formData.append('is_featured', String(!!values.is_featured))
+      formData.append('imageUrl', course?.image_url || '')
 
-      mockDb.saveCourse(courseData)
+      if (imageFile) {
+        formData.append('imageFile', imageFile)
+      }
+
+      // Đóng gói content JSONB
+      const contentJson = {
+        overview: values.content,
+        commencement: values.commencement,
+        benefits: values.benefits.split('\n').filter((b: string) => b.trim() !== ''),
+        special_benefits: values.special_benefits,
+        status: values.status,
+        curriculum: course?.curriculum || []
+      }
+      formData.append('content', JSON.stringify(contentJson))
+
+      const res = await upsertCourse(formData)
+      
+      if (res.error) {
+        throw new Error(res.error)
+      }
       
       toast.success(course ? "Cập nhật thành công!" : "Tạo khóa học thành công!")
       setOpen(false)
-      window.location.reload() // Reload to reflect changes if not using state management
+      window.location.reload() // Reload to reflect changes
     } catch (error: any) {
       toast.error("Lỗi: " + error.message)
     } finally {
@@ -319,7 +317,7 @@ export function CourseFormDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Trạng thái</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="h-14 rounded-2xl bg-slate-50/50 border-slate-200">
                                 <SelectValue placeholder="Chọn trạng thái" />
@@ -350,7 +348,7 @@ export function CourseFormDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Hình thức học</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger className="h-14 rounded-2xl bg-slate-50/50 border-slate-200">
                                 <SelectValue placeholder="Chọn hình thức" />
@@ -565,7 +563,7 @@ export function CourseFormDialog({
                     <div className="w-2 h-8 bg-secondary rounded-full" />
                     <h4 className="font-black text-primary uppercase text-[10px] tracking-widest">Hình ảnh đại diện</h4>
                   </div>
-                  <div className="relative aspect-[4/3] w-full rounded-[2rem] overflow-hidden border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center group hover:border-secondary/50 transition-all cursor-pointer">
+                  <div className="relative aspect-[16/9] w-full rounded-[2rem] overflow-hidden border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center group hover:border-secondary/50 transition-all cursor-pointer">
                     {preview ? (
                       <Image src={preview} alt="Course preview" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
                     ) : (
@@ -578,6 +576,9 @@ export function CourseFormDialog({
                     )}
                     <input type="file" accept="image/*" onChange={handleImageChange} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
                   </div>
+                  <p className="text-[11px] text-slate-400 font-medium text-center leading-normal mt-2">
+                    Khuyến nghị: Tỷ lệ <strong>16:9</strong> (Kích thước: 1200x675px hoặc 800x450px) để hiển thị tốt nhất trên thiết bị di động & máy tính.
+                  </p>
                 </div>
 
                 <FormField

@@ -5,14 +5,17 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { CenterInfo, Course, Contact } from '@/types'
 import { mockDb } from '@/lib/mock-db'
+import crypto from 'crypto'
 
-const adminEmail = 'khainguyen2122002@gmail.com'
+const adminEmails = ['khainguyen2122002@gmail.com', 'inspiringhr.daotaonhansu@gmail.com']
 
 async function getAdminUser() {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error) throw new Error(`Lỗi xác thực: ${error.message}`)
-  if (user?.email !== adminEmail) throw new Error('Thiếu quyền cập nhật (Yêu cầu tài khoản Admin)')
+  if (!user || !adminEmails.includes(user.email || '')) {
+    throw new Error('Thiếu quyền cập nhật (Yêu cầu tài khoản Admin)')
+  }
   return { supabase, user }
 }
 
@@ -42,6 +45,22 @@ async function uploadFile(file: File, path: string) {
   return publicUrl
 }
 
+// Public Image Upload Action (from admin forms)
+export async function uploadImageAction(formData: FormData) {
+  try {
+    const file = formData.get('imageFile') as File
+    const path = formData.get('path') as string || 'general'
+    if (!file || file.size === 0) {
+      throw new Error('Không tìm thấy file để upload.')
+    }
+    const publicUrl = await uploadFile(file, path)
+    return { success: true, url: publicUrl }
+  } catch (error: any) {
+    console.error('[Action Error] uploadImageAction:', error)
+    return { success: false, error: error.message }
+  }
+}
+
 // AUTH ACTIONS
 export async function signOut() {
   try {
@@ -55,16 +74,83 @@ export async function signOut() {
   }
 }
 
+// ADMIN 2-LAYER SECURITY ACTIONS
+export async function verifyAdminSecondaryPassword(email: string, secondaryPassword: string) {
+  try {
+    const supabase = await createClient()
+    const cleanEmail = email.trim().toLowerCase()
+    const hash = crypto.createHash('sha256').update(secondaryPassword.trim()).digest('hex')
+    
+    const { data, error } = await supabase
+      .from('admin_security')
+      .select('secondary_password_hash')
+      .eq('admin_email', cleanEmail)
+      .single()
+      
+    if (error || !data) {
+      console.error('Lỗi khi truy cập mật khẩu cấp 2:', error)
+      return { success: false, error: 'Tài khoản admin chưa được thiết lập bảo mật cấp 2.' }
+    }
+    
+    if (data.secondary_password_hash === hash) {
+      return { success: true }
+    } else {
+      return { success: false, error: 'Mật khẩu cấp 2 không chính xác.' }
+    }
+  } catch (error: any) {
+    console.error('[Action Error] verifyAdminSecondaryPassword:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function changeAdminSecondaryPassword(email: string, currentSecondaryPassword: string, newSecondaryPassword: string) {
+  try {
+    const { supabase } = await getAdminUser()
+    const cleanEmail = email.trim().toLowerCase()
+    
+    // Kiểm tra mật khẩu hiện tại
+    const currentHash = crypto.createHash('sha256').update(currentSecondaryPassword.trim()).digest('hex')
+    const { data, error: selectErr } = await supabase
+      .from('admin_security')
+      .select('secondary_password_hash')
+      .eq('admin_email', cleanEmail)
+      .single()
+      
+    if (selectErr || !data) {
+      throw new Error('Tài khoản admin chưa được thiết lập bảo mật cấp 2.')
+    }
+    
+    if (data.secondary_password_hash !== currentHash) {
+      throw new Error('Mật khẩu cấp 2 hiện tại không chính xác.')
+    }
+    
+    // Hash mật khẩu mới và cập nhật
+    const newHash = crypto.createHash('sha256').update(newSecondaryPassword.trim()).digest('hex')
+    const { error: updateErr } = await supabase
+      .from('admin_security')
+      .upsert({
+        admin_email: cleanEmail,
+        secondary_password_hash: newHash,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'admin_email' })
+      
+    if (updateErr) throw updateErr
+    
+    return { success: true }
+  } catch (error: any) {
+    console.error('[Action Error] changeAdminSecondaryPassword:', error)
+    return { success: false, error: error.message }
+  }
+}
+
 // CENTER INFO ACTIONS
 export async function updateCenterInfo(formData: FormData) {
   try {
     const { supabase } = await getAdminUser()
 
-    // Logo/Banner URLs - dùng trực tiếp URL từ form (không upload file nữa)
     const logoUrl = formData.get('logoUrl') as string || ''
     const bannerUrl = formData.get('bannerUrl') as string || ''
 
-    // Kiểm tra cột bảng
     const updates = {
       name: formData.get('name') as string,
       slogan: formData.get('slogan') as string,
@@ -100,7 +186,6 @@ export async function updateCenterInfo(formData: FormData) {
       )
 
     if (error) {
-      console.log('Error updating center_info:', error)
       if (error.code === '42P01') throw new Error('Không tìm thấy bảng center_info. Hãy chạy SQL schema.')
       if (error.code === '42703') throw new Error('Cột dữ liệu bị thiếu trong bảng center_info.')
       if (error.code === '42501') throw new Error('Thiết lập RLS trong db chặn bạn cập nhật (Chưa có Policy Update).')
@@ -120,6 +205,100 @@ export async function updateCenterInfo(formData: FormData) {
 }
 
 // COURSE ACTIONS
+export async function getCourses() {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('courses')
+      .select('*')
+      .order('created_at', { ascending: false })
+      
+    if (error) {
+      if (error.code === '42P01') {
+        return { success: true, data: mockDb.getCourses() }
+      }
+      throw error
+    }
+    
+    let coursesData = data
+    // Nếu chưa có khoá học nào trong Supabase, seed dữ liệu mẫu
+    if (!data || data.length === 0) {
+      await seedSampleCoursesOnly()
+      const { data: reseeded, error: reseedError } = await supabase
+        .from('courses')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (!reseedError && reseeded) {
+        coursesData = reseeded
+      }
+    }
+    
+    // Map to client Course structure
+    const mapped = (coursesData || []).map((row: any) => ({
+      id: row.id,
+      title: row.title,
+      slug: row.slug,
+      description: row.description || '',
+      price: Number(row.price || 0),
+      original_price: row.original_price ? Number(row.original_price) : undefined,
+      sessions: row.duration || '',
+      schedule: row.schedule || '',
+      level: row.level || '',
+      category: row.category || '',
+      is_featured: !!row.is_featured,
+      image_url: row.image_url || '',
+      instructor_name: row.instructor_name || '',
+      instructor_role: row.instructor_role || '',
+      target_audience: row.target_audience || '',
+      external_form_url: row.external_form_url || '',
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      content: row.content?.overview || '',
+      commencement: row.content?.commencement || '',
+      benefits: row.content?.benefits || [],
+      special_benefits: row.content?.special_benefits || '',
+      status: row.content?.status || 'Sắp khai giảng',
+      curriculum: row.content?.curriculum || []
+    }))
+    
+    return { success: true, data: mapped as Course[] }
+  } catch (error: any) {
+    console.error('[Action Error] getCourses:', error)
+    return { success: false, error: error.message, data: mockDb.getCourses() }
+  }
+}
+
+async function seedSampleCoursesOnly() {
+  try {
+    const supabase = await createClient()
+    const defaultCourses = mockDb.getCourses()
+    for (const course of defaultCourses) {
+      const slug = course.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      await supabase.from('courses').upsert({
+        title: course.title,
+        slug: slug,
+        description: course.description,
+        price: course.price,
+        duration: course.sessions,
+        level: course.level,
+        category: course.category,
+        image_url: course.image_url,
+        is_featured: course.is_featured,
+        content: { 
+          overview: course.description || '', 
+          curriculum: course.curriculum || [],
+          commencement: course.commencement || '',
+          benefits: course.benefits || [],
+          special_benefits: course.special_benefits || '',
+          status: course.status || 'Sắp khai giảng'
+        }
+      }, { onConflict: 'slug' })
+    }
+  } catch (e) {
+    console.error('Lỗi seed courses phụ:', e)
+  }
+}
+
 export async function upsertCourse(formData: FormData) {
   try {
     const { supabase } = await getAdminUser()
@@ -166,6 +345,8 @@ export async function upsertCourse(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
+    revalidatePath('/courses')
+    revalidatePath('/khoa-hoc')
     return { success: true, data }
   } catch (error: any) {
     console.error('[Action Error] upsertCourse:', error)
@@ -185,6 +366,8 @@ export async function deleteCourse(id: string) {
     if (error) throw new Error(`Xóa thất bại: ${error.message}`)
 
     revalidatePath('/', 'layout')
+    revalidatePath('/courses')
+    revalidatePath('/khoa-hoc')
     return { success: true }
   } catch (error: any) {
     console.error('[Action Error] deleteCourse:', error)
@@ -192,7 +375,7 @@ export async function deleteCourse(id: string) {
   }
 }
 
-// CONTACT ACTIONS
+// CONTACT ACTIONS (Registrations & Consultations)
 export async function submitContact(formData: FormData) {
   try {
     const supabase = await createClient()
@@ -203,7 +386,10 @@ export async function submitContact(formData: FormData) {
       phone: formData.get('phone') as string,
       message: formData.get('message') as string,
       course_id: formData.get('courseId') as string || null,
+      course_title: formData.get('courseTitle') as string || null,
+      level: formData.get('level') as string || null,
       type: formData.get('type') as string || 'contact',
+      status: 'new'
     }
 
     const { error } = await supabase
@@ -215,10 +401,8 @@ export async function submitContact(formData: FormData) {
        throw new Error(`Đã có lỗi CSDL: ${error.message}`)
     }
 
-    // Gửi email thông báo (Nếu có cấu hình - Tạm thời log ra console)
     console.log(`[Notification] Có yêu cầu mới từ ${contactData.name} (${contactData.phone})`)
-    // Sau này có thể dùng Resend: await resend.emails.send({...})
-
+    revalidatePath('/admin/registrations')
     return { success: true }
   } catch (error: any) {
     console.error('[Action Error] submitContact:', error)
@@ -251,7 +435,7 @@ export async function updateContactStatus(id: string, status: 'new' | 'contacted
       .eq('id', id)
 
     if (error) throw error
-    revalidatePath('/admin/contacts')
+    revalidatePath('/admin/registrations')
     return { success: true }
   } catch (error: any) {
     console.error('[Action Error] updateContactStatus:', error)
@@ -268,7 +452,7 @@ export async function deleteContact(id: string) {
       .eq('id', id)
 
     if (error) throw error
-    revalidatePath('/admin/contacts')
+    revalidatePath('/admin/registrations')
     return { success: true }
   } catch (error: any) {
     console.error('[Action Error] deleteContact:', error)
@@ -276,137 +460,145 @@ export async function deleteContact(id: string) {
   }
 }
 
+// Transition registrations from Google Sheets/CSVs to Supabase Table Contacts
 export async function getGoogleSheetRegistrations() {
   try {
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/1szp_pNmmnoGjtRbc5vkmUA-kCwlShQNv7tYTRcO4Ckw/export?format=csv'
-    const res = await fetch(csvUrl, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-    const text = await res.text()
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('contacts')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-    const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0)
-    const records = lines.map((line, idx) => {
-      const row = parseCsvLine(line)
-      const rawType = (row[7] || '').trim()
-      const courseTitle = (row[4] || '').trim()
-      
-      let type = 'contact'
-      if (rawType.toLowerCase() === 'registration' || courseTitle.length > 0) {
-        type = 'registration'
+    if (error) {
+      if (error.code === '42P01') {
+        return { success: true, data: [] }
       }
+      throw error
+    }
 
-      return {
-        id: `sheet-${idx}-${Date.now()}`,
-        date: (row[0] || '').trim(),
-        name: (row[1] || '').trim(),
-        phone: (row[2] || '').trim(),
-        email: (row[3] || '').trim(),
-        courseTitle: courseTitle || null,
-        level: (row[5] || '').trim() || null,
-        message: (row[6] || '').trim() || null,
-        type: type,
-        status: 'new'
-      }
-    })
+    const records = data.map((row: any) => ({
+      id: row.id,
+      date: row.created_at ? new Date(row.created_at).toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN'),
+      name: row.name || '',
+      phone: row.phone || '',
+      email: row.email || '',
+      courseTitle: row.course_title || null,
+      level: row.level || null,
+      message: row.message || null,
+      type: row.type || 'contact',
+      status: row.status || 'new'
+    }))
 
-    records.reverse()
     return { success: true, data: records }
   } catch (err: any) {
-    console.error('Error in getGoogleSheetRegistrations:', err)
+    console.error('Error in getGoogleSheetRegistrations (Supabase):', err)
     return { success: false, error: err.message, data: [] }
   }
 }
 
-function parseCsvLine(text: string): string[] {
-  const result: string[] = []
-  let cur = ''
-  let inQuote = false
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i]
-    if (char === '"') {
-      if (inQuote && text[i+1] === '"') {
-        cur += '"'
-        i++
-      } else {
-        inQuote = !inQuote
-      }
-    } else if (char === ',' && !inQuote) {
-      result.push(cur.trim())
-      cur = ''
-    } else {
-      cur += char
-    }
-  }
-  result.push(cur.trim())
-  return result
-}
-
-const GOOGLE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyFj52ZzU5vkE_4sQUXElI1l6xzExoqZqUd3L69XtC3MMXY_rH2QLmIFqAbSQU_GNL_/exec'
-
+// NEWS ACTIONS
 export async function getGoogleSheetNews() {
   try {
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/1szp_pNmmnoGjtRbc5vkmUA-kCwlShQNv7tYTRcO4Ckw/export?format=csv&gid=701056727'
-    const res = await fetch(csvUrl, { cache: 'no-store' })
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-    const text = await res.text()
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-    const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0)
-    if (lines.length <= 1) {
-      return { success: true, data: mockDb.getNews() }
+    if (error) {
+      if (error.code === '42P01') {
+        return { success: true, data: mockDb.getNews() }
+      }
+      throw error
     }
 
-    const records = lines.slice(1).map((line, idx) => {
-      const row = parseCsvLine(line)
-      return {
-        id: row[0] || `news-${idx}-${Date.now()}`,
-        title: row[1] || '',
-        date: row[2] || new Date().toLocaleDateString('vi-VN'),
-        type: row[3] || 'Tin Tức',
-        author: row[4] || 'Inspiring HR',
-        image: row[5] || 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
-        desc: row[6] || '',
-        content: row[7] || '',
-        views: Number(row[8]) || 150
+    if (!data || data.length === 0) {
+      // Seed default news if empty
+      const defaultNews = mockDb.getNews()
+      for (const item of defaultNews) {
+        await supabase.from('news').insert({
+          title: item.title,
+          type: item.type,
+          author: item.author,
+          image: item.image,
+          desc: item.desc,
+          content: item.content,
+          views: item.views,
+          date: item.date || new Date().toLocaleDateString('vi-VN')
+        })
       }
-    })
+      const { data: refetched } = await supabase
+        .from('news')
+        .select('*')
+        .order('created_at', { ascending: false })
+      return { success: true, data: refetched || defaultNews }
+    }
 
-    records.reverse()
-    return { success: true, data: records }
+    return { success: true, data }
   } catch (err: any) {
-    console.error('Error in getGoogleSheetNews:', err)
+    console.error('Error in getGoogleSheetNews (Supabase):', err)
     return { success: false, error: err.message, data: mockDb.getNews() }
   }
 }
 
 export async function saveNewsToGoogleSheet(newsItem: any) {
   try {
+    const supabase = await createClient()
+    
     const payload = {
-      sheetName: 'News',
-      id: newsItem.id || Date.now().toString(),
       title: newsItem.title || '',
-      date: newsItem.date || new Date().toLocaleDateString('vi-VN'),
       type: newsItem.type || 'Tin Tức',
       author: newsItem.author || 'Ban Biên tập',
       image: newsItem.image || 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
       desc: newsItem.desc || '',
       content: newsItem.content || '',
-      views: newsItem.views || 150
+      views: Number(newsItem.views || 150),
+      date: newsItem.date || new Date().toLocaleDateString('vi-VN'),
+      updated_at: new Date().toISOString()
     }
 
-    await fetch(GOOGLE_WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+    let error;
+    // Check if it's a valid UUID
+    const isUUID = newsItem.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(newsItem.id)
+    
+    if (isUUID) {
+      const { error: upsertError } = await supabase
+        .from('news')
+        .upsert({ id: newsItem.id, ...payload })
+      error = upsertError
+    } else {
+      const { error: insertError } = await supabase
+        .from('news')
+        .insert([payload])
+      error = insertError
+    }
+
+    if (error) throw error
 
     revalidatePath('/tin-tuc')
     revalidatePath('/')
     revalidatePath('/admin/news')
     return { success: true }
   } catch (error: any) {
-    console.error('Error in saveNewsToGoogleSheet:', error)
+    console.error('Error in saveNewsToGoogleSheet (Supabase):', error)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function deleteSupabaseNews(id: string) {
+  try {
+    const { supabase } = await getAdminUser()
+    const { error } = await supabase
+      .from('news')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
+    revalidatePath('/tin-tuc')
+    revalidatePath('/')
+    revalidatePath('/admin/news')
+    return { success: true }
+  } catch (error: any) {
+    console.error('[Action Error] deleteSupabaseNews:', error)
     return { success: false, error: error.message }
   }
 }

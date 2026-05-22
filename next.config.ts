@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
     'localhost:3000',
     'd9e4f892092e271a-115-72-233-60.serveousercontent.com'
   ],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -20,7 +25,7 @@ const nextConfig: NextConfig = {
       {
         // Supabase Storage
         protocol: 'https',
-        hostname: 'qqkilpcifglxhqoblikgj.supabase.co',
+        hostname: 'qqkilpcifglxhqoblkgj.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
     ],

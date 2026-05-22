@@ -6,16 +6,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Edit, Trash2, X, Save, Calendar, Loader2 } from 'lucide-react'
+import { Plus, Edit, Trash2, X, Save, Calendar, Loader2, Upload, ImageIcon } from 'lucide-react'
 import { mockDb } from '@/lib/mock-db'
 import { toast } from 'sonner'
-import { getGoogleSheetNews, saveNewsToGoogleSheet } from '@/app/actions'
+import { getGoogleSheetNews, saveNewsToGoogleSheet, deleteSupabaseNews, uploadImageAction } from '@/app/actions'
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState<any[]>([])
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [currentItem, setCurrentItem] = useState<any>(null)
 
   useEffect(() => {
@@ -41,43 +42,30 @@ export default function AdminNewsPage() {
     setIsEditing(true)
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const img = new window.Image()
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        let width = img.width
-        let height = img.height
-        const MAX_DIM = 800
+    setIsUploading(true)
+    const toastId = toast.loading('Đang tải ảnh lên hệ thống...')
 
-        if (width > height) {
-          if (width > MAX_DIM) {
-            height *= MAX_DIM / width
-            width = MAX_DIM
-          }
-        } else {
-          if (height > MAX_DIM) {
-            width *= MAX_DIM / height
-            height = MAX_DIM
-          }
-        }
+    try {
+      const formData = new FormData()
+      formData.append('imageFile', file)
+      formData.append('path', 'news')
 
-        canvas.width = width
-        canvas.height = height
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height)
-          const base64Url = canvas.toDataURL('image/jpeg', 0.7)
-          setCurrentItem((prev: any) => ({...prev, image: base64Url}))
-        }
+      const res = await uploadImageAction(formData)
+      if (res.success && res.url) {
+        setCurrentItem((prev: any) => ({ ...prev, image: res.url }))
+        toast.success('Tải ảnh lên thành công!', { id: toastId })
+      } else {
+        toast.error('Tải ảnh thất bại: ' + (res.error || 'Chưa bật Storage hoặc phân quyền RLS.'), { id: toastId })
       }
-      img.src = event.target?.result as string
+    } catch (err: any) {
+      toast.error('Lỗi khi tải ảnh lên: ' + err.message, { id: toastId })
+    } finally {
+      setIsUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleAddNew = () => {
@@ -92,47 +80,65 @@ export default function AdminNewsPage() {
     setIsEditing(true)
   }
 
-  const handleDelete = (id: string) => {
-    if (confirm('Bạn có chắc muốn xóa bài viết này?')) {
-      mockDb.deleteNews(id)
-      setNews(mockDb.getNews())
-      toast.success('Đã xóa bài viết khỏi bộ đệm.')
+  const handleDelete = async (id: string) => {
+    if (confirm('Bạn có chắc muốn xóa bài viết này khỏi hệ thống Supabase?')) {
+      setIsLoading(true)
+      try {
+        const res = await deleteSupabaseNews(id)
+        if (res.success) {
+          toast.success('Đã xóa bài viết thành công.')
+          const refreshed = await getGoogleSheetNews()
+          if (refreshed.success) {
+            setNews(refreshed.data || [])
+          }
+        } else {
+          toast.error('Xóa thất bại: ' + (res.error || ''))
+        }
+      } catch (err: any) {
+        toast.error('Lỗi: ' + err.message)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSaving(true)
-    toast.info('Đang xuất bản và đồng bộ bài viết lên Google Sheets...', { duration: 6000 })
+    const toastId = toast.loading('Đang lưu dữ liệu lên Supabase...')
     
     try {
-      mockDb.saveNews(currentItem)
       const res = await saveNewsToGoogleSheet(currentItem)
       if (res && res.success) {
-        toast.success('Xuất bản thành công! Bài viết đã được lưu vào Google Sheets.', { duration: 10000 })
+        toast.success('Đã lưu bài viết thành công!', { id: toastId })
+        const refreshed = await getGoogleSheetNews()
+        if (refreshed.success && refreshed.data) {
+          setNews(refreshed.data)
+        }
+        setIsEditing(false)
       } else {
-        toast.error('Lưu bộ đệm thành công, nhưng kết nối Google Sheets gặp sự cố: ' + (res?.error || ''))
+        toast.error('Lưu thất bại: ' + (res?.error || ''), { id: toastId })
       }
-
-      const refreshed = await getGoogleSheetNews()
-      if (refreshed.success && refreshed.data && refreshed.data.length > 0) {
-        setNews(refreshed.data)
-      } else {
-        setNews(mockDb.getNews())
-      }
-      setIsEditing(false)
     } catch (err: any) {
-      toast.error('Lỗi xuất bản: ' + err.message)
+      toast.error('Lỗi xuất bản: ' + err.message, { id: toastId })
     } finally {
       setIsSaving(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
     <div className="space-y-10">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-black text-primary tracking-tight">Quản lý Tin tức & Hội thảo</h1>
-        <Button onClick={handleAddNew} className="bg-primary text-white rounded-2xl h-14 px-8 font-black shadow-xl">
+        <Button onClick={handleAddNew} className="bg-primary text-white rounded-2xl h-14 px-8 font-black shadow-xl hover:bg-primary/95 transition-all">
           <Plus className="mr-2 w-5 h-5" /> Viết bài mới
         </Button>
       </div>
@@ -174,22 +180,39 @@ export default function AdminNewsPage() {
             </div>
 
             <div className="space-y-4 md:col-span-2">
-              <label className="text-sm font-black text-slate-400 uppercase tracking-widest">Hình ảnh minh họa</label>
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-                 {currentItem.image && (
-                   <div className="w-32 h-20 rounded-xl overflow-hidden shrink-0 border border-slate-100 bg-slate-50">
-                      <img src={currentItem.image} alt="preview" className="w-full h-full object-cover" />
-                   </div>
-                 )}
-                 <div className="space-y-2 flex-1 w-full">
+              <label className="text-sm font-black text-slate-400 uppercase tracking-widest block">Hình ảnh minh họa (Kích thước khuyên dùng: tỷ lệ 16:9 hoặc 1.91:1, vd: 1200x675px)</label>
+              <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                 <div className="w-48 h-32 rounded-[2rem] overflow-hidden shrink-0 border border-slate-100 bg-slate-50 flex items-center justify-center">
+                   {currentItem.image ? (
+                     <img src={currentItem.image} alt="preview" className="w-full h-full object-cover" />
+                   ) : (
+                     <ImageIcon className="w-10 h-10 text-slate-300" />
+                   )}
+                 </div>
+                 <div className="space-y-3 flex-1 w-full">
+                    <div className="relative">
+                      <Input 
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        disabled={isUploading}
+                        className="hidden"
+                        id="news-image-upload"
+                      />
+                      <label 
+                        htmlFor="news-image-upload"
+                        className="flex items-center justify-center gap-2 h-14 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-primary cursor-pointer transition-all font-bold text-slate-600"
+                      >
+                        {isUploading ? (
+                          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                        ) : (
+                          <Upload className="w-5 h-5 text-slate-400" />
+                        )}
+                        Tải ảnh lên từ máy tính
+                      </label>
+                    </div>
                     <Input 
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="h-14 rounded-2xl border-slate-100 pt-3"
-                    />
-                    <Input 
-                      placeholder="Hoặc dán URL hình ảnh vào đây..."
+                      placeholder="Hoặc dán URL hình ảnh bên ngoài..."
                       value={currentItem.image} 
                       onChange={(e) => setCurrentItem({...currentItem, image: e.target.value})}
                       className="h-14 rounded-2xl border-slate-100"
@@ -218,10 +241,11 @@ export default function AdminNewsPage() {
             </div>
 
             <div className="md:col-span-2 pt-6 flex gap-4">
-               <Button type="submit" className="bg-primary text-white h-14 px-10 rounded-2xl font-black shadow-xl">
-                  <Save className="mr-2 w-5 h-5" /> Xuất bản bài viết
+               <Button type="submit" disabled={isSaving || isUploading} className="bg-primary text-white h-14 px-10 rounded-2xl font-black shadow-xl hover:bg-primary/95 transition-all">
+                  {isSaving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Save className="mr-2 w-5 h-5" />}
+                  Xuất bản bài viết
                </Button>
-               <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="h-14 px-10 rounded-2xl font-bold border-slate-100">
+               <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="h-14 px-10 rounded-2xl font-bold border-slate-100 hover:bg-slate-50">
                   Hủy bỏ
                </Button>
             </div>

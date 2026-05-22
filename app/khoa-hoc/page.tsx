@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select"
 import { mockDb } from '@/lib/mock-db'
 import { Course } from '@/types'
+import { getCourses } from '@/app/actions'
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([])
@@ -25,10 +26,20 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchCourses = () => {
-      const data = mockDb.getCourses()
-      setCourses(data)
-      setLoading(false)
+    const fetchCourses = async () => {
+      try {
+        const res = await getCourses()
+        if (res.success && res.data && res.data.length > 0) {
+          setCourses(res.data)
+        } else {
+          setCourses(mockDb.getCourses())
+        }
+      } catch (err) {
+        console.error('Error fetching courses from Supabase:', err)
+        setCourses(mockDb.getCourses())
+      } finally {
+        setLoading(false)
+      }
     }
     fetchCourses()
   }, [])
@@ -105,7 +116,7 @@ export default function CoursesPage() {
                      </Badge>
                   </div>
                 )}
-                <div className="relative h-40 md:h-56 overflow-hidden bg-slate-100">
+                <Link href={`/khoa-hoc/chi-tiet?id=${course.id}`} className="relative h-40 md:h-56 overflow-hidden bg-slate-100 block">
                   {course.image_url && (
                     <Image 
                       src={course.image_url} 
@@ -116,10 +127,10 @@ export default function CoursesPage() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 right-3 md:right-4 flex items-center justify-between text-white font-bold text-[8px] md:text-[9px] uppercase tracking-widest">
-                     <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-sm px-2 md:px-2.5 py-1 rounded-md border border-white/10"><Clock className="w-3 md:w-3.5 h-3 md:h-3.5 text-secondary" /> {course.sessions}</div>
+                     <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-sm px-2 md:px-2.5 py-1 rounded-md border border-white/10"><Clock className="w-3 md:w-3.5 h-3 md:h-3.5 text-secondary" /> {course.sessions?.includes('buổi') ? course.sessions : `${course.sessions} buổi`}</div>
                      <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-sm px-2 md:px-2.5 py-1 rounded-md border border-white/10"><CheckCircle2 className="w-3 md:w-3.5 h-3 md:h-3.5 text-secondary" /> {course.status}</div>
                   </div>
-                </div>
+                </Link>
 
                 <CardContent className="p-6 md:p-8 flex-grow flex flex-col space-y-4 md:space-y-5">
                   <div className="flex items-center justify-between">
@@ -129,9 +140,11 @@ export default function CoursesPage() {
                     <span className="text-[8px] md:text-[9px] font-bold text-slate-300 uppercase tracking-widest">{course.commencement}</span>
                   </div>
                   
-                  <h3 className="text-base md:text-lg font-bold text-primary line-clamp-2 leading-tight group-hover:text-secondary transition-colors min-h-[2rem] md:min-h-[2.5rem]">
-                    {course.title}
-                  </h3>
+                  <Link href={`/khoa-hoc/chi-tiet?id=${course.id}`} className="block">
+                    <h3 className="text-base md:text-lg font-bold text-primary line-clamp-2 leading-tight group-hover:text-secondary transition-colors min-h-[2rem] md:min-h-[2.5rem]">
+                      {course.title}
+                    </h3>
+                  </Link>
                   
                   <p className="text-slate-500 text-[11px] md:text-xs font-medium line-clamp-3 leading-relaxed flex-grow">
                     {course.description}

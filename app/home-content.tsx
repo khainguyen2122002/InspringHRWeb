@@ -8,21 +8,35 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { getGoogleSheetNews, getCourses } from '@/app/actions'
 import { mockDb } from '@/lib/mock-db'
 import { Course } from '@/types'
 import { GalleryCarousel } from '@/components/gallery-carousel'
-import { getGoogleSheetNews } from '@/app/actions'
 
 export default function HomeContent() {
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([])
   const [latestNews, setLatestNews] = useState<any[]>([])
 
   useEffect(() => {
-    // Lấy danh sách khóa học
-    const allCourses = mockDb.getCourses()
-    setFeaturedCourses(allCourses.slice(0, 4)) // Lấy 4 khóa học
+    // Lấy danh sách khóa học từ Supabase
+    async function loadCourses() {
+      try {
+        const res = await getCourses()
+        if (res && res.success && res.data && res.data.length > 0) {
+          // Lấy 4 khóa học, ưu tiên các khóa học nổi bật (is_featured)
+          const featured = res.data.filter((c: Course) => c.is_featured)
+          const nonFeatured = res.data.filter((c: Course) => !c.is_featured)
+          setFeaturedCourses([...featured, ...nonFeatured].slice(0, 4))
+        } else {
+          setFeaturedCourses(mockDb.getCourses().slice(0, 4))
+        }
+      } catch (e) {
+        console.error('Lỗi lấy khóa học:', e)
+        setFeaturedCourses(mockDb.getCourses().slice(0, 4))
+      }
+    }
 
-    // Lấy tin tức mới nhất từ Google Sheets
+    // Lấy tin tức mới nhất từ Google Sheets (Supabase)
     async function loadLatestNews() {
       try {
         const res = await getGoogleSheetNews()
@@ -32,9 +46,12 @@ export default function HomeContent() {
           setLatestNews(mockDb.getNews().slice(0, 5))
         }
       } catch (e) {
+        console.error('Lỗi lấy tin tức:', e)
         setLatestNews(mockDb.getNews().slice(0, 5))
       }
     }
+
+    loadCourses()
     loadLatestNews()
   }, [])
 

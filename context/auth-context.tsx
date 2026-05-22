@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { createClient } from '@/utils/supabase/client'
+import { verifyAdminSecondaryPassword as verifySecondaryAction, changeAdminSecondaryPassword as changeSecondaryAction } from '@/app/actions'
 
 interface User {
   id: string
@@ -13,14 +15,14 @@ interface User {
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<{ success: boolean; requireOtp?: boolean }>
-  verifyAdminOtpLogin: (otp: string) => Promise<boolean>
+  login: (email: string, password: string) => Promise<{ success: boolean; requireSecondaryPassword?: boolean; error?: string }>
+  verifyAdminSecondaryPassword: (email: string, secondaryPassword: string) => Promise<boolean>
   register: (name: string, email: string, password: string) => Promise<boolean>
   logout: () => void
-  bypassAdminLogin: () => boolean
-  sendAdminOtp: () => Promise<string>
-  changeAdminPassword: (newPassword: string, otp: string) => Promise<boolean>
+  changeSecondaryPassword: (email: string, currentPass: string, newPass: string) => Promise<{ success: boolean; error?: string }>
+  changePrimaryPassword: (newPass: string) => Promise<{ success: boolean; error?: string }>
   isLoading: boolean
+  bypassAdminLogin: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -31,101 +33,155 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   useEffect(() => {
+    const supabase = createClient()
+    if (!supabase) {
+      setIsLoading(false)
+      return
+    }
+
+    // 1. Check secret key backdoor for development
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search)
       const secret = urlParams.get('secret')
       if (secret === 'inspiringhr2026') {
-        const adminUser: User = { id: 'admin', email: 'inspiringhr.daotaonhansu@gmail.com', name: 'Quản trị viên', role: 'admin' }
+        const adminUser: User = { id: 'admin', email: 'inspiringhr.daotaonhansu@gmail.com', name: 'Quản trị viên (Bypass)', role: 'admin' }
         localStorage.setItem('ih_user', JSON.stringify(adminUser))
         localStorage.setItem('ih_admin_login_time', Date.now().toString())
         setUser(adminUser)
-        console.log('Backdoor: Admin logged in successfully via secret key')
         setIsLoading(false)
         return
       }
     }
 
-    const checkAdminSession = () => {
-      const savedUser = localStorage.getItem('ih_user')
+    const checkSession = async () => {
+      try {
+        const { data: { user: sbUser } } = await supabase.auth.getUser()
+        const savedUser = localStorage.getItem('ih_user')
+        const loginTime = localStorage.getItem('ih_admin_login_time')
+
+        if (sbUser) {
+          const adminEmails = ['khainguyen2122002@gmail.com', 'inspiringhr.daotaonhansu@gmail.com']
+          const isAdmin = adminEmails.includes(sbUser.email || '')
+
+          if (isAdmin) {
+            if (savedUser && loginTime) {
+              try {
+                const userObj = JSON.parse(savedUser)
+                if (userObj.role === 'admin' && userObj.email === sbUser.email) {
+                  const elapsed = Date.now() - Number(loginTime)
+                  const ONE_HOUR = 60 * 60 * 1000 // 1 hour session
+                  if (elapsed < ONE_HOUR) {
+                    setUser(userObj)
+                  } else {
+                    console.log('Session level 2 expired. Signing out from Supabase...')
+                    await supabase.auth.signOut()
+                    localStorage.removeItem('ih_user')
+                    localStorage.removeItem('ih_admin_login_time')
+                    setUser(null)
+                    window.location.href = '/dang-nhap?expired=true'
+                  }
+                } else {
+                  setUser(null)
+                }
+              } catch (e) {
+                setUser(null)
+              }
+            } else {
+              console.log('Supabase session exists but level 2 (secondary password) is not verified. Sign out.')
+              await supabase.auth.signOut()
+              setUser(null)
+            }
+          } else {
+            // Regular user verified via Supabase Auth (if any)
+            setUser({
+              id: sbUser.id,
+              email: sbUser.email || '',
+              name: sbUser.user_metadata?.name || 'Người học',
+              role: 'user'
+            })
+          }
+        } else {
+          // No Supabase session, fallback to local storage mock user (regular user)
+          if (savedUser) {
+            try {
+              const userObj = JSON.parse(savedUser)
+              if (userObj.role === 'user') {
+                setUser(userObj)
+              } else {
+                localStorage.removeItem('ih_user')
+                localStorage.removeItem('ih_admin_login_time')
+                setUser(null)
+              }
+            } catch (e) {
+              localStorage.removeItem('ih_user')
+              setUser(null)
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error during checkSession:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    checkSession()
+
+    // 1-minute interval to check if session expired
+    const interval = setInterval(() => {
       const loginTime = localStorage.getItem('ih_admin_login_time')
+      const savedUser = localStorage.getItem('ih_user')
       if (savedUser && loginTime) {
         try {
           const userObj = JSON.parse(savedUser)
           if (userObj.role === 'admin') {
             const elapsed = Date.now() - Number(loginTime)
-            const ONE_HOUR = 60 * 60 * 1000 // Precisely 1 hour in ms
+            const ONE_HOUR = 60 * 60 * 1000
             if (elapsed >= ONE_HOUR) {
-              console.log('Admin session expired after 1 hour. Automatically logging out.')
-              setUser(null)
-              localStorage.removeItem('ih_user')
-              localStorage.removeItem('ih_admin_login_time')
-              window.location.href = '/dang-nhap?expired=true'
+              console.log('Session expired. Logging out...')
+              supabase.auth.signOut().then(() => {
+                localStorage.removeItem('ih_user')
+                localStorage.removeItem('ih_admin_login_time')
+                setUser(null)
+                window.location.href = '/dang-nhap?expired=true'
+              })
             }
           }
         } catch (e) {}
       }
-    }
+    }, 60000)
 
-    const saved = localStorage.getItem('ih_user')
-    if (saved) {
-      try {
-        setUser(JSON.parse(saved))
-        console.log('AuthContext: User restored from storage')
-        checkAdminSession()
-      } catch (e) {
-        console.error('AuthContext: Error parsing user data')
-        localStorage.removeItem('ih_user')
-      }
-    }
-    setIsLoading(false)
-
-    const sessionInterval = setInterval(checkAdminSession, 60000) // check every minute
-    return () => clearInterval(sessionInterval)
+    return () => clearInterval(interval)
   }, [])
 
-  const bypassAdminLogin = (): boolean => {
-    const adminUser: User = { id: 'admin', email: 'inspiringhr.daotaonhansu@gmail.com', name: 'Quản trị viên', role: 'admin' }
-    localStorage.setItem('ih_user', JSON.stringify(adminUser))
-    localStorage.setItem('ih_admin_login_time', Date.now().toString())
-    setUser(adminUser)
-    console.log('Backdoor: Admin logged in successfully')
-    return true
-  }
-
-  const sendAdminOtp = async (): Promise<string> => {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    localStorage.setItem('ih_admin_otp', otp)
-    console.log(`[Email Verification] Gửi mã OTP ${otp} đến inspiringhr.daotaonhansu@gmail.com`)
-    return otp
-  }
-
-  const changeAdminPassword = async (newPassword: string, otp: string): Promise<boolean> => {
-    const savedOtp = localStorage.getItem('ih_admin_otp')
-    if (!savedOtp || savedOtp !== otp.trim()) {
-      return false
-    }
-    localStorage.setItem('ih_admin_password', newPassword.trim())
-    localStorage.removeItem('ih_admin_otp')
-    console.log('Admin password changed successfully')
-    return true
-  }
-
-  const login = async (email: string, password: string): Promise<{ success: boolean; requireOtp?: boolean }> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; requireSecondaryPassword?: boolean; error?: string }> => {
     const cleanEmail = email.trim().toLowerCase()
     const cleanPassword = password.trim()
-    
-    const users = JSON.parse(localStorage.getItem('ih_users') || '[]')
-    const currentAdminPass = localStorage.getItem('ih_admin_password') || 'admin123'
-    
-    if (cleanEmail === 'inspiringhr.daotaonhansu@gmail.com' && cleanPassword === currentAdminPass) {
-      // Step 1: Password verified! Trigger 2FA OTP
-      const otp = Math.floor(100000 + Math.random() * 900000).toString()
-      localStorage.setItem('ih_admin_login_otp', otp)
-      console.log(`[Hệ thống Gửi Email OTP] Mã xác thực đăng nhập 6 số của bạn là: ${otp}`)
-      toast.success(`[Hệ thống Email OTP] Đã gửi mã xác thực đến inspiringhr.daotaonhansu@gmail.com. Mã OTP 6 số của bạn là: ${otp}`, { duration: 20000 })
-      return { success: true, requireOtp: true }
+    const adminEmails = ['khainguyen2122002@gmail.com', 'inspiringhr.daotaonhansu@gmail.com']
+    const isAdmin = adminEmails.includes(cleanEmail)
+
+    const supabase = createClient()
+    if (!supabase) {
+      return { success: false, error: 'Không thể kết nối đến hệ thống xác thực.' }
     }
 
+    if (isAdmin) {
+      // Step 1: Standard Supabase authentication
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: cleanPassword
+      })
+
+      if (error) {
+        return { success: false, error: 'Email hoặc mật khẩu cấp 1 không đúng.' }
+      }
+
+      // Step 1 success. Request Layer 2 password verification.
+      return { success: true, requireSecondaryPassword: true }
+    }
+
+    // Learners / Regular user: use local storage mock db to maintain compatibility
+    const users = JSON.parse(localStorage.getItem('ih_users') || '[]')
     const foundUser = users.find((u: any) => u.email.toLowerCase() === cleanEmail && u.password === cleanPassword)
     if (foundUser) {
       const loggedUser: User = { id: foundUser.id, email: foundUser.email, name: foundUser.name, role: foundUser.role }
@@ -133,22 +189,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('ih_user', JSON.stringify(loggedUser))
       return { success: true }
     }
-    return { success: false }
+
+    return { success: false, error: 'Email hoặc mật khẩu không chính xác.' }
   }
 
-  const verifyAdminOtpLogin = async (otp: string): Promise<boolean> => {
-    const savedOtp = localStorage.getItem('ih_admin_login_otp')
-    if (!savedOtp || savedOtp !== otp.trim()) {
-      return false
+  const verifyAdminSecondaryPassword = async (email: string, secondaryPassword: string): Promise<boolean> => {
+    const cleanEmail = email.trim().toLowerCase()
+    const result = await verifySecondaryAction(cleanEmail, secondaryPassword)
+    
+    if (result.success) {
+      const supabase = createClient()
+      if (!supabase) return false
+      const { data: { user: sbUser } } = await supabase.auth.getUser()
+      if (sbUser && sbUser.email?.toLowerCase() === cleanEmail) {
+        const adminUser: User = {
+          id: sbUser.id,
+          email: cleanEmail,
+          name: 'Quản trị viên',
+          role: 'admin'
+        }
+        localStorage.setItem('ih_user', JSON.stringify(adminUser))
+        localStorage.setItem('ih_admin_login_time', Date.now().toString())
+        setUser(adminUser)
+        return true
+      }
     }
-    // Verify successful! Create admin session
-    const adminUser: User = { id: 'admin', email: 'inspiringhr.daotaonhansu@gmail.com', name: 'Quản trị viên', role: 'admin' }
-    localStorage.setItem('ih_user', JSON.stringify(adminUser))
-    localStorage.setItem('ih_admin_login_time', Date.now().toString()) // 1 hour timer starts!
-    localStorage.removeItem('ih_admin_login_otp')
-    setUser(adminUser)
-    console.log('Admin verified via OTP successfully! Session expires in precisely 1 hour.')
-    return true
+    return false
+  }
+
+  const changeSecondaryPassword = async (email: string, currentPass: string, newPass: string) => {
+    const cleanEmail = email.trim().toLowerCase()
+    const result = await changeSecondaryAction(cleanEmail, currentPass, newPass)
+    return result
+  }
+
+  const changePrimaryPassword = async (newPass: string) => {
+    const supabase = createClient()
+    if (!supabase) return { success: false, error: 'Không thể kết nối đến hệ thống.' }
+    const { error } = await supabase.auth.updateUser({ password: newPass })
+    if (error) {
+      return { success: false, error: error.message }
+    }
+    return { success: true }
   }
 
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
@@ -161,7 +243,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return true
   }
 
-  const logout = () => {
+  const bypassAdminLogin = () => {
+    const adminUser: User = { 
+      id: 'admin-dev', 
+      email: 'inspiringhr.daotaonhansu@gmail.com', 
+      name: 'Quản trị viên (Dev)', 
+      role: 'admin' 
+    }
+    localStorage.setItem('ih_user', JSON.stringify(adminUser))
+    localStorage.setItem('ih_admin_login_time', Date.now().toString())
+    setUser(adminUser)
+  }
+
+  const logout = async () => {
+    const supabase = createClient()
+    if (supabase) {
+      try {
+        await supabase.auth.signOut()
+      } catch (e) {}
+    }
     setUser(null)
     localStorage.removeItem('ih_user')
     localStorage.removeItem('ih_admin_login_time')
@@ -169,7 +269,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, verifyAdminOtpLogin, register, logout, bypassAdminLogin, sendAdminOtp, changeAdminPassword, isLoading }}>
+    <AuthContext.Provider value={{
+      user,
+      login,
+      verifyAdminSecondaryPassword,
+      register,
+      logout,
+      changeSecondaryPassword,
+      changePrimaryPassword,
+      isLoading,
+      bypassAdminLogin
+    }}>
       {children}
     </AuthContext.Provider>
   )

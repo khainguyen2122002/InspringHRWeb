@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { mockDb } from '@/lib/mock-db'
+import { submitContact } from '@/app/actions'
 
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyFj52ZzU5vkE_4sQUXElI1l6xzExoqZqUd3L69XtC3MMXY_rH2QLmIFqAbSQU_GNL_/exec'
 
@@ -35,6 +35,10 @@ export function ContactForm({ courseId, courseTitle }: ContactFormProps) {
         return
       }
 
+      if (courseId) formData.append('courseId', courseId)
+      if (courseTitle) formData.append('courseTitle', courseTitle)
+      formData.append('type', courseTitle ? 'registration' : 'contact')
+
       const data = {
         name,
         email: formData.get('email') as string,
@@ -44,7 +48,10 @@ export function ContactForm({ courseId, courseTitle }: ContactFormProps) {
         type: courseTitle ? 'registration' : 'contact'
       }
       
-      mockDb.saveInquiry(data)
+      const res = await submitContact(formData)
+      if (res && 'error' in res && res.error) {
+        throw new Error(res.error)
+      }
 
       await fetch(WEBHOOK_URL, {
         method: 'POST',
