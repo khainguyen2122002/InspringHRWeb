@@ -65,7 +65,7 @@ export default function HomeContent() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* 1. HERO SECTION - CỰC ẤN TƯỢNG */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#0A2A0B] z-0">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-mesh-green z-0">
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
@@ -94,7 +94,7 @@ export default function HomeContent() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-5 pt-2 md:pt-6 px-8 sm:px-0">
               <Link 
                 href="/khoa-hoc" 
-                className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto bg-secondary hover:bg-[#E09D00] text-primary font-black h-12 md:h-16 px-10 md:px-12 rounded-xl shadow-xl transition-all text-[12px] md:text-sm uppercase tracking-widest group")}
+                className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto bg-secondary hover:bg-[#FFCE54] text-primary font-black h-12 md:h-16 px-10 md:px-12 rounded-xl shadow-xl transition-all text-[12px] md:text-sm uppercase tracking-widest group")}
               >
                 ĐĂNG KÝ NGAY <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -202,7 +202,7 @@ export default function HomeContent() {
       </section>
 
       {/* 4. TIN TỨC & SỰ KIỆN */}
-      <section className="py-16 md:py-24 bg-slate-50">
+      <section className="py-16 md:py-24 bg-primary/5">
          <div className="container mx-auto px-4 max-w-7xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
                <div className="space-y-2 md:space-y-3">
@@ -215,60 +215,74 @@ export default function HomeContent() {
                </Link>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-               {/* Featured News (Left - 2/3) */}
-               <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+               {/* Featured News (Left - 60% width) */}
+               <div className="lg:col-span-3">
                  {latestNews[0] && (
-                   <Card className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group border-none">
-                      <div className="grid md:grid-cols-2">
-                        <div className="relative h-64 md:h-full min-h-[300px] overflow-hidden">
-                           <Image 
+                    <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-slate-100 flex flex-col h-full">
+                       <Link href={`/tin-tuc/chi-tiet?id=${latestNews[0].id}`} className="relative aspect-[16/10] w-full overflow-hidden block">
+                          <Image 
                             src={latestNews[0].image} 
                             alt={latestNews[0].title} 
                             fill 
-                            className="object-cover group-hover:scale-110 transition-transform duration-1000" 
-                           />
-                           <div className="absolute top-4 left-4">
-                              <Badge className="bg-primary text-white font-bold px-3 py-1.5 rounded-lg border-none uppercase text-[9px] tracking-widest">
-                                {latestNews[0].type}
-                              </Badge>
-                           </div>
-                        </div>
-                        <div className="p-8 md:p-12 flex flex-col justify-center space-y-5 md:space-y-6">
-                           <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                              <span className="flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5 text-secondary" /> {latestNews[0].date}</span>
-                              <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-secondary" /> {latestNews[0].views}</span>
-                           </div>
-                           <h3 className="text-xl md:text-2xl font-black text-primary leading-tight group-hover:text-secondary transition-colors">
-                              {latestNews[0].title}
-                           </h3>
-                           <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed line-clamp-3">
-                              {latestNews[0].desc}
-                           </p>
-                           <Link href={`/tin-tuc/chi-tiet?id=${latestNews[0].id}`} className="inline-flex items-center gap-2 text-[10px] md:text-[11px] font-black text-primary uppercase tracking-widest group/btn">
-                              Xem chi tiết <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                           </Link>
-                        </div>
-                      </div>
-                   </Card>
+                            className="object-cover group-hover:scale-105 transition-transform duration-1000" 
+                          />
+                          <div className="absolute top-4 left-4">
+                             <Badge className="bg-primary text-white font-bold px-3 py-1.5 rounded-lg border-none uppercase text-[9px] tracking-widest">
+                               {latestNews[0].type}
+                             </Badge>
+                          </div>
+                       </Link>
+                       <div className="p-6 md:p-8 flex flex-col flex-grow justify-between space-y-4">
+                          <div className="space-y-3">
+                             <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <span className="flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5 text-secondary" /> {latestNews[0].date}</span>
+                                <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-secondary" /> {latestNews[0].views} lượt xem</span>
+                             </div>
+                             <Link href={`/tin-tuc/chi-tiet?id=${latestNews[0].id}`} className="block">
+                                <h3 className="text-xl md:text-2xl font-black text-primary leading-tight hover:text-secondary transition-colors line-clamp-2">
+                                   {latestNews[0].title}
+                                </h3>
+                             </Link>
+                             <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed line-clamp-3">
+                                {latestNews[0].desc}
+                             </p>
+                          </div>
+                          <div className="pt-2">
+                             <Link href={`/tin-tuc/chi-tiet?id=${latestNews[0].id}`} className="inline-flex items-center justify-center bg-primary hover:bg-secondary hover:text-primary text-white font-black px-6 py-3 rounded-xl transition-all text-xs uppercase tracking-widest gap-2">
+                                Xem chi tiết <ArrowRight className="w-4 h-4" />
+                             </Link>
+                          </div>
+                       </div>
+                    </div>
                  )}
                </div>
-
-               {/* News List (Right - 1/3) */}
-               <div className="space-y-8">
+ 
+               {/* News List (Right - 40% width) */}
+               <div className="lg:col-span-2 space-y-6 flex flex-col justify-between">
                   {latestNews.slice(1, 5).map((news, i) => (
-                    <Link key={i} href={`/tin-tuc/chi-tiet?id=${news.id}`} className="group block">
-                       <div className="space-y-3">
+                    <div key={i} className="flex gap-4 items-start group">
+                       <Link href={`/tin-tuc/chi-tiet?id=${news.id}`} className="relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-sm border border-slate-100 block">
+                          <Image 
+                            src={news.image} 
+                            alt={news.title} 
+                            fill 
+                            className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                          />
+                       </Link>
+                       <div className="space-y-2 py-1 flex-grow">
                           <div className="flex items-center gap-3 text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest">
                              <span className="text-secondary">{news.type}</span>
                              <span>{news.date}</span>
                           </div>
-                          <h4 className="text-sm md:text-[15px] font-bold text-primary leading-snug group-hover:text-secondary transition-colors line-clamp-2">
-                             {news.title}
-                          </h4>
+                          <Link href={`/tin-tuc/chi-tiet?id=${news.id}`} className="block">
+                             <h4 className="text-sm md:text-[15px] font-bold text-primary leading-snug group-hover:text-secondary transition-colors line-clamp-2">
+                                {news.title}
+                             </h4>
+                          </Link>
                           <div className="w-0 group-hover:w-12 h-0.5 bg-secondary transition-all duration-300 rounded-full" />
                        </div>
-                    </Link>
+                    </div>
                   ))}
                </div>
             </div>
@@ -325,7 +339,7 @@ export default function HomeContent() {
       </section>
 
       {/* 6. LÝ DO CHỌN CHÚNG TÔI */}
-      <section className="py-16 md:py-24 bg-slate-50 relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-primary/5 relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-6xl relative z-10">
            <div className="text-center mb-12 md:mb-20 space-y-3 md:space-y-4">
               <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Tại Sao Chọn Inspiring HR?</h2>
@@ -351,7 +365,7 @@ export default function HomeContent() {
       {/* 7. CTA CUỐI TRANG / LIÊN HỆ NHANH */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto bg-primary rounded-[2rem] md:rounded-[3.5rem] p-8 sm:p-12 md:p-24 text-center space-y-8 md:space-y-10 shadow-2xl relative overflow-hidden">
+          <div className="max-w-5xl mx-auto bg-mesh-green rounded-[2rem] md:rounded-[3.5rem] p-8 sm:p-12 md:p-24 text-center space-y-8 md:space-y-10 shadow-2xl relative overflow-hidden">
              <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
              <div className="relative z-10 space-y-6 md:space-y-8">
                 <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
@@ -363,7 +377,7 @@ export default function HomeContent() {
                 <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 pt-4 md:pt-6">
                   <Link 
                     href="/lien-he" 
-                    className="bg-secondary text-primary hover:bg-[#E09D00] font-black h-14 md:h-16 px-10 md:px-12 rounded-xl shadow-xl transition-all text-[13px] md:text-sm flex items-center justify-center gap-3 uppercase tracking-widest w-full sm:w-auto"
+                    className="bg-secondary text-primary hover:bg-[#FFCE54] font-black h-14 md:h-16 px-10 md:px-12 rounded-xl shadow-xl transition-all text-[13px] md:text-sm flex items-center justify-center gap-3 uppercase tracking-widest w-full sm:w-auto"
                   >
                     Đăng Ký Tư Vấn Ngay
                   </Link>

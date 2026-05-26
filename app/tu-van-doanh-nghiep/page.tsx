@@ -94,7 +94,7 @@ export default function ConsultingPage() {
       </section>
 
       {/* Process Section */}
-      <section className="py-16 md:py-20 bg-slate-50">
+      <section className="py-16 md:py-20 bg-primary/5">
          <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-10 md:mb-16 space-y-2 md:space-y-3">
                <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight">Quy Trình Triển Khai</h2>

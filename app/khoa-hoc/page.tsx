@@ -52,7 +52,7 @@ export default function CoursesPage() {
   })
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-20 md:pt-32 pb-16 md:pb-20">
+    <div className="min-h-screen bg-primary/5 pt-20 md:pt-32 pb-16 md:pb-20">
       <div className="container mx-auto px-4">
         
         {/* Page Header */}
@@ -75,14 +75,14 @@ export default function CoursesPage() {
             <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <Input 
               placeholder="Tìm kiếm khóa học..." 
-              className="pl-11 md:pl-12 h-12 md:h-14 bg-slate-50 border-none rounded-xl focus-visible:ring-1 focus-visible:ring-primary/20 text-sm md:text-base font-medium"
+              className="pl-11 md:pl-12 h-12 md:h-14 bg-primary/5 border-none rounded-xl focus-visible:ring-1 focus-visible:ring-primary/20 text-sm md:text-base font-medium"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="w-full md:w-64">
             <Select value={levelFilter} onValueChange={(val) => setLevelFilter(val || 'all')}>
-              <SelectTrigger className="h-12 md:h-14 bg-slate-50 border-none rounded-xl px-5 md:px-6 font-bold text-primary text-xs md:text-sm">
+              <SelectTrigger className="h-12 md:h-14 bg-primary/5 border-none rounded-xl px-5 md:px-6 font-bold text-primary text-xs md:text-sm">
                 <div className="flex items-center gap-2">
                   <Layers className="w-4 h-4 text-secondary" />
                   <SelectValue placeholder="Tất cả hình thức" />
@@ -170,7 +170,7 @@ export default function CoursesPage() {
 
                     <div className="grid grid-cols-2 gap-2 md:gap-3">
                       <Link href={`/khoa-hoc/chi-tiet?id=${course.id}`} className="w-full">
-                        <Button variant="outline" className="w-full h-9 md:h-11 rounded-xl border-slate-200 font-bold text-slate-500 hover:bg-slate-50 hover:text-primary transition-all text-[10px] md:text-xs uppercase tracking-widest">
+                        <Button variant="outline" className="w-full h-9 md:h-11 rounded-xl border-slate-200 font-bold text-slate-500 hover:bg-primary/5 hover:text-primary transition-all text-[10px] md:text-xs uppercase tracking-widest">
                           Chi tiết
                         </Button>
                       </Link>

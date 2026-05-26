@@ -130,7 +130,7 @@ export function ContactForm({ courseId, courseTitle }: ContactFormProps) {
         <Button 
           type="submit" 
           disabled={loading}
-          className="w-full h-16 bg-[#F2A900] hover:bg-[#D99600] text-[#0E3B0F] font-black text-xl rounded-2xl shadow-2xl shadow-yellow-500/10 transition-all active:scale-95"
+          className="w-full h-16 bg-[#FFB606] hover:bg-[#D99600] text-[#0E3B0F] font-black text-xl rounded-2xl shadow-2xl shadow-yellow-500/10 transition-all active:scale-95"
         >
           {loading ? (
             <Loader2 className="mr-2 h-6 w-6 animate-spin" />

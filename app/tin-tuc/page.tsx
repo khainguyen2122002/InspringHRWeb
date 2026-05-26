@@ -34,7 +34,7 @@ export default function NewsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col min-h-screen bg-slate-50 pt-32 pb-20 items-center justify-center space-y-4">
+      <div className="flex flex-col min-h-screen bg-primary/5 pt-32 pb-20 items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
         <p className="text-sm font-bold text-slate-400">Đang tải tin tức từ trang tính Google Sheets...</p>
       </div>
@@ -43,14 +43,14 @@ export default function NewsPage() {
 
   if (news.length === 0) {
     return (
-      <div className="flex flex-col min-h-screen bg-slate-50 pt-24 pb-20 items-center justify-center">
+      <div className="flex flex-col min-h-screen bg-primary/5 pt-24 pb-20 items-center justify-center">
          <p className="text-slate-500 font-medium">Chưa có bài viết nào.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pt-20 md:pt-24 pb-16 md:pb-20">
+    <div className="flex flex-col min-h-screen bg-primary/5 pt-20 md:pt-24 pb-16 md:pb-20">
       {/* Header section - Tinh gọn */}
       <section className="bg-white py-10 md:py-16 border-b border-slate-100">
         <div className="container mx-auto px-4">
@@ -135,7 +135,7 @@ export default function NewsPage() {
                     </p>
                     <div className="pt-3 md:pt-4 flex items-center justify-between border-t border-slate-50">
                        <span className="text-[8px] md:text-[9px] font-bold text-slate-300 uppercase tracking-widest">By {item.author}</span>
-                       <Link href={`/tin-tuc/chi-tiet?id=${item.id}`} className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-slate-50 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+                       <Link href={`/tin-tuc/chi-tiet?id=${item.id}`} className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/5 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
                           <ArrowRight className="w-3.5 h-3.5 md:w-4 h-4" />
                        </Link>
                     </div>

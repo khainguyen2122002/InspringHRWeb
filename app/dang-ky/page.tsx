@@ -55,7 +55,7 @@ function RegisterForm() {
   if (!mounted) return null
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 py-32 relative overflow-hidden">
+    <div className="min-h-screen bg-primary/5 flex items-center justify-center p-4 py-32 relative overflow-hidden">
       <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
 
@@ -78,7 +78,7 @@ function RegisterForm() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-primary transition-all text-lg font-medium"
+                className="pl-14 h-16 rounded-2xl border-slate-100 bg-primary/5 focus:bg-white focus:ring-primary transition-all text-lg font-medium"
               />
             </div>
           </div>
@@ -91,7 +91,7 @@ function RegisterForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-primary transition-all text-lg font-medium"
+                className="pl-14 h-16 rounded-2xl border-slate-100 bg-primary/5 focus:bg-white focus:ring-primary transition-all text-lg font-medium"
               />
             </div>
           </div>
@@ -104,7 +104,7 @@ function RegisterForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-primary transition-all text-lg font-medium"
+                className="pl-14 h-16 rounded-2xl border-slate-100 bg-primary/5 focus:bg-white focus:ring-primary transition-all text-lg font-medium"
               />
             </div>
           </div>

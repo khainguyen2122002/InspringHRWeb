@@ -13,12 +13,12 @@
   --card-foreground: 224 71.4% 4.1%;
   --popover: 0 0% 100%;
   --popover-foreground: 224 71.4% 4.1%;
-  --primary: 121 62% 14%;
-  /* #0E3B0F */
+  --primary: 121 58% 15%;
+  /* #103C11 */
   --primary-foreground: 0 0% 100%;
-  --secondary: 42 100% 47.5%;
-  /* #F2A900 */
-  --secondary-foreground: 0 0% 100%;
+  --secondary: 42.4 100% 51.2%;
+  /* #FFB606 */
+  --secondary-foreground: 121 58% 15%;
   --muted: 220 14.3% 95.9%;
   --muted-foreground: 220 8.9% 46.1%;
   --accent: 42 100% 47.5%;
@@ -143,6 +143,46 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background;
+    color: #222222;
   }
+
+  p {
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-family: var(--font-sans);
+  }
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 50px;
+    }
+  }
+
+  h2 {
+    font-size: 28px;
+    font-family: var(--font-sans);
+  }
+  @media (min-width: 768px) {
+    h2 {
+      font-size: 38px;
+    }
+  }
+
+  h3 {
+    font-size: 24px;
+    font-family: var(--font-sans);
+  }
+  @media (min-width: 768px) {
+    h3 {
+      font-size: 30px;
+    }
+  }
+}
+
+/* Linear Gradient tĩnh: từ xanh rừng sâu (#103C11) sang xanh nhạt (#E6F0E6) theo đường chéo mượt mà */
+.bg-mesh-green {
+  background: linear-gradient(135deg, #103C11 0%, #E6F0E6 100%);
 }

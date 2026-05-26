@@ -8,6 +8,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import Link from 'next/link'
 import { Phone, MessageCircle } from 'lucide-react'
 import { AuthProvider } from '@/context/auth-context'
+import { PromoModal } from "@/components/promo-modal"
 
 // export const dynamic = 'force-dynamic'
 // export const revalidate = 0
@@ -98,6 +99,7 @@ export default function RootLayout({
           </div>
 
           <Toaster position="top-right" richColors />
+          <PromoModal />
           {gaId && <GoogleAnalytics gaId={gaId} />}
         </AuthProvider>
       </body>

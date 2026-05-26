@@ -28,7 +28,7 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white pt-20 md:pt-24">
       {/* Hero Section - Sạch sẽ, typography tinh tế */}
-      <section className="bg-slate-50 py-12 md:py-20 relative overflow-hidden">
+      <section className="bg-primary/5 py-12 md:py-20 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center max-w-3xl">
           <Badge className="bg-primary/5 text-primary border-none px-3 md:px-4 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] mb-4 md:mb-6">
             Hành trình Inspiring HR
@@ -70,16 +70,7 @@ export default function AboutPage() {
                     <p>Với hành trình hơn 15 năm kinh nghiệm đảm nhiệm các vị trí Giám đốc Nhân sự (CHRO), Trưởng phòng Nhân sự tại các tập đoàn lớn, Ms. Hồng Nhung hiểu rõ những nỗi đau và thách thức mà người làm nghề HR đang gặp phải.</p>
                     <p>Inspiring HR ra đời từ tâm huyết muốn chia sẻ những kiến thức "xương máu", những biểu mẫu "thực chiến" mà không một trường lớp hàn lâm nào giảng dạy. Mục tiêu duy nhất là giúp học viên rút ngắn thời gian thành công và doanh nghiệp tối ưu được nguồn lực quý giá nhất: <strong>Con người</strong>.</p>
                  </div>
-                 <div className="flex justify-center md:justify-start gap-8 pt-2 md:pt-4">
-                    <div className="space-y-0.5 md:space-y-1">
-                       <p className="text-2xl md:text-2xl font-black text-primary">5000+</p>
-                       <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Học viên đào tạo</p>
-                    </div>
-                    <div className="space-y-0.5 md:space-y-1">
-                       <p className="text-2xl md:text-2xl font-black text-primary">50+</p>
-                       <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doanh nghiệp tư vấn</p>
-                    </div>
-                 </div>
+
               </div>
            </div>
         </div>
@@ -89,7 +80,7 @@ export default function AboutPage() {
       <GalleryCarousel />
 
       {/* Core Values */}
-      <section className="py-16 md:py-20 bg-slate-50">
+      <section className="py-16 md:py-20 bg-primary/5">
          <div className="container mx-auto px-4 max-w-6xl">
             <div className="text-center mb-10 md:mb-16 space-y-2 md:space-y-3">
                <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight">Giá Trị Cốt Lõi</h2>
@@ -109,25 +100,10 @@ export default function AboutPage() {
          </div>
       </section>
 
-      {/* Partners / Clients */}
-      <section className="py-20">
-         <div className="container mx-auto px-4 max-w-6xl">
-            <div className="text-center mb-16 space-y-3">
-               <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tight">Đối Tác Đồng Hành</h2>
-               <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Tin tưởng bởi các doanh nghiệp hàng đầu</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-1000">
-               {['Vingroup', 'Viettel', 'FPT', 'Sun Group'].map((client, i) => (
-                 <div key={i} className="flex items-center justify-center h-20 border border-slate-100 rounded-2xl bg-slate-50/50">
-                    <span className="text-xl font-black text-slate-400">{client}</span>
-                 </div>
-               ))}
-            </div>
-         </div>
-      </section>
+
 
       {/* CTA */}
-      <section className="py-16 md:py-20 bg-primary">
+      <section className="py-16 md:py-20 bg-mesh-green">
          <div className="container mx-auto px-4 text-center max-w-4xl space-y-6 md:space-y-8">
             <h2 className="text-xl md:text-4xl font-black text-white leading-tight px-4 md:px-0">
                Hãy Để Chúng Tôi Đồng Hành Cùng <br className="hidden md:block" /> <span className="text-secondary italic">Sự Nghiệp Của Bạn</span>
@@ -136,7 +112,7 @@ export default function AboutPage() {
                Gia nhập cộng đồng nhân sự chuyên nghiệp và bứt phá giới hạn năng lực bản thân ngay hôm nay.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-2 md:pt-4 px-4 md:px-0">
-               <Link href="/khoa-hoc" className="bg-secondary text-primary font-black px-10 h-13 md:h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-[#E09D00] transition-all text-sm w-full sm:w-auto">
+               <Link href="/khoa-hoc" className="bg-secondary text-primary font-black px-10 h-13 md:h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-[#FFCE54] transition-all text-sm w-full sm:w-auto">
                   Khám phá các khóa học <ArrowRight className="w-4 h-4" />
                </Link>
                <Link href="/lien-he" className="bg-white/10 text-white border border-white/20 font-black px-10 h-13 md:h-14 rounded-xl flex items-center justify-center gap-2 hover:bg-white/20 transition-all text-sm w-full sm:w-auto">

@@ -70,9 +70,9 @@ export function Navbar() {
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20 transition-all duration-500">
         <Link href="/" className="flex items-center group transition-transform duration-300 hover:scale-105">
           <div className={cn(
-            "relative h-11 md:h-14 w-44 md:w-56 flex items-center justify-center transition-all duration-300",
+            "relative h-12 w-12 md:h-14 md:w-14 flex items-center justify-center transition-all duration-300",
             (isHomePage && !isScrolled)
-              ? "bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-lg border border-white/20"
+              ? "bg-white/95 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-white/20"
               : ""
           )}>
             <Image 
@@ -80,7 +80,7 @@ export function Navbar() {
               alt="Inspiring HR Logo" 
               fill
               priority
-              sizes="(max-width: 768px) 176px, 224px"
+              sizes="(max-width: 768px) 48px, 56px"
               className="object-contain transition-opacity duration-300 group-hover:opacity-95"
             />
           </div>
@@ -98,13 +98,13 @@ export function Navbar() {
                 className={cn(
                   "relative text-[15px] font-bold transition-all duration-300 group py-2",
                   isWhiteText
-                    ? (isActive ? "text-secondary" : "text-white/90 hover:text-secondary")
-                    : (isActive ? "text-primary" : "text-slate-700 hover:text-primary")
+                    ? (isActive ? "text-[#FFB606]" : "text-white/90 hover:text-[#FFB606]")
+                    : (isActive ? "text-[#0E3B0F]" : "text-slate-700 hover:text-[#0E3B0F]")
                 )}
               >
                 {link.label}
                 <span className={cn(
-                  "absolute bottom-0 left-0 h-0.5 bg-secondary transition-all duration-300 rounded-full",
+                  "absolute bottom-0 left-0 h-0.5 bg-[#FFB606] transition-all duration-300 rounded-full",
                   isActive ? "w-full" : "w-0 group-hover:w-full"
                 )}></span>
               </Link>
@@ -114,9 +114,9 @@ export function Navbar() {
           <div className="ml-4 flex items-center gap-2.5 md:gap-3">
             <Link 
               href="/khoa-hoc" 
-              className="flex items-center gap-1.5 font-bold text-xs md:text-sm bg-gradient-to-r from-secondary to-amber-500 hover:from-amber-500 hover:to-secondary text-primary px-4 py-2 md:py-2.5 rounded-xl shadow-md shadow-amber-500/20 transition-all hover:scale-105"
+              className="flex items-center gap-1.5 font-bold text-xs md:text-sm bg-gradient-to-r from-[#FFB606] to-[#FFB606] hover:from-[#FFCE54] hover:to-[#FFB606] text-[#0E3B0F] px-4 py-2 md:py-2.5 rounded-xl shadow-md shadow-[#FFB606]/20 transition-all hover:scale-105"
             >
-              <Sparkles className="w-4 h-4 text-primary animate-spin" />
+              <Sparkles className="w-4 h-4 text-[#0E3B0F] animate-spin" />
               Đăng ký ngay
             </Link>
 
@@ -125,7 +125,7 @@ export function Navbar() {
               className={cn(
                 "flex items-center gap-1.5 font-bold text-xs md:text-sm px-4 py-2 md:py-2.5 rounded-xl transition-all border",
                 (isScrolled || !isHomePage) 
-                  ? "border-primary text-primary hover:bg-primary/5" 
+                  ? "border-[#0E3B0F] text-[#0E3B0F] hover:bg-[#0E3B0F]/5" 
                   : "border-white/30 text-white hover:bg-white/10"
               )}
             >
@@ -139,7 +139,7 @@ export function Navbar() {
                   "flex items-center gap-1.5 font-black text-xs md:text-sm px-3.5 py-2 md:py-2.5 rounded-xl transition-all group border",
                   (isScrolled || !isHomePage) 
                     ? "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100" 
-                    : "bg-amber-500/20 border-amber-500/30 text-amber-300 hover:bg-amber-500/30"
+                    : "bg-[#FFB606]/20 border-[#FFB606]/30 text-amber-300 hover:bg-[#FFB606]/30"
                 )}
               >
                 <LayoutDashboard className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" /> 
@@ -151,7 +151,7 @@ export function Navbar() {
               <div className="flex items-center gap-2">
                 <div className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-xl border text-xs md:text-sm font-bold",
-                  (isScrolled || !isHomePage) ? "bg-primary/5 border-primary/10 text-primary" : "bg-white/10 border-white/10 text-white"
+                  (isScrolled || !isHomePage) ? "bg-[#0E3B0F]/5 border-[#0E3B0F]/10 text-[#0E3B0F]" : "bg-white/10 border-white/10 text-white"
                 )}>
                   <UserIcon className="w-3.5 h-3.5" />
                   <span>{user.name}</span>
@@ -180,7 +180,7 @@ export function Navbar() {
               href="/admin/registrations" 
               className={cn(
                 "flex items-center gap-1 font-black text-xs px-3 py-2 rounded-xl border",
-                (isScrolled || !isHomePage) ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-amber-500/20 border-amber-500/30 text-amber-300"
+                (isScrolled || !isHomePage) ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-[#FFB606]/20 border-[#FFB606]/30 text-amber-300"
               )}
             >
               <LayoutDashboard className="w-3.5 h-3.5" /> Admin
@@ -216,7 +216,7 @@ export function Navbar() {
                 href={link.href}
                 className={cn(
                   "text-base font-bold p-3.5 rounded-xl transition-all flex items-center justify-between group",
-                  isActive ? "bg-primary/5 text-primary" : "text-slate-600 hover:bg-slate-50 hover:text-primary"
+                  isActive ? "bg-[#0E3B0F]/5 text-[#0E3B0F]" : "text-slate-600 hover:bg-slate-50 hover:text-[#0E3B0F]"
                 )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -228,7 +228,7 @@ export function Navbar() {
           <div className="mt-4 pt-6 border-t border-slate-100 flex flex-col gap-3">
             <Link 
               href="/khoa-hoc" 
-              className="flex items-center justify-center gap-2 font-black text-sm bg-gradient-to-r from-secondary to-amber-500 text-primary px-4 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all"
+              className="flex items-center justify-center gap-2 font-black text-sm bg-gradient-to-r from-[#FFB606] to-[#FFB606] text-[#0E3B0F] px-4 py-3.5 rounded-xl shadow-lg shadow-[#FFB606]/20 transition-all"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <Sparkles className="w-4 h-4" /> Đăng ký khóa học ngay
@@ -236,7 +236,7 @@ export function Navbar() {
 
             <Link 
               href="/lien-he" 
-              className="flex items-center justify-center gap-2 font-bold text-sm bg-primary/5 border border-primary/20 text-primary px-4 py-3.5 rounded-xl hover:bg-primary/10 transition-all"
+              className="flex items-center justify-center gap-2 font-bold text-sm bg-[#0E3B0F]/5 border border-[#0E3B0F]/20 text-[#0E3B0F] px-4 py-3.5 rounded-xl hover:bg-primary/10 transition-all"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Liên hệ & Nhận tư vấn
@@ -245,7 +245,7 @@ export function Navbar() {
             {isAdmin && (
               <Link 
                 href="/admin/registrations" 
-                className="flex items-center justify-center gap-2 font-black text-sm bg-amber-500 text-white px-4 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all mt-2"
+                className="flex items-center justify-center gap-2 font-black text-sm bg-[#FFB606] text-[#103C11] px-4 py-3.5 rounded-xl shadow-lg shadow-[#FFB606]/20 transition-all mt-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <LayoutDashboard className="w-4 h-4" /> Trang Quản Trị (Admin)
