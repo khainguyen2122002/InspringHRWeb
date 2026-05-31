@@ -10,6 +10,14 @@ import { Plus, Edit, Trash2, X, Save, Calendar, Loader2, Upload, ImageIcon } fro
 import { mockDb } from '@/lib/mock-db'
 import { toast } from 'sonner'
 import { getGoogleSheetNews, saveNewsToGoogleSheet, deleteSupabaseNews, uploadImageAction } from '@/app/actions'
+import dynamic from 'next/dynamic'
+import 'react-quill/dist/quill.snow.css'
+
+// @ts-ignore
+const ReactQuill = dynamic(() => import('react-quill'), { 
+  ssr: false, 
+  loading: () => <div className="h-[300px] rounded-3xl border border-slate-100 bg-slate-50 flex items-center justify-center"><p className="text-slate-400">Đang tải trình soạn thảo...</p></div> 
+})
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState<any[]>([])
@@ -232,12 +240,13 @@ export default function AdminNewsPage() {
 
             <div className="space-y-4 md:col-span-2">
               <label className="text-sm font-black text-slate-400 uppercase tracking-widest">Nội dung đầy đủ</label>
-              <Textarea 
-                value={currentItem.content || ''} 
-                onChange={(e) => setCurrentItem({...currentItem, content: e.target.value})}
-                className="min-h-[300px] rounded-3xl border-slate-100 p-6"
-                placeholder="Nhập nội dung chi tiết bài viết..."
-              />
+              <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-slate-100 [&_.ql-container]:border-none [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:text-base [&_.ql-editor]:text-slate-700">
+                 <ReactQuill 
+                   theme="snow"
+                   value={currentItem.content || ''} 
+                   onChange={(value: string) => setCurrentItem({...currentItem, content: value})}
+                 />
+              </div>
             </div>
 
             <div className="md:col-span-2 pt-6 flex gap-4">

@@ -81,7 +81,6 @@ export default function HomeContent() {
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-4xl mx-auto space-y-5 md:space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             <div className="space-y-3 md:space-y-4">
-               {/* Sửa Typography: Giảm size chữ trên mobile mạnh hơn, căn chỉnh khoảng cách dòng */}
                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[1.2] md:leading-tight tracking-tight text-white drop-shadow-2xl px-2 sm:px-0">
                  Truyền Cảm Hứng <br className="hidden sm:block" />
                  <span className="text-secondary">Nâng Tầm</span> Nghề Nhân Sự
@@ -114,95 +113,8 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 2. KHÓA HỌC NỔI BẬT */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
-             <div className="space-y-2 md:space-y-3">
-                <p className="text-secondary font-bold uppercase tracking-widest text-[9px] md:text-[10px]">Chương trình đào tạo</p>
-                <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Khóa Học Nổi Bật</h2>
-                <div className="w-12 md:w-16 h-1 bg-secondary rounded-full" />
-             </div>
-             <Link href="/khoa-hoc" className="text-primary font-bold text-[13px] md:text-sm hover:text-secondary transition-colors flex items-center gap-2 group">
-                Tất cả khóa học <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-             </Link>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-            {/* Featured Course (Left - 2/3) */}
-            <div className="lg:col-span-2 space-y-6">
-              {featuredCourses[0] && (
-                <div className="group cursor-pointer">
-                  <Link href={`/khoa-hoc/chi-tiet?id=${featuredCourses[0].id}`}>
-                    <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl mb-6 md:mb-8">
-                      <Image 
-                        src={featuredCourses[0].image_url} 
-                        alt={featuredCourses[0].title} 
-                        fill 
-                        className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                      <div className="absolute top-4 md:top-6 left-4 md:left-6">
-                        <Badge className="bg-secondary text-primary font-bold px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg border-none">
-                          Nổi bật nhất
-                        </Badge>
-                      </div>
-                      <div className="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 text-white">
-                        <div className="flex items-center gap-4 text-[10px] md:text-[11px] font-bold text-white/80 uppercase tracking-widest mb-2 md:mb-4">
-                          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].sessions}</span>
-                          <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].views} lượt xem</span>
-                        </div>
-                        <h3 className="text-xl md:text-4xl font-black mb-3 md:mb-5 leading-tight group-hover:text-secondary transition-colors">
-                          {featuredCourses[0].title}
-                        </h3>
-                        <p className="text-white/70 text-xs md:text-base font-medium line-clamp-2 max-w-3xl mb-4 md:mb-6 leading-relaxed">
-                          {featuredCourses[0].description}
-                        </p>
-                        <div className="inline-flex items-center gap-2 bg-white text-primary px-5 md:px-8 py-2.5 md:py-4 rounded-xl font-black text-[10px] md:text-[12px] uppercase tracking-widest hover:bg-secondary transition-all">
-                          Xem chi tiết <ArrowRight className="w-4 h-4" />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Course List (Right - 1/3) */}
-            <div className="flex flex-col gap-6 md:gap-8">
-              {featuredCourses.slice(1, 4).map((course) => (
-                <Link key={course.id} href={`/khoa-hoc/chi-tiet?id=${course.id}`} className="group block">
-                  <div className="flex gap-4 md:gap-6 items-start">
-                    <div className="relative w-28 md:w-36 aspect-square rounded-2xl overflow-hidden shrink-0 shadow-md">
-                      <Image 
-                        src={course.image_url} 
-                        alt={course.title} 
-                        fill 
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    </div>
-                    <div className="space-y-2 md:space-y-3 py-1">
-                      <div className="flex items-center gap-3 text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em]">
-                        <span className="text-secondary">{course.category}</span>
-                        <span className="flex items-center gap-1"><Eye className="w-2.5 h-2.5" /> {course.views}</span>
-                      </div>
-                      <h4 className="text-sm md:text-[15px] font-bold text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-2">
-                        {course.title}
-                      </h4>
-                      <p className="text-[10px] md:text-[11px] font-bold text-primary/80">
-                         {new Intl.NumberFormat('vi-VN').format(Number(course.price))}đ
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. TIN TỨC & SỰ KIỆN */}
-      <section className="py-16 md:py-24 bg-primary/5">
+      {/* 2. TIN TỨC & SỰ KIỆN */}
+      <section className="py-12 md:py-20 bg-primary/5">
          <div className="container mx-auto px-4 max-w-7xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
                <div className="space-y-2 md:space-y-3">
@@ -216,7 +128,6 @@ export default function HomeContent() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-               {/* Featured News (Left - 60% width) */}
                <div className="lg:col-span-3">
                  {latestNews[0] && (
                     <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-slate-100 flex flex-col h-full">
@@ -258,7 +169,6 @@ export default function HomeContent() {
                  )}
                </div>
  
-               {/* News List (Right - 40% width) */}
                <div className="lg:col-span-2 space-y-6 flex flex-col justify-between">
                   {latestNews.slice(1, 5).map((news, i) => (
                     <div key={i} className="flex gap-4 items-start group">
@@ -289,59 +199,156 @@ export default function HomeContent() {
          </div>
       </section>
 
-      {/* 5. VỀ CHÚNG TÔI */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <div className="relative">
-               <div className="absolute inset-0 bg-secondary/10 rounded-[2rem] md:rounded-[3rem] translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4" />
-               <div className="relative aspect-[4/3] rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100">
-                  <Image 
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop" 
-                    alt="Team Inspiring HR" 
-                    fill 
-                    className="object-cover"
-                  />
-               </div>
-            </div>
-            
-            <div className="space-y-6 md:space-y-8">
-              <div className="space-y-3 md:space-y-4">
-                 <p className="text-secondary font-bold uppercase tracking-widest text-[10px] md:text-[11px]">Hành trình & Sứ mệnh</p>
-                 <h2 className="text-2xl md:text-4xl font-black text-primary leading-tight tracking-tight">
-                    Về Inspiring HR
-                 </h2>
-                 <div className="w-12 md:w-16 h-1 bg-secondary rounded-full" />
-              </div>
-              <div className="space-y-4 md:space-y-6 text-slate-600 text-[13px] md:text-sm leading-relaxed font-medium">
-                <p>
-                  Chúng tôi là đơn vị đào tạo và tư vấn nhân sự thực chiến, được sáng lập từ tâm huyết muốn nâng tầm năng lực cho đội ngũ HR Việt Nam. Tại Inspiring HR, chúng tôi không chỉ dạy lý thuyết, chúng tôi chuyển giao kinh nghiệm "xương máu" từ những chuyên gia hàng đầu.
-                </p>
-                <div className="grid grid-cols-2 gap-6 md:gap-8 pt-2 md:pt-4">
-                   <div className="space-y-0.5 md:space-y-1">
-                      <p className="text-3xl md:text-4xl font-black text-primary">15+</p>
-                      <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Năm thực chiến</p>
-                   </div>
-                   <div className="space-y-0.5 md:space-y-1">
-                      <p className="text-3xl md:text-4xl font-black text-secondary">2000+</p>
-                      <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Học viên tin dùng</p>
-                   </div>
+      {/* 3. KHÓA HỌC NỔI BẬT */}
+      <section className="py-12 md:py-20 bg-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
+             <div className="space-y-2 md:space-y-3">
+                <p className="text-secondary font-bold uppercase tracking-widest text-[9px] md:text-[10px]">Chương trình đào tạo</p>
+                <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Khóa Học Nổi Bật</h2>
+                <div className="w-12 md:w-16 h-1 bg-secondary rounded-full" />
+             </div>
+             <Link href="/khoa-hoc" className="text-primary font-bold text-[13px] md:text-sm hover:text-secondary transition-colors flex items-center gap-2 group">
+                Tất cả khóa học <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+             </Link>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            <div className="lg:col-span-2 space-y-6">
+              {featuredCourses[0] && (
+                <div className="group cursor-pointer">
+                  <Link href={`/khoa-hoc/chi-tiet?id=${featuredCourses[0].id}`}>
+                    <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl mb-6 md:mb-8">
+                      <Image 
+                        src={featuredCourses[0].image_url} 
+                        alt={featuredCourses[0].title} 
+                        fill 
+                        className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute top-4 md:top-6 left-4 md:left-6">
+                        <Badge className="bg-secondary text-primary font-bold px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg border-none">
+                          Nổi bật nhất
+                        </Badge>
+                      </div>
+                      <div className="absolute bottom-4 md:bottom-8 left-4 md:left-8 right-4 md:right-8 text-white">
+                        <div className="flex items-center gap-4 text-[10px] md:text-[11px] font-bold text-white/80 uppercase tracking-widest mb-2 md:mb-4">
+                          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].sessions}</span>
+                          <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].views} lượt xem</span>
+                        </div>
+                        <h3 className="text-xl md:text-4xl font-black mb-3 md:mb-5 leading-tight group-hover:text-secondary transition-colors">
+                          {featuredCourses[0].title}
+                        </h3>
+                        <p className="text-white/70 text-xs md:text-base font-medium line-clamp-2 max-w-3xl mb-4 md:mb-6 leading-relaxed">
+                          {featuredCourses[0].description}
+                        </p>
+                        <div className="inline-flex items-center gap-2 bg-white text-primary px-5 md:px-8 py-2.5 md:py-4 rounded-xl font-black text-[10px] md:text-[12px] uppercase tracking-widest hover:bg-secondary transition-all">
+                          Xem chi tiết <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
-              </div>
-              <div className="pt-2 md:pt-6">
-                 <Link href="/gioi-thieu" className="bg-primary/5 text-primary font-black px-8 md:px-10 py-3.5 md:py-4 rounded-xl hover:bg-primary hover:text-white transition-all inline-flex items-center gap-3 text-[13px] md:text-sm uppercase tracking-widest">
-                    Tìm hiểu thêm <ArrowRight className="w-4 h-4" />
-                 </Link>
-              </div>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-6 md:gap-8">
+              {featuredCourses.slice(1, 4).map((course) => (
+                <Link key={course.id} href={`/khoa-hoc/chi-tiet?id=${course.id}`} className="group block">
+                  <div className="flex gap-4 md:gap-6 items-start">
+                    <div className="relative w-28 md:w-36 aspect-square rounded-2xl overflow-hidden shrink-0 shadow-md">
+                      <Image 
+                        src={course.image_url} 
+                        alt={course.title} 
+                        fill 
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="space-y-2 md:space-y-3 py-1">
+                      <div className="flex items-center gap-3 text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em]">
+                        <span className="text-secondary">{course.category}</span>
+                        <span className="flex items-center gap-1"><Eye className="w-2.5 h-2.5" /> {course.views}</span>
+                      </div>
+                      <h4 className="text-sm md:text-[15px] font-bold text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-2">
+                        {course.title}
+                      </h4>
+                      <p className="text-[10px] md:text-[11px] font-bold text-primary/80">
+                         {new Intl.NumberFormat('vi-VN').format(Number(course.price))}đ
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* 6. LÝ DO CHỌN CHÚNG TÔI */}
-      <section className="py-16 md:py-24 bg-primary/5 relative overflow-hidden">
+      {/* 4. CÁC DỊCH VỤ CỦA INSPIRING HR */}
+      <section className="py-12 md:py-20 bg-primary/5">
+        <div className="container mx-auto px-4 max-w-7xl">
+           <div className="text-center mb-12 md:mb-16 space-y-3 md:space-y-4">
+              <h2 className="text-2xl md:text-4xl font-black text-primary tracking-tight leading-snug">Các dịch vụ của Inspiring HR</h2>
+              <p className="text-slate-600 text-sm md:text-base font-medium max-w-2xl mx-auto">Chúng tôi đồng hành cùng bạn từ đào tạo, coaching đến tư vấn hệ thống nhân sự chuyên sâu</p>
+              <div className="w-16 md:w-20 h-1 bg-secondary mx-auto rounded-full mt-4" />
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {/* Card 1 */}
+              <Link href="/khoa-hoc" className="group block">
+                <Card className="h-full border-none shadow-lg hover:shadow-2xl transition-transform duration-300 hover:-translate-y-2 overflow-hidden bg-[#1E40AF] text-white">
+                  <CardContent className="p-8 flex flex-col h-full relative z-10">
+                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                      <BookOpen className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-[#FFCE54] transition-colors">Đào tạo Nhà Quản Lý & Người Làm Nhân Sự</h3>
+                    <p className="text-white/80 text-sm mb-8 flex-grow leading-relaxed">Từ cơ bản đến chuyên sâu với 100% nội dung thực tiễn, case study thực tế từ doanh nghiệp.</p>
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-white/90 bg-white/10 py-2 px-4 rounded-xl inline-block mt-auto w-fit">
+                      24 buổi • Online/Offline • Có chứng nhận
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Card 2 */}
+              <Link href="https://zalo.me/0915099642" target="_blank" className="group block">
+                <Card className="h-full border-none shadow-lg hover:shadow-2xl transition-transform duration-300 hover:-translate-y-2 overflow-hidden bg-[#6B21A8] text-white">
+                  <CardContent className="p-8 flex flex-col h-full relative z-10">
+                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                      <Users className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-[#FFCE54] transition-colors">Coaching Sự Nghiệp Cá Nhân</h3>
+                    <p className="text-white/80 text-sm mb-8 flex-grow leading-relaxed">Hỗ trợ 1-1 định hướng nghề nghiệp, xây dựng lộ trình phát triển và kỹ năng phỏng vấn cho HR.</p>
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-white/90 bg-white/10 py-2 px-4 rounded-xl inline-block mt-auto w-fit">
+                      Coaching trực tiếp với chuyên gia {'>'}15 năm kinh nghiệm
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Card 3 */}
+              <Link href="/tu-van-doanh-nghiep" className="group block">
+                <Card className="h-full border-none shadow-lg hover:shadow-2xl transition-transform duration-300 hover:-translate-y-2 overflow-hidden bg-[#D97706] text-white">
+                  <CardContent className="p-8 flex flex-col h-full relative z-10">
+                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                      <Building2 className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-[#FFCE54] transition-colors">Tư Vấn Doanh Nghiệp</h3>
+                    <p className="text-white/80 text-sm mb-8 flex-grow leading-relaxed">Xây dựng hệ thống quản trị nhân sự, chính sách, quy trình, KPI, lương thưởng và tư vấn pháp lý lao động.</p>
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-white/90 bg-white/10 py-2 px-4 rounded-xl inline-block mt-auto w-fit">
+                      Đồng hành cùng doanh nghiệp phát triển bền vững
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+           </div>
+        </div>
+      </section>
+
+      {/* 5. LÝ DO CHỌN CHÚNG TÔI */}
+      <section className="py-12 md:py-20 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-6xl relative z-10">
-           <div className="text-center mb-12 md:mb-20 space-y-3 md:space-y-4">
+           <div className="text-center mb-12 md:mb-16 space-y-3 md:space-y-4">
               <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Tại Sao Chọn Inspiring HR?</h2>
               <div className="w-16 md:w-20 h-1 bg-secondary mx-auto rounded-full" />
            </div>
@@ -363,7 +370,7 @@ export default function HomeContent() {
       <GalleryCarousel />
 
       {/* 7. CTA CUỐI TRANG / LIÊN HỆ NHANH */}
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-12 md:py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto bg-mesh-green rounded-[2rem] md:rounded-[3.5rem] p-8 sm:p-12 md:p-24 text-center space-y-8 md:space-y-10 shadow-2xl relative overflow-hidden">
              <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
