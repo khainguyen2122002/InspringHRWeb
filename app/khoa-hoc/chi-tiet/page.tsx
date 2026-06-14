@@ -9,6 +9,7 @@ import {
   ArrowRight, PhoneCall, Award, BookOpen, 
   Target, GraduationCap, Sparkles, PartyPopper, Loader2
 } from 'lucide-react'
+import { SectionDivider } from '@/components/section-divider'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -174,11 +175,8 @@ function CourseDetailContent() {
             {/* Target & Benefits */}
             {(courseData.benefits && courseData.benefits.length > 0) && (
               <section className="space-y-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-sm">
-                    <Target className="w-5 h-5" />
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-black text-primary">Lợi ích khóa học</h2>
+                <div className="mb-6">
+                  <SectionDivider title="Lợi ích khóa học" align="left" />
                 </div>
                 <div className="grid md:grid-cols-2 gap-3">
                   {courseData.benefits.map((benefit: string, i: number) => (
@@ -194,11 +192,8 @@ function CourseDetailContent() {
             {/* Content Details */}
             {courseData.content && (
               <section className="space-y-6">
-                <div className="flex items-center gap-3 mb-6">
-                   <div className="w-10 h-10 bg-secondary text-primary rounded-xl flex items-center justify-center shadow-sm">
-                      <Layers className="w-5 h-5" />
-                   </div>
-                   <h2 className="text-xl md:text-2xl font-black text-primary">Giới thiệu chi tiết</h2>
+                <div className="mb-6">
+                   <SectionDivider title="Giới thiệu chi tiết" align="left" />
                 </div>
                 <div className="prose max-w-none text-slate-600">
                   {courseData.content.split('\n').map((para: string, idx: number) => (
@@ -211,11 +206,8 @@ function CourseDetailContent() {
             {/* Curriculum */}
             {(courseData.curriculum && courseData.curriculum.length > 0) && (
               <section id="curriculum" className="space-y-6">
-                <div className="flex items-center gap-3 mb-6">
-                   <div className="w-10 h-10 bg-secondary text-primary rounded-xl flex items-center justify-center shadow-sm">
-                      <BookOpen className="w-5 h-5" />
-                   </div>
-                   <h2 className="text-xl md:text-2xl font-black text-primary">Nội dung chương trình</h2>
+                <div className="mb-6">
+                   <SectionDivider title="Nội dung chương trình" align="left" />
                 </div>
                 <div className="space-y-3">
                   {courseData.curriculum.map((item: any, i: number) => (

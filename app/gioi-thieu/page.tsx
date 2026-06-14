@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { CheckCircle2, Award, Users, Target, Building2, Sparkles, ArrowRight, FileText, Handshake, Headphones, GraduationCap } from 'lucide-react'
+import { SectionDivider } from '@/components/section-divider'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { GalleryCarousel } from '@/components/gallery-carousel'
@@ -70,12 +71,10 @@ export default function AboutPage() {
            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               {/* Cột trái: Nội dung */}
               <div className="space-y-8 order-2 lg:order-1 text-center lg:text-left">
-                 <div className="space-y-4">
-                    <h2 className="text-sm md:text-base font-black uppercase tracking-widest text-[#103C11]">
-                       Câu chuyện của chúng tôi
-                    </h2>
-                    <div className="w-16 h-1 bg-[#C7A959] mx-auto lg:mx-0 rounded-full" />
-                 </div>
+                 <SectionDivider
+                    title="Câu chuyện của chúng tôi"
+                    align="left"
+                 />
                  
                  <div className="space-y-6 text-[#103C11] text-base md:text-lg font-medium leading-[1.7]">
                     <p>
@@ -118,11 +117,11 @@ export default function AboutPage() {
       {/* CAM KẾT SECTION */}
       <section className="py-20 md:py-28 bg-[#fdfcf8]">
         <div className="container mx-auto px-4 max-w-7xl">
-           <div className="text-center mb-16 space-y-4">
-              <h2 className="text-3xl md:text-5xl font-black text-[#103C11] tracking-tight uppercase drop-shadow-sm">
-                 CAM KẾT TỪ INSPIRING HR
-              </h2>
-              <div className="w-24 h-1.5 bg-[#C7A959] mx-auto rounded-full shadow-sm" />
+           <div className="flex justify-center mb-16">
+              <SectionDivider
+                 title="CAM KẾT TỪ INSPIRING HR"
+                 align="center"
+              />
            </div>
 
            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
@@ -212,9 +211,11 @@ export default function AboutPage() {
       {/* Core Values */}
       <section className="py-16 md:py-20 bg-primary/5">
          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="text-center mb-10 md:mb-16 space-y-2 md:space-y-3">
-               <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight">Giá Trị Cốt Lõi</h2>
-               <div className="w-10 md:w-12 h-1 bg-secondary mx-auto rounded-full" />
+            <div className="flex justify-center mb-10 md:mb-16">
+               <SectionDivider
+                  title="Giá Trị Cốt Lõi"
+                  align="center"
+               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                {values.map((v, i) => (
@@ -252,9 +253,11 @@ export default function AboutPage() {
 
       {/* Gallery Carousel (Đẩy xuống cuối cùng) */}
       <div className="py-20 bg-white">
-        <div className="container mx-auto px-4 text-center mb-10">
-           <h2 className="text-2xl md:text-4xl font-black text-[#103C11] tracking-tight uppercase drop-shadow-sm">Khoảnh Khắc Đáng Nhớ</h2>
-           <div className="w-24 h-1.5 bg-[#C7A959] mx-auto rounded-full shadow-sm mt-4" />
+        <div className="container mx-auto px-4 flex justify-center mb-10">
+           <SectionDivider
+              title="Khoảnh Khắc Đáng Nhớ"
+              align="center"
+           />
         </div>
         <GalleryCarousel />
       </div>

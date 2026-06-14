@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { CheckCircle2, Building2, Scale, Calculator, Presentation, ArrowRight, PhoneCall, Mail, MessageSquare } from 'lucide-react'
+import { SectionDivider } from '@/components/section-divider'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -96,9 +97,11 @@ export default function ConsultingPage() {
       {/* Process Section */}
       <section className="py-16 md:py-20 bg-primary/5">
          <div className="container mx-auto px-4 max-w-5xl">
-            <div className="text-center mb-10 md:mb-16 space-y-2 md:space-y-3">
-               <h2 className="text-xl md:text-3xl font-black text-primary tracking-tight">Quy Trình Triển Khai</h2>
-               <div className="w-10 md:w-12 h-1 bg-secondary mx-auto rounded-full" />
+            <div className="flex justify-center mb-10 md:mb-16">
+               <SectionDivider
+                  title="Quy Trình Triển Khai"
+                  align="center"
+               />
             </div>
             <div className="grid md:grid-cols-3 gap-6 md:gap-12 relative">
                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 hidden md:block" />

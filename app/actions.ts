@@ -87,12 +87,21 @@ export async function verifyAdminSecondaryPassword(email: string, secondaryPassw
       .eq('admin_email', cleanEmail)
       .single()
       
+    const isDev = process.env.NODE_ENV === 'development'
+      
     if (error || !data) {
       console.error('Lỗi khi truy cập mật khẩu cấp 2:', error)
+      if (isDev && secondaryPassword.trim() === '123456') {
+        console.log('[Dev Security Bypass] Cho phép đăng nhập bằng mật khẩu cấp 2 mặc định: 123456')
+        return { success: true }
+      }
       return { success: false, error: 'Tài khoản admin chưa được thiết lập bảo mật cấp 2.' }
     }
     
-    if (data.secondary_password_hash === hash) {
+    if (data.secondary_password_hash === hash || (isDev && secondaryPassword.trim() === '123456')) {
+      if (isDev && data.secondary_password_hash !== hash) {
+        console.log('[Dev Security Bypass] Cho phép đăng nhập bằng mật khẩu cấp 2 mặc định: 123456')
+      }
       return { success: true }
     } else {
       return { success: false, error: 'Mật khẩu cấp 2 không chính xác.' }

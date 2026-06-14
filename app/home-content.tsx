@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Users, Target, BookOpen, Clock, Layers, PhoneCall, CheckCircle2, Award, Building2, Sparkles, CalendarDays, Eye } from 'lucide-react'
+import { ArrowRight, Users, Target, BookOpen, Clock, Layers, PhoneCall, CheckCircle2, Award, Building2, Sparkles, CalendarDays, Eye, Compass, Briefcase } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
@@ -12,6 +12,7 @@ import { getGoogleSheetNews, getCourses } from '@/app/actions'
 import { mockDb } from '@/lib/mock-db'
 import { Course } from '@/types'
 import { GalleryCarousel } from '@/components/gallery-carousel'
+import { SectionDivider } from '@/components/section-divider'
 
 export default function HomeContent() {
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([])
@@ -82,11 +83,12 @@ export default function HomeContent() {
           <div className="max-w-4xl mx-auto space-y-5 md:space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             <div className="space-y-3 md:space-y-4">
                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[1.2] md:leading-tight tracking-tight text-white drop-shadow-2xl px-2 sm:px-0">
-                 Truyền Cảm Hứng <br className="hidden sm:block" />
-                 <span className="text-secondary">Nâng Tầm</span> Nghề Nhân Sự
+                 Truyền Cảm Hứng & <br className="hidden sm:block" />
+                 <span className="text-secondary">Nâng Tầm Năng Lực</span> <br className="hidden sm:block" />
+                 Người Làm Nghề Nhân Sự
                </h1>
-               <p className="text-[11px] sm:text-sm md:text-lg lg:text-xl text-white/90 font-medium max-w-xl mx-auto leading-relaxed drop-shadow-lg px-6 sm:px-0">
-                 Hệ sinh thái đào tạo và tư vấn nhân sự toàn diện nhất cho doanh nghiệp Việt.
+               <p className="text-xs sm:text-sm md:text-lg lg:text-xl text-white/90 font-bold max-w-2xl mx-auto leading-relaxed drop-shadow-lg px-6 sm:px-0 uppercase tracking-wider">
+                 Truyền cảm hứng và nâng tầm năng lực cho người làm nghề Nhân sự
                </p>
             </div>
 
@@ -116,13 +118,13 @@ export default function HomeContent() {
       {/* 2. TIN TỨC & SỰ KIỆN */}
       <section className="py-12 md:py-20 bg-primary/5">
          <div className="container mx-auto px-4 max-w-7xl">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
-               <div className="space-y-2 md:space-y-3">
-                  <p className="text-secondary font-bold uppercase tracking-widest text-[9px] md:text-[10px]">Kiến thức & Sự kiện</p>
-                  <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Tin Tức & Sự Kiện Mới Nhất</h2>
-                  <div className="w-12 md:w-16 h-1 bg-secondary rounded-full" />
-               </div>
-               <Link href="/tin-tuc" className="text-primary font-bold text-[13px] md:text-sm hover:text-secondary transition-colors flex items-center gap-2 group">
+            <div className="flex flex-col items-center mb-10 md:mb-16 gap-4">
+               <SectionDivider 
+                 title="Tin Tức & Sự Kiện Mới Nhất" 
+                 subtitle="Kiến thức & Sự kiện" 
+                 align="center"
+               />
+               <Link href="/tin-tuc" className="text-primary font-bold text-[13px] md:text-sm hover:text-secondary transition-colors flex items-center gap-2 group mt-2">
                   Xem tất cả tin tức <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                </Link>
             </div>
@@ -202,13 +204,13 @@ export default function HomeContent() {
       {/* 3. KHÓA HỌC NỔI BẬT */}
       <section className="py-12 md:py-20 bg-white">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-6">
-             <div className="space-y-2 md:space-y-3">
-                <p className="text-secondary font-bold uppercase tracking-widest text-[9px] md:text-[10px]">Chương trình đào tạo</p>
-                <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Khóa Học Nổi Bật</h2>
-                <div className="w-12 md:w-16 h-1 bg-secondary rounded-full" />
-             </div>
-             <Link href="/khoa-hoc" className="text-primary font-bold text-[13px] md:text-sm hover:text-secondary transition-colors flex items-center gap-2 group">
+          <div className="flex flex-col items-center mb-10 md:mb-16 gap-4">
+             <SectionDivider 
+               title="Khóa Học Nổi Bật" 
+               subtitle="Chương trình đào tạo" 
+               align="center"
+             />
+             <Link href="/khoa-hoc" className="text-primary font-bold text-[13px] md:text-sm hover:text-secondary transition-colors flex items-center gap-2 group mt-2">
                 Tất cả khóa học <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
              </Link>
           </div>
@@ -275,7 +277,7 @@ export default function HomeContent() {
                       <p className="text-[10px] md:text-[11px] font-bold text-primary/80">
                          {new Intl.NumberFormat('vi-VN').format(Number(course.price))}đ
                       </p>
-                    </div>
+                  </div>
                   </div>
                 </Link>
               ))}
@@ -287,21 +289,23 @@ export default function HomeContent() {
       {/* 4. CÁC DỊCH VỤ CỦA INSPIRING HR */}
       <section className="py-12 md:py-20 bg-primary/5">
         <div className="container mx-auto px-4 max-w-7xl">
-           <div className="text-center mb-12 md:mb-16 space-y-3 md:space-y-4">
-              <h2 className="text-2xl md:text-4xl font-black text-primary tracking-tight leading-snug">Các dịch vụ của Inspiring HR</h2>
-              <p className="text-slate-600 text-sm md:text-base font-medium max-w-2xl mx-auto">Chúng tôi đồng hành cùng bạn từ đào tạo, coaching đến tư vấn hệ thống nhân sự chuyên sâu</p>
-              <div className="w-16 md:w-20 h-1 bg-secondary mx-auto rounded-full mt-4" />
+           <div className="text-center mb-12 md:mb-16">
+              <SectionDivider 
+                title="Các dịch vụ của Inspiring HR" 
+                subtitle="Đồng hành cùng bạn từ đào tạo, coaching đến tư vấn hệ thống nhân sự chuyên sâu" 
+                align="center"
+              />
            </div>
-
+ 
            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {/* Card 1 */}
               <Link href="/khoa-hoc" className="group block">
-                <Card className="h-full border-none shadow-lg hover:shadow-2xl transition-transform duration-300 hover:-translate-y-2 overflow-hidden bg-[#1E40AF] text-white">
+                <Card className="h-full border-none shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden bg-[#0E3B0F] text-white rounded-2xl">
                   <CardContent className="p-8 flex flex-col h-full relative z-10">
                     <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
                       <BookOpen className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-[#FFCE54] transition-colors">Đào tạo Nhà Quản Lý & Người Làm Nhân Sự</h3>
+                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-secondary transition-colors">Đào tạo Nhà Quản Lý & Người Làm Nhân Sự</h3>
                     <p className="text-white/80 text-sm mb-8 flex-grow leading-relaxed">Từ cơ bản đến chuyên sâu với 100% nội dung thực tiễn, case study thực tế từ doanh nghiệp.</p>
                     <div className="text-[11px] font-bold uppercase tracking-widest text-white/90 bg-white/10 py-2 px-4 rounded-xl inline-block mt-auto w-fit">
                       24 buổi • Online/Offline • Có chứng nhận
@@ -309,15 +313,15 @@ export default function HomeContent() {
                   </CardContent>
                 </Card>
               </Link>
-
+ 
               {/* Card 2 */}
               <Link href="https://zalo.me/0915099642" target="_blank" className="group block">
-                <Card className="h-full border-none shadow-lg hover:shadow-2xl transition-transform duration-300 hover:-translate-y-2 overflow-hidden bg-[#6B21A8] text-white">
+                <Card className="h-full border-none shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden bg-[#1E5F23] text-white rounded-2xl">
                   <CardContent className="p-8 flex flex-col h-full relative z-10">
                     <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
-                      <Users className="w-7 h-7 text-white" />
+                      <Compass className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-[#FFCE54] transition-colors">Coaching Sự Nghiệp Cá Nhân</h3>
+                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-secondary transition-colors">Coaching Sự Nghiệp Cá Nhân</h3>
                     <p className="text-white/80 text-sm mb-8 flex-grow leading-relaxed">Hỗ trợ 1-1 định hướng nghề nghiệp, xây dựng lộ trình phát triển và kỹ năng phỏng vấn cho HR.</p>
                     <div className="text-[11px] font-bold uppercase tracking-widest text-white/90 bg-white/10 py-2 px-4 rounded-xl inline-block mt-auto w-fit">
                       Coaching trực tiếp với chuyên gia {'>'}15 năm kinh nghiệm
@@ -325,17 +329,17 @@ export default function HomeContent() {
                   </CardContent>
                 </Card>
               </Link>
-
+ 
               {/* Card 3 */}
               <Link href="/tu-van-doanh-nghiep" className="group block">
-                <Card className="h-full border-none shadow-lg hover:shadow-2xl transition-transform duration-300 hover:-translate-y-2 overflow-hidden bg-[#D97706] text-white">
+                <Card className="h-full border border-amber-100/10 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden bg-[#FFF9E6] text-[#0E3B0F] rounded-2xl">
                   <CardContent className="p-8 flex flex-col h-full relative z-10">
-                    <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
-                      <Building2 className="w-7 h-7 text-white" />
+                    <div className="w-14 h-14 bg-[#0E3B0F]/5 rounded-2xl flex items-center justify-center mb-6">
+                      <Briefcase className="w-7 h-7 text-[#0E3B0F]" />
                     </div>
-                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-[#FFCE54] transition-colors">Tư Vấn Doanh Nghiệp</h3>
-                    <p className="text-white/80 text-sm mb-8 flex-grow leading-relaxed">Xây dựng hệ thống quản trị nhân sự, chính sách, quy trình, KPI, lương thưởng và tư vấn pháp lý lao động.</p>
-                    <div className="text-[11px] font-bold uppercase tracking-widest text-white/90 bg-white/10 py-2 px-4 rounded-xl inline-block mt-auto w-fit">
+                    <h3 className="text-xl font-black mb-4 leading-tight group-hover:text-amber-600 transition-colors">Tư Vấn Doanh Nghiệp</h3>
+                    <p className="text-[#0E3B0F]/80 text-sm mb-8 flex-grow leading-relaxed">Xây dựng hệ thống quản trị nhân sự, chính sách, quy trình, KPI, lương thưởng và tư vấn pháp lý lao động.</p>
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-[#0E3B0F]/90 bg-[#0E3B0F]/5 py-2 px-4 rounded-xl inline-block mt-auto w-fit">
                       Đồng hành cùng doanh nghiệp phát triển bền vững
                     </div>
                   </CardContent>
@@ -348,9 +352,12 @@ export default function HomeContent() {
       {/* 5. LÝ DO CHỌN CHÚNG TÔI */}
       <section className="py-12 md:py-20 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 max-w-6xl relative z-10">
-           <div className="text-center mb-12 md:mb-16 space-y-3 md:space-y-4">
-              <h2 className="text-xl md:text-4xl font-black text-primary tracking-tight leading-snug">Tại Sao Chọn Inspiring HR?</h2>
-              <div className="w-16 md:w-20 h-1 bg-secondary mx-auto rounded-full" />
+           <div className="text-center mb-12 md:mb-16">
+              <SectionDivider 
+                title="Tại Sao Chọn Inspiring HR?" 
+                subtitle="Đồng hành bứt phá" 
+                align="center"
+              />
            </div>
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               {reasons.map((val, i) => (
