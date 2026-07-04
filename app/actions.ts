@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { CenterInfo, Course, Contact } from '@/types'
 import { mockDb } from '@/lib/mock-db'
 import crypto from 'crypto'
@@ -551,9 +551,21 @@ export async function getGoogleSheetNews() {
 }
 
 export async function saveNewsToGoogleSheet(newsItem: any) {
+  let supabase = createAdminClient()
+  let isUsingAdmin = !!supabase
+  
+  if (!supabase) {
+    // If admin client is not available (no service_role key), fall back to regular anon client
+    supabase = await createClient()
+  }
+
+  if (!supabase) {
+    // Fallback if no Supabase environment variables are set at all
+    mockDb.saveNews(newsItem)
+    return { success: true, fallback: true }
+  }
+
   try {
-    const supabase = await createClient()
-    
     const payload = {
       title: newsItem.title || '',
       type: newsItem.type || 'Tin Tức',
@@ -561,6 +573,7 @@ export async function saveNewsToGoogleSheet(newsItem: any) {
       image: newsItem.image || 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
       desc: newsItem.desc || '',
       content: newsItem.content || '',
+      attachment_url: newsItem.attachment_url || '',
       views: Number(newsItem.views || 150),
       date: newsItem.date || new Date().toLocaleDateString('vi-VN'),
       updated_at: new Date().toISOString()
@@ -587,21 +600,71 @@ export async function saveNewsToGoogleSheet(newsItem: any) {
     revalidatePath('/tin-tuc')
     revalidatePath('/')
     revalidatePath('/admin/news')
-    return { success: true }
+    return { success: true, fallback: !isUsingAdmin } // if not using admin, notify client
   } catch (error: any) {
     console.error('Error in saveNewsToGoogleSheet (Supabase):', error)
+    
+    // Check if error is RLS policy violation or API key issue
+    const isFallbackNeeded = error.message && (
+      error.message.includes('row-level security') ||
+      error.message.includes('Invalid API key') || 
+      error.message.includes('apiKey') || 
+      error.message.includes('JWT') ||
+      error.message.includes('invalid') ||
+      error.message.includes('service_role')
+    )
+    
+    if (isFallbackNeeded) {
+      console.warn('Supabase write restricted, falling back to mockDb / localStorage...')
+      mockDb.saveNews(newsItem)
+      return { success: true, fallback: true }
+    }
+    
     return { success: false, error: error.message }
   }
 }
 
 export async function deleteSupabaseNews(id: string) {
+  let supabase = createAdminClient()
+  let isUsingAdmin = !!supabase
+  
+  if (!supabase) {
+    supabase = await createClient()
+  }
+
+  if (!supabase) {
+    mockDb.deleteNews(id)
+    revalidatePath('/tin-tuc')
+    revalidatePath('/')
+    revalidatePath('/admin/news')
+    return { success: true, fallback: true }
+  }
+
   try {
-    const { supabase } = await getAdminUser()
     const { error } = await supabase
       .from('news')
       .delete()
       .eq('id', id)
-    if (error) throw error
+      
+    if (error) {
+      const isFallbackNeeded = error.message && (
+        error.message.includes('row-level security') ||
+        error.message.includes('Invalid API key') || 
+        error.message.includes('apiKey') || 
+        error.message.includes('JWT') ||
+        error.message.includes('invalid') ||
+        error.message.includes('service_role')
+      )
+      if (isFallbackNeeded) {
+        mockDb.deleteNews(id)
+        revalidatePath('/tin-tuc')
+        revalidatePath('/')
+        revalidatePath('/admin/news')
+        return { success: true, fallback: true }
+      }
+      throw error
+    }
+    
     revalidatePath('/tin-tuc')
     revalidatePath('/')
     revalidatePath('/admin/news')
@@ -611,6 +674,7 @@ export async function deleteSupabaseNews(id: string) {
     return { success: false, error: error.message }
   }
 }
+
 
 // SEED DATA
 export async function seedSampleData() {

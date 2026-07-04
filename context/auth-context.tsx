@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/utils/supabase/client'
@@ -101,12 +101,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             })
           }
         } else {
-          // No Supabase session, fallback to local storage mock user (regular user)
+          // No Supabase session, fallback to local storage mock user (regular user) or bypassed admin
           if (savedUser) {
             try {
               const userObj = JSON.parse(savedUser)
               if (userObj.role === 'user') {
                 setUser(userObj)
+              } else if (userObj.role === 'admin' && loginTime) {
+                // Keep admin session active if it's less than 1 hour old (e.g. bypassed dev admin)
+                const elapsed = Date.now() - Number(loginTime)
+                const ONE_HOUR = 60 * 60 * 1000 // 1 hour session
+                if (elapsed < ONE_HOUR) {
+                  setUser(userObj)
+                } else {
+                  localStorage.removeItem('ih_user')
+                  localStorage.removeItem('ih_admin_login_time')
+                  setUser(null)
+                }
               } else {
                 localStorage.removeItem('ih_user')
                 localStorage.removeItem('ih_admin_login_time')
@@ -244,7 +255,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return true
   }
 
-  const bypassAdminLogin = () => {
+  const bypassAdminLogin = useCallback(() => {
     const adminUser: User = { 
       id: 'admin-dev', 
       email: 'inspiringhr.daotaonhansu@gmail.com', 
@@ -254,7 +265,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('ih_user', JSON.stringify(adminUser))
     localStorage.setItem('ih_admin_login_time', Date.now().toString())
     setUser(adminUser)
-  }
+  }, [])
 
   const logout = async () => {
     const supabase = createClient()

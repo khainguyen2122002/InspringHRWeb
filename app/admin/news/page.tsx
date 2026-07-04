@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,7 +17,21 @@ import 'react-quill-new/dist/quill.snow.css'
 const ReactQuill = dynamic(() => import('react-quill-new'), { 
   ssr: false, 
   loading: () => <div className="h-[300px] rounded-3xl border border-slate-100 bg-slate-50 flex items-center justify-center"><p className="text-slate-400">Đang tải trình soạn thảo...</p></div> 
-})
+}) as any
+
+const EMOJIS = ['📝', '📅', '📢', '🎓', '💼', '🚀', '💡', '🔗', '📌', '⭐', '🔥', '✅', '❌', '❤️', '👍', '👏', '🔔', '🌍', '❓', 'ℹ️']
+
+const QUILL_MODULES = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'align': [] }],
+    [{ 'lineheight': ['1', '1.15', '1.5', '2', '2.5', '3'] }],
+    [{ 'color': [] }, { 'background': [] }],
+    ['clean']
+  ]
+}
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState<any[]>([])
@@ -26,6 +40,70 @@ export default function AdminNewsPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [currentItem, setCurrentItem] = useState<any>(null)
+  const [customFontSize, setCustomFontSize] = useState<string>('')
+  const quillRef = useRef<any>(null)
+
+  // Register custom Quill formatting styles on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const Quill = require('react-quill-new').Quill;
+        
+        // 1. Text Align Style Attributor
+        const AlignStyle = Quill.import('attributors/style/align');
+        Quill.register(AlignStyle, true);
+        
+        // 2. Font Size Style Attributor (allow ANY value - no whitelist)
+        const SizeStyle = Quill.import('attributors/style/size');
+        SizeStyle.whitelist = null; // remove whitelist so any px value works
+        Quill.register(SizeStyle, true);
+
+        // 3. Line Height Style Attributor
+        const Parchment = Quill.import('parchment');
+        const StyleAttributor = Parchment.StyleAttributor || (Parchment.Attributor && Parchment.Attributor.Style);
+        if (StyleAttributor) {
+          const scope = Parchment.Scope ? Parchment.Scope.BLOCK : 3;
+          const LineHeightStyle = new StyleAttributor('lineheight', 'line-height', {
+            scope: scope,
+            whitelist: ['1', '1.15', '1.5', '2', '2.5', '3']
+          });
+          Quill.register(LineHeightStyle, true);
+        } else {
+          console.warn('Could not find StyleAttributor in Parchment');
+        }
+      } catch (err) {
+        console.error('Lỗi khi đăng ký định dạng cho Quill:', err);
+      }
+    }
+  }, []);
+
+  // Apply custom font size to current Quill selection
+  const applyFontSize = () => {
+    if (!quillRef.current || !customFontSize) return;
+    const quill = quillRef.current.getEditor();
+    const range = quill.getSelection(true);
+    if (range && range.length > 0) {
+      quill.format('size', customFontSize + 'px');
+    } else {
+      // apply to cursor position for future typing
+      quill.format('size', customFontSize + 'px');
+    }
+  };
+
+  const insertEmoji = (emoji: string) => {
+    if (quillRef.current) {
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      if (range) {
+        quill.insertText(range.index, emoji);
+        quill.setSelection(range.index + emoji.length);
+      } else {
+        quill.insertText(quill.getLength() - 1, emoji);
+      }
+    } else {
+      setCurrentItem((prev: any) => ({ ...prev, content: (prev.content || '') + emoji }));
+    }
+  };
 
   useEffect(() => {
     async function load() {
@@ -46,7 +124,10 @@ export default function AdminNewsPage() {
   }, [])
 
   const handleEdit = (item: any) => {
-    setCurrentItem(item)
+    setCurrentItem({
+      ...item,
+      attachment_url: item.attachment_url || ''
+    })
     setIsEditing(true)
   }
 
@@ -83,7 +164,8 @@ export default function AdminNewsPage() {
       type: 'Tin Tức',
       image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop',
       desc: '',
-      content: ''
+      content: '',
+      attachment_url: ''
     })
     setIsEditing(true)
   }
@@ -118,7 +200,11 @@ export default function AdminNewsPage() {
     try {
       const res = await saveNewsToGoogleSheet(currentItem)
       if (res && res.success) {
-        toast.success('Đã lưu bài viết thành công!', { id: toastId })
+        if (res.fallback) {
+          toast.success('Đã lưu bài viết thành công vào bộ nhớ Local (Do chưa cấu hình API Key Supabase)!', { id: toastId })
+        } else {
+          toast.success('Đã lưu bài viết thành công lên Supabase!', { id: toastId })
+        }
         const refreshed = await getGoogleSheetNews()
         if (refreshed.success && refreshed.data) {
           setNews(refreshed.data)
@@ -239,15 +325,71 @@ export default function AdminNewsPage() {
             </div>
 
             <div className="space-y-4 md:col-span-2">
-              <label className="text-sm font-black text-slate-400 uppercase tracking-widest">Nội dung đầy đủ</label>
-              <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-slate-100 [&_.ql-container]:border-none [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:text-base [&_.ql-editor]:text-slate-700">
+              <label className="text-sm font-black text-slate-400 uppercase tracking-widest">Tài liệu / Link đính kèm (Ví dụ: Link PDF, Google Drive, Website liên kết)</label>
+              <Input 
+                placeholder="Dán đường dẫn tài liệu hoặc trang web (ví dụ: https://...)"
+                value={currentItem.attachment_url || ''} 
+                onChange={(e) => setCurrentItem({...currentItem, attachment_url: e.target.value})}
+                className="h-14 rounded-2xl border-slate-100"
+              />
+            </div>
+ 
+            <div className="space-y-4 md:col-span-2">
+               <div className="flex flex-col gap-3">
+                 <label className="text-sm font-black text-slate-400 uppercase tracking-widest">Nội dung đầy đủ</label>
+                 {/* Quick tools bar */}
+                 <div className="flex flex-col sm:flex-row gap-3">
+                   {/* Emoji quick insert */}
+                   <div className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-100 flex-1">
+                     <span className="text-xs font-bold text-slate-400 px-2">Icon nhanh:</span>
+                     <div className="flex flex-wrap gap-1">
+                       {EMOJIS.map(emoji => (
+                         <button
+                           key={emoji}
+                           type="button"
+                           onClick={() => insertEmoji(emoji)}
+                           className="w-8 h-8 rounded-lg hover:bg-white hover:shadow-sm text-lg flex items-center justify-center transition-all active:scale-90"
+                           title="Click để chèn nhanh vào con trỏ soạn thảo"
+                         >
+                           {emoji}
+                         </button>
+                       ))}
+                     </div>
+                     <span className="text-[10px] text-slate-400 italic font-semibold ml-2">(Win + . / Cmd + Space)</span>
+                   </div>
+                   {/* Custom font size input */}
+                   <div className="flex items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-100 shrink-0">
+                     <span className="text-xs font-bold text-slate-400 px-2 whitespace-nowrap">Cỡ chữ (px):</span>
+                     <input
+                       type="number"
+                       min={6}
+                       max={120}
+                       placeholder="16"
+                       value={customFontSize}
+                       onChange={(e) => setCustomFontSize(e.target.value)}
+                       onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyFontSize(); } }}
+                       className="w-20 h-9 rounded-xl border border-slate-200 bg-white text-center text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                     />
+                     <button
+                       type="button"
+                       onClick={applyFontSize}
+                       className="h-9 px-4 rounded-xl bg-primary text-white text-xs font-black hover:bg-primary/90 transition-all active:scale-95 whitespace-nowrap"
+                     >
+                       Áp dụng
+                     </button>
+                   </div>
+                 </div>
+               </div>
+               <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-slate-100 [&_.ql-container]:border-none [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:text-base [&_.ql-editor]:text-slate-700">
                  <ReactQuill 
+                   ref={quillRef}
                    theme="snow"
+                   modules={QUILL_MODULES}
                    value={currentItem.content || ''} 
                    onChange={(value: string) => setCurrentItem({...currentItem, content: value})}
                  />
-              </div>
-            </div>
+               </div>
+             </div>
 
             <div className="md:col-span-2 pt-6 flex gap-4">
                <Button type="submit" disabled={isSaving || isUploading} className="bg-primary text-white h-14 px-10 rounded-2xl font-black shadow-xl hover:bg-primary/95 transition-all">

@@ -7,11 +7,14 @@ CREATE TABLE IF NOT EXISTS news (
   image TEXT NOT NULL,
   "desc" TEXT,
   content TEXT,
+  attachment_url TEXT,
   views INTEGER DEFAULT 0,
   date TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+ALTER TABLE news ADD COLUMN IF NOT EXISTS attachment_url TEXT;
 
 -- 2. Create Admin Security Table (For secondary password layer)
 CREATE TABLE IF NOT EXISTS admin_security (
