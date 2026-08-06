@@ -109,6 +109,7 @@ export default function AdminCoursesPage() {
             <TableHeader className="bg-slate-50/50">
               <TableRow className="hover:bg-transparent border-slate-50 h-16">
                 <TableHead className="w-[350px] font-bold text-slate-400 uppercase text-[10px] tracking-widest pl-8">Khóa học</TableHead>
+                <TableHead className="font-bold text-slate-400 uppercase text-[10px] tracking-widest text-center">Thứ tự</TableHead>
                 <TableHead className="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Danh mục</TableHead>
                 <TableHead className="font-bold text-slate-400 uppercase text-[10px] tracking-widest text-center">Hình thức</TableHead>
                 <TableHead className="font-bold text-slate-400 uppercase text-[10px] tracking-widest text-center">Nổi bật</TableHead>
@@ -138,6 +139,13 @@ export default function AdminCoursesPage() {
                         </div>
                       </div>
                     </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {course.display_order ? (
+                      <Badge className="bg-slate-100 text-slate-700 font-bold border-none px-2.5 py-1">#{course.display_order}</Badge>
+                    ) : (
+                      <span className="text-slate-300 text-xs">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="rounded-lg font-bold text-primary bg-primary/5 border-none px-3 py-1">{course.category}</Badge>

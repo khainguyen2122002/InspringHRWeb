@@ -33,9 +33,10 @@ VALUES
 ON CONFLICT (admin_email) DO UPDATE 
 SET secondary_password_hash = EXCLUDED.secondary_password_hash;
 
--- 3. Modify Contacts Table to support course registrations fields
+-- 3. Modify Contacts & Courses Table to support extra fields
 ALTER TABLE contacts ADD COLUMN IF NOT EXISTS course_title TEXT;
 ALTER TABLE contacts ADD COLUMN IF NOT EXISTS level TEXT;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 0;
 
 -- 4. Enable Row Level Security (RLS)
 ALTER TABLE news ENABLE ROW LEVEL SECURITY;

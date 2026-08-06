@@ -137,10 +137,7 @@ export default function HomeContent() {
       try {
         const res = await getCourses()
         if (res && res.success && res.data && res.data.length > 0) {
-          // Lấy 4 khóa học, ưu tiên các khóa học nổi bật (is_featured)
-          const featured = res.data.filter((c: Course) => c.is_featured)
-          const nonFeatured = res.data.filter((c: Course) => !c.is_featured)
-          setFeaturedCourses([...featured, ...nonFeatured].slice(0, 4))
+          setFeaturedCourses(res.data.slice(0, 4))
         } else {
           setFeaturedCourses(mockDb.getCourses().slice(0, 4))
         }
@@ -425,7 +422,7 @@ export default function HomeContent() {
                           <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].sessions}</span>
                           <span className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5 text-secondary" /> {featuredCourses[0].views} lượt xem</span>
                         </div>
-                        <h3 className="text-xl md:text-4xl font-black mb-3 md:mb-5 leading-tight group-hover:text-secondary transition-colors">
+                        <h3 className="text-xl md:text-4xl font-black mb-3 md:mb-5 leading-snug py-1 group-hover:text-secondary transition-colors">
                           {featuredCourses[0].title}
                         </h3>
                         <p className="text-white/70 text-xs md:text-base font-medium line-clamp-2 max-w-3xl mb-4 md:mb-6 leading-relaxed">

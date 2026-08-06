@@ -58,6 +58,7 @@ const formSchema = z.object({
   external_form_url: z.string().optional().nullable(),
   status: z.enum(['Sắp khai giảng', 'Đang diễn ra', 'Đã kết thúc']),
   is_featured: z.boolean().optional(),
+  display_order: z.coerce.number().optional().default(0),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -102,6 +103,7 @@ export function CourseFormDialog({
       external_form_url: course?.external_form_url || "",
       status: course?.status || "Sắp khai giảng",
       is_featured: !!course?.is_featured,
+      display_order: course?.display_order || 0,
     },
   })
 
@@ -145,6 +147,7 @@ export function CourseFormDialog({
         external_form_url: course?.external_form_url || "",
         status: course?.status || "Sắp khai giảng",
         is_featured: !!course?.is_featured,
+        display_order: course?.display_order || 0,
       })
       setPreview(course?.image_url || null)
       setImageFile(null)
@@ -180,6 +183,7 @@ export function CourseFormDialog({
       formData.append('level', values.level)
       formData.append('category', values.category)
       formData.append('is_featured', String(!!values.is_featured))
+      formData.append('display_order', String(values.display_order || 0))
       formData.append('imageUrl', course?.image_url || '')
 
       if (imageFile) {
@@ -262,7 +266,7 @@ export function CourseFormDialog({
                         <FormItem>
                           <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tên khóa học chính thức</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ví dụ: Nghề Nhân sự Chuyên nghiệp..." {...field} className="h-16 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white transition-all text-xl font-bold text-primary" />
+                            <Input placeholder="Ví dụ: Nghề Nhân sự Chuyên nghiệp..." {...field} className="h-auto min-h-[4rem] py-3 px-4 rounded-2xl bg-slate-50/50 border-slate-200 focus:bg-white transition-all text-xl font-bold text-primary leading-normal overflow-visible" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -581,18 +585,49 @@ export function CourseFormDialog({
                   </p>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="is_featured"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-4 space-y-0 rounded-[2rem] border-2 border-dashed border-slate-100 p-6 bg-slate-50/30">
-                      <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} className="w-6 h-6 rounded-lg" />
-                      </FormControl>
-                      <FormLabel className="text-xs font-black uppercase text-primary">🔥 Khóa học nổi bật</FormLabel>
-                    </FormItem>
-                  )}
-                />
+                {/* ORDER & FEATURED CARD */}
+                <div className="bg-white p-8 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-2 h-8 bg-secondary rounded-full" />
+                    <h4 className="font-black text-primary uppercase text-[10px] tracking-widest">Thứ tự & Vị trí hiển thị</h4>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="display_order"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Thứ tự xuất hiện (1 = Hiển thị đầu tiên)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            min="0"
+                            placeholder="Ví dụ: 1" 
+                            {...field} 
+                            className="h-14 rounded-2xl bg-slate-50/50 border-slate-200 font-bold text-primary text-lg" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="is_featured"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-4 space-y-0 rounded-2xl border-2 border-dashed border-amber-200 p-5 bg-amber-50/40">
+                        <FormControl>
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} className="w-6 h-6 rounded-lg data-[state=checked]:bg-amber-500" />
+                        </FormControl>
+                        <div className="space-y-1">
+                          <FormLabel className="text-xs font-black uppercase text-amber-900 cursor-pointer">🔥 Đánh dấu là Khóa học Nổi bật</FormLabel>
+                          <p className="text-[10px] text-amber-700 font-medium">Khóa học sẽ hiển thị dạng Banner/Thẻ tiêu điểm lớn nhất khi học viên vào xem</p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </div>
 

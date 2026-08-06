@@ -25,6 +25,7 @@ export const mockDb = {
           views: 1250,
           description: 'Khóa học cung cấp kiến thức toàn diện về quản trị nhân sự hiện đại, từ tuyển dụng, đào tạo đến C&B và quan hệ lao động.',
           is_featured: true,
+          display_order: 1,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
@@ -39,6 +40,7 @@ export const mockDb = {
           views: 840,
           description: 'Học cách xây dựng hệ thống lương thưởng, bảo hiểm và các chính sách nhân sự giúp thu hút và giữ chân nhân tài.',
           is_featured: false,
+          display_order: 2,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
@@ -53,6 +55,7 @@ export const mockDb = {
           views: 2100,
           description: 'Nắm vững các bộ câu hỏi phỏng vấn hành vi và kỹ năng đánh giá ứng viên chuẩn xác nhất.',
           is_featured: false,
+          display_order: 3,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
@@ -67,6 +70,7 @@ export const mockDb = {
           views: 560,
           description: 'Lộ trình từng bước để định hình và lan tỏa giá trị cốt lõi, gắn kết đội ngũ một cách tự nhiên.',
           is_featured: false,
+          display_order: 4,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }

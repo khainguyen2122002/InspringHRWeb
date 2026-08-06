@@ -224,7 +224,8 @@ export async function getCourses() {
       
     if (error) {
       if (error.code === '42P01') {
-        return { success: true, data: mockDb.getCourses() }
+        const sortedMock = mockDb.getCourses().sort((a: Course, b: Course) => (a.display_order || 99) - (b.display_order || 99))
+        return { success: true, data: sortedMock }
       }
       throw error
     }
@@ -255,6 +256,7 @@ export async function getCourses() {
       level: row.level || '',
       category: row.category || '',
       is_featured: !!row.is_featured,
+      display_order: row.display_order !== undefined && row.display_order !== null ? Number(row.display_order) : 0,
       image_url: row.image_url || '',
       instructor_name: row.instructor_name || '',
       instructor_role: row.instructor_role || '',
@@ -270,6 +272,15 @@ export async function getCourses() {
       curriculum: row.content?.curriculum || []
     }))
     
+    // Sắp xếp: Ưu tiên display_order > 0 (1, 2, 3...), tiếp đến is_featured, cuối cùng là created_at
+    mapped.sort((a: any, b: any) => {
+      const orderA = a.display_order && a.display_order > 0 ? a.display_order : 999
+      const orderB = b.display_order && b.display_order > 0 ? b.display_order : 999
+      if (orderA !== orderB) return orderA - orderB
+      if (a.is_featured !== b.is_featured) return a.is_featured ? -1 : 1
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+    })
+
     return { success: true, data: mapped as Course[] }
   } catch (error: any) {
     console.error('[Action Error] getCourses:', error)
@@ -293,6 +304,7 @@ async function seedSampleCoursesOnly() {
         category: course.category,
         image_url: course.image_url,
         is_featured: course.is_featured,
+        display_order: course.display_order || 0,
         content: { 
           overview: course.description || '', 
           curriculum: course.curriculum || [],
@@ -337,6 +349,7 @@ export async function upsertCourse(formData: FormData) {
       level: formData.get('level') as string,
       category: formData.get('category') as string,
       is_featured: formData.get('is_featured') === 'true',
+      display_order: formData.get('display_order') ? Number(formData.get('display_order')) : 0,
       image_url: imageUrl,
       updated_at: new Date().toISOString(),
       content: JSON.parse(formData.get('content') as string || '{"overview":"","curriculum":[]}')

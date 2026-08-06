@@ -52,6 +52,7 @@ export interface Course {
   status?: 'Sắp khai giảng' | 'Đang diễn ra' | 'Đã kết thúc'
   external_form_url?: string
   is_featured: boolean
+  display_order?: number
   views: number
   created_at: string
   updated_at: string
