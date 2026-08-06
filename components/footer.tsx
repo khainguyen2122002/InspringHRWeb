@@ -64,7 +64,7 @@ export function Footer() {
                 <p className="font-bold text-sm text-primary uppercase tracking-wider">CÔNG TY TNHH INSPIRING HR</p>
                 <div className="flex items-start gap-3 justify-center md:justify-start">
                   <MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span className="leading-relaxed">114/2K hẻm 222 đường Trường Chinh, P. Đông Hưng Thuận, TP. HCM</span>
+                  <span className="leading-relaxed">Đường Trường Chinh, P. Đông Hưng Thuận, TP. HCM</span>
                 </div>
                 <div className="flex items-center gap-3 justify-center md:justify-start">
                   <Phone className="w-4 h-4 text-primary shrink-0" />
